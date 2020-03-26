@@ -42,7 +42,7 @@ public class COVID19ByAgeDeathsItem
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private long _deathWomenCount;
 
-	@MarshallField(as="deathCount",
+	@MarshallField(as="deathTotalCount",
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private long _deathTotalCount;
 	

@@ -3,23 +3,23 @@ package r01f.opendata.covid19.model.byagedeath;
 import java.util.Collection;
 import java.util.Date;
 
+import com.google.common.collect.Iterables;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import r01f.locale.Language;
 import r01f.locale.LanguageTexts;
-import r01f.locale.LanguageTextsMapBacked;
-import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
 import r01f.objectstreamer.annotations.MarshallField;
 import r01f.objectstreamer.annotations.MarshallField.DateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
-import r01f.opendata.covid19.model.COVID19IDs.COVID19MetaDataID;
-import r01f.opendata.covid19.model.COVID19MetaData;
+import r01f.opendata.covid19.model.COVID19DimensionValuesByDate;
 import r01f.opendata.covid19.model.COVID19MetaDataCollection;
 import r01f.opendata.covid19.model.COVID19ModelObject;
+import r01f.util.types.collections.CollectionUtils;
+import r01f.util.types.collections.Lists;
 
 @MarshallType(as="covid19ByAgeDeaths")
 @Accessors(prefix="_")
@@ -40,49 +40,106 @@ public class COVID19ByAgeDeaths
 	@Getter @Setter private Collection<COVID19ByAgeDeathsAtDate> _byDateItems;
 	
 	@MarshallField(as="name")
-	@Getter @Setter private LanguageTexts _name = NAME_BY_AGE_DEATHS;
+	@Getter @Setter private LanguageTexts _name = COVID19ByAgeDeathsMeta.NAME;
 	
 	@MarshallField(as="notes")
-	@Getter @Setter private LanguageTexts _notes = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
-															.add(Language.SPANISH,"Hildakoen kopurua agian ez dator bat egunen batean ospitaleetatik datozen datuekin, bi informazio-sistemen artean dekalaje bat dagoelako, eta dekalaje hori hurrengo egunetan zuzenduko da.")
-															.add(Language.BASQUE,"El número de fallecidos puede que algún día no coincida con los datos que provienen de los hospitales porque existe un decalaje entre ambos sistemas de información que se corregirá en días posteriores");
+	@Getter @Setter private LanguageTexts _notes = COVID19ByAgeDeathsMeta.NOTE;
 	
 	@MarshallField(as="metaData",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(new COVID19MetaData(COVID19MetaDataID.forId("ageRange"),
-																													"Rango de edad",
-																													"Adin-tartea"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("positiveMenCount"),
-																													"Hombres positivos",
-																													"Gizonak: positiboak"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("positiveWomenCount"),
-																													"Mujeres positvos",
-																													"Emakumeak: positiboak"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("positiveTotalCount"),
-																													"Total",
-																													"Guztira"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("deathMenCount"),
-																													"Hombres: fallecimientos",
-																													"Gizonak: hildakoak"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("deathWomenCount"),
-																													"Mujeres: fallecimientos",
-																													"Emakumeak: hildakoak"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("deathCount"),
-																													"Total: fallecimientos",
-																													"Guztira: hildakoak"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("menLethalityRate"),
-																													"Hombres: letalidad",
-																													"Gizonak: hilgarritasuna"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("womenLethalityRate"),
-																													"Mujeres: letalidad",
-																													"Emakumeak: hilgarritasuna"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("totalLethalityRate"),
-																													"Total: letalidad",
-																													"Guztira: hilgarritasuna"));
+	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(COVID19ByAgeDeathsMeta.AGE_RANGE,
+																							
+																								COVID19ByAgeDeathsMeta.POSITIVE_MEN_COUNT,
+																								COVID19ByAgeDeathsMeta.POSITIVE_WOMEN_COUNT,
+																								COVID19ByAgeDeathsMeta.POSITIVE_TOTAL_COUNT,
+																								
+																								COVID19ByAgeDeathsMeta.DEATH_MEN_COUNT,
+																								COVID19ByAgeDeathsMeta.DEATH_WOMEN_COUNT,
+																								COVID19ByAgeDeathsMeta.DEATH_TOTAL_COUNT,
+																								
+																								COVID19ByAgeDeathsMeta.MEN_LETHALITY_RATE,
+																								COVID19ByAgeDeathsMeta.WOMEN_LETHALITY_RATE,
+																								COVID19ByAgeDeathsMeta.TOTAL_LETHALITY_RATE);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public final static LanguageTexts NAME_BY_AGE_DEATHS = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
-																	.add(Language.SPANISH,"Fallecidos")
-																	.add(Language.BASQUE,"Hildakoak");
+	public Collection<String> getAgeRanges() {
+		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return Lists.newArrayList();
+		
+		Collection<String> outAges = Lists.newArrayList();
+		for (COVID19ByAgeDeathsAtDate item : _byDateItems) {
+			Collection<String> itemAgeRanges = item.getAgeRanges();
+			if (CollectionUtils.isNullOrEmpty(itemAgeRanges)) continue;
+			
+			for (String ageRange : itemAgeRanges) {
+				if (!Iterables.tryFind(outAges,reg -> reg.equals(ageRange))
+							  .isPresent()) {
+					outAges.add(ageRange);
+				}
+			}
+		}
+		return outAges;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////	
+	public COVID19ByAgeDeathsByDate pivotByDate() {
+		COVID19ByAgeDeathsByDate out = new COVID19ByAgeDeathsByDate();
+		out.setLastUpdateDate(this.getLastUpdateDate());
+		out.setName(this.getName());
+		out.setNotes(this.getNotes());
+		
+		Collection<String> ageRanges = this.getAgeRanges();
+		for (String ageRange : ageRanges) {
+			// positives
+			COVID19DimensionValuesByDate<String,Long> positiveMenCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.POSITIVE_MEN_COUNT,
+																											   	  ageRange);
+			COVID19DimensionValuesByDate<String,Long> positiveWomenCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.POSITIVE_WOMEN_COUNT,
+																											   	  	ageRange);
+			COVID19DimensionValuesByDate<String,Long> positiveTotalCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.POSITIVE_TOTAL_COUNT,
+																											   	  	ageRange);
+			// deaths
+			COVID19DimensionValuesByDate<String,Long> deathMenCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.DEATH_MEN_COUNT,
+																											   ageRange);
+			COVID19DimensionValuesByDate<String,Long> deathWomeCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.DEATH_WOMEN_COUNT,
+																											   	ageRange);
+			COVID19DimensionValuesByDate<String,Long> deathTotalCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.DEATH_TOTAL_COUNT,
+																											   	 ageRange);
+			// lethality
+			COVID19DimensionValuesByDate<String,Float> menLethalityRateByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.MEN_LETHALITY_RATE,
+																											   	   ageRange);
+			COVID19DimensionValuesByDate<String,Float> womenLethalityRateByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.WOMEN_LETHALITY_RATE,
+																											   	   	 ageRange);
+			COVID19DimensionValuesByDate<String,Float> totalLethalityRateByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.TOTAL_LETHALITY_RATE,
+																											   	   	 ageRange);
+			
+			for (COVID19ByAgeDeathsAtDate itemAtDate : _byDateItems) {
+				COVID19ByAgeDeathsItem dimItem = itemAtDate.getItemFor(ageRange);
+				if (dimItem != null) {
+					// positives
+					positiveMenCountByDate.addValueAt(itemAtDate.getDate(),
+													  dimItem.getPositiveMenCount());
+					positiveWomenCountByDate.addValueAt(itemAtDate.getDate(),
+												   		dimItem.getPositiveWomenCount());
+					positiveTotalCountByDate.addValueAt(itemAtDate.getDate(),
+												  		dimItem.getPositiveTotalCount());
+					// deaths
+					deathMenCountByDate.addValueAt(itemAtDate.getDate(),
+												   dimItem.getDeathMenCount());
+					deathWomeCountByDate.addValueAt(itemAtDate.getDate(),
+													dimItem.getDeathWomenCount());
+					deathTotalCountByDate.addValueAt(itemAtDate.getDate(),
+													 dimItem.getDeathTotalCount());
+					// lethality
+					menLethalityRateByDate.addValueAt(itemAtDate.getDate(),
+													  dimItem.getMenLethalityRate());
+					womenLethalityRateByDate.addValueAt(itemAtDate.getDate(),
+														dimItem.getWomenLethalityRate());
+					totalLethalityRateByDate.addValueAt(itemAtDate.getDate(),
+														dimItem.getTotalLethalityRate());
+				}
+			}
+		}
+		return out;
+	}
 }

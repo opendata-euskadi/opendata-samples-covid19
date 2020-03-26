@@ -2,6 +2,7 @@ package r01f.opendata.covid19.model.byagedeath;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,8 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 import r01f.opendata.covid19.model.COVID19ModelObject;
+import r01f.util.types.collections.CollectionUtils;
+import r01f.util.types.collections.Lists;
 
 @MarshallType(as="covid19ByAgeDeathsAtDate")
 @Accessors(prefix="_")
@@ -33,4 +36,21 @@ public class COVID19ByAgeDeathsAtDate
 	@MarshallField(as="items",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
 	@Getter @Setter private Collection<COVID19ByAgeDeathsItem> _items;
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	public Collection<String> getAgeRanges() {
+		return CollectionUtils.hasData(_items)
+					? _items.stream()
+							.map(item -> item.getAgeRange())
+							.collect(Collectors.toList())
+					: Lists.newArrayList();
+	}
+	public COVID19ByAgeDeathsItem getItemFor(final String ageRange) {
+		return CollectionUtils.hasData(_items) 
+					? _items.stream()
+							.filter(item -> item.getAgeRange().equals(ageRange))
+							.findFirst().orElse(null)
+					: null;
+	}
 }

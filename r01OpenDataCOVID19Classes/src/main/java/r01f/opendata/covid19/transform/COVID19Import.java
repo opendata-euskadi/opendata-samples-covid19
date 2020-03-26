@@ -18,12 +18,16 @@ import r01f.objectstreamer.Marshaller;
 import r01f.objectstreamer.MarshallerBuilder;
 import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeaths;
 import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeathsAtDate;
+import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeathsByDate;
 import r01f.opendata.covid19.model.byhealthzone.COVID19ByHealthZone;
 import r01f.opendata.covid19.model.byhealthzone.COVID19ByHealthZoneAtDate;
+import r01f.opendata.covid19.model.byhealthzone.COVID19ByHealthZoneByDate;
 import r01f.opendata.covid19.model.byhospital.COVID19ByHospital;
 import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalAtDate;
+import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalByDate;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipality;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityAtDate;
+import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityByDate;
 import r01f.opendata.covid19.model.history.COVID19History;
 import r01f.types.Path;
 import r01f.types.url.Url;
@@ -82,7 +86,12 @@ public class COVID19Import {
 		Path historyJsonFilePath = folderPath.joinedWith("aurrekoak-anteriores.json");
 		StringPersistenceUtils.save(historyJson,
 									historyJsonFilePath);
-//		log.info(historyJson);
+		
+		String historyXml = marshaller.forWriting()
+									  .toXml(history);
+		Path historyXmlFilePath = folderPath.joinedWith("aurrekoak-anteriores.xml");
+		StringPersistenceUtils.save(historyXml,
+									historyXmlFilePath);
 		
 		// [2] - Import every file
 		// By health zone
@@ -90,48 +99,100 @@ public class COVID19Import {
 		log.info("BY HEALTH ZONE:");
 		log.info("=================================================================");
 		COVID19ByHealthZone byHealthZone = _importByHealthZone(history);
-		String healthZoneJson = marshaller.forWriting()
+		COVID19ByHealthZoneByDate byHealthZoneByDate = byHealthZone.pivotByDate();
+		
+		String byHealthZoneJson = marshaller.forWriting()
 										  .toJson(byHealthZone);
-		Path healthZoneJsonFilePath = folderPath.joinedWith("osasun_eremuak-zonas_salud.json");
-		StringPersistenceUtils.save(healthZoneJson,
-									healthZoneJsonFilePath);
-//		log.info(healthZoneJson);
+		Path byHealthZoneJsonFilePath = folderPath.joinedWith("osasun_eremuak-zonas_salud.json");
+		StringPersistenceUtils.save(byHealthZoneJson,
+									byHealthZoneJsonFilePath);
+		
+		String byHealthZoneXml = marshaller.forWriting()
+									  .toXml(byHealthZone);
+		Path byHealthZoneXmlFilePath = folderPath.joinedWith("osasun_eremuak-zonas_salud.xml");
+		StringPersistenceUtils.save(byHealthZoneXml,
+									byHealthZoneXmlFilePath);
+		
+		String byHealthZoneByDateJson = marshaller.forWriting()
+										  		  .toJson(byHealthZoneByDate);
+		Path byHealthZoneByDateJsonFilePath = folderPath.joinedWith("osasun_eremuak-zonas_salud-by_date.json");
+		StringPersistenceUtils.save(byHealthZoneByDateJson,
+									byHealthZoneByDateJsonFilePath);
 
 		// By municipality
 		log.info("=================================================================");
 		log.info("BY MUNICIPALITY:");
 		log.info("=================================================================");
 		COVID19ByMunicipality byMunicipality = _importByMunicipality(history);
+		COVID19ByMunicipalityByDate byMunicipalityByDate = byMunicipality.pivotByDate();
+		
 		String byMunicipalityJson = marshaller.forWriting()
 										  .toJson(byMunicipality);
 		Path byMunicipalityJsonFilePath = folderPath.joinedWith("udalerriak-municipios.json");
 		StringPersistenceUtils.save(byMunicipalityJson,
 									byMunicipalityJsonFilePath);
-//		log.info(byMunicipalityJson);
+		
+		String byMunicipalityXml = marshaller.forWriting()
+										  .toXml(byMunicipality);
+		Path byMunicipalityXmlFilePath = folderPath.joinedWith("udalerriak-municipios.xml");
+		StringPersistenceUtils.save(byMunicipalityXml,
+									byMunicipalityXmlFilePath);
+		
+		String byMunicipalityByDateJson = marshaller.forWriting()
+										  			.toJson(byMunicipalityByDate);
+		Path byMunicipalityByDateJsonFilePath = folderPath.joinedWith("udalerriak-municipios-by_date.json");
+		StringPersistenceUtils.save(byMunicipalityByDateJson,
+									byMunicipalityByDateJsonFilePath);
 		
 		// By hospital
 		log.info("=================================================================");
 		log.info("BY HOSPITAL:");
 		log.info("=================================================================");
 		COVID19ByHospital byHospital = _importByHospital(history);
+		COVID19ByHospitalByDate byHospitalByDate = byHospital.pivotByDate();
+		
 		String byHospitalJson = marshaller.forWriting()
 										  .toJson(byHospital);
 		Path byHospitalJsonFilePath = folderPath.joinedWith("ospitaleratuak-hospitalizados.json");
 		StringPersistenceUtils.save(byHospitalJson,
 									byHospitalJsonFilePath);
-//		log.info(byHospitalJson);
+		
+		String byHospitalXml = marshaller.forWriting()
+										  .toXml(byHospital);
+		Path byHospitalXmlFilePath = folderPath.joinedWith("ospitaleratuak-hospitalizados.xml");
+		StringPersistenceUtils.save(byHospitalXml,
+									byHospitalXmlFilePath);
+		
+		String byHospitalByDateJson = marshaller.forWriting()
+										  		.toJson(byHospitalByDate);
+		Path byHospitalByDateJsonFilePath = folderPath.joinedWith("ospitaleratuak-hospitalizados-by_date.json");
+		StringPersistenceUtils.save(byHospitalByDateJson,
+									byHospitalByDateJsonFilePath);
 		
 		// By age deaths
 		log.info("=================================================================");
 		log.info("BY AGE DEATHS:");
 		log.info("=================================================================");
 		COVID19ByAgeDeaths byAgeDeaths = _importByAgeDeaths(history);
+		COVID19ByAgeDeathsByDate byAgeDeathsByDate = byAgeDeaths.pivotByDate();
+		
 		String byAgeDeathsJson = marshaller.forWriting()
 										  .toJson(byAgeDeaths);
 		Path byAgeDeathsJsonFilePath = folderPath.joinedWith("hildakoak-fallecidos.json");
 		StringPersistenceUtils.save(byAgeDeathsJson,
 									byAgeDeathsJsonFilePath);
-//		log.info(byAgeDeathsJson);
+		
+		String byAgeDeathsXml = marshaller.forWriting()
+										  .toXml(byAgeDeaths);
+		Path byAgeDeathsXmlFilePath = folderPath.joinedWith("hildakoak-fallecidos.xml");
+		StringPersistenceUtils.save(byAgeDeathsXml,
+									byAgeDeathsXmlFilePath);
+		
+		String byAgeDeathsByDateJson = marshaller.forWriting()
+										  		 .toJson(byAgeDeathsByDate);
+		Path byAgeDeathsByDateJsonFilePath = folderPath.joinedWith("hildakoak-fallecidos-by_date.json");
+		StringPersistenceUtils.save(byAgeDeathsByDateJson,
+									byAgeDeathsByDateJsonFilePath);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY HEALTH ZONE

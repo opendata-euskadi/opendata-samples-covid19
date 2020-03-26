@@ -22,10 +22,12 @@ import r01f.locale.Language;
 import r01f.locale.LanguageTexts;
 import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
 import r01f.locale.LanguageTextsMapBacked;
-import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeaths;
+import r01f.opendata.covid19.model.byhealthzone.COVID19ByHealthZoneMeta;
 import r01f.opendata.covid19.model.byhealthzone.COVID19ByHealthZone;
 import r01f.opendata.covid19.model.byhospital.COVID19ByHospital;
+import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalMeta;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipality;
+import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityMeta;
 import r01f.opendata.covid19.model.history.COVID19History;
 import r01f.opendata.covid19.model.history.COVID19HistoryDate;
 import r01f.opendata.covid19.model.history.COVID19HistoryItem;
@@ -148,22 +150,22 @@ public class COVID19HistoryImport {
 			}
 			else if (fileName.startsWith("ospitaleratuak-hospitalizados-")) {
 				COVID19HistoryItem csvItem = new COVID19HistoryItem(url,
-																	COVID19ByHospital.NAME_BY_HOSPITAL);	
+																	COVID19ByHospitalMeta.NAME);	
 				outItems.add(csvItem);				
 			} 
 			else if (fileName.startsWith("udalerriak-municipios-")) {
 				COVID19HistoryItem csvItem = new COVID19HistoryItem(url,
-																	COVID19ByMunicipality.NAME_BY_MUNICIPALY);	
+																	COVID19ByMunicipalityMeta.NAME);
 				outItems.add(csvItem);	
 			}
 			else if (fileName.startsWith("osasun_eremuak-zonas_salud-")) {
 				COVID19HistoryItem csvItem = new COVID19HistoryItem(url,
-																	COVID19ByHealthZone.NAME_BY_HEALTH_ZONE);	
+																	COVID19ByHealthZoneMeta.NAME);	
 				outItems.add(csvItem);	
 			}
 			else if (fileName.startsWith("hildakoak-fallecidos")) {
 				COVID19HistoryItem csvItem = new COVID19HistoryItem(url,
-																	COVID19ByAgeDeaths.NAME_BY_AGE_DEATHS);	
+																	COVID19ByHealthZoneMeta.NAME);	
 				outItems.add(csvItem);	
 			}
 			return outItems.stream();

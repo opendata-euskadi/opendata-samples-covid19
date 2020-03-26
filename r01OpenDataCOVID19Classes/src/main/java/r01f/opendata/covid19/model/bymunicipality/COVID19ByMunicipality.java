@@ -3,22 +3,23 @@ package r01f.opendata.covid19.model.bymunicipality;
 import java.util.Collection;
 import java.util.Date;
 
+import com.google.common.collect.Iterables;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import r01f.locale.Language;
 import r01f.locale.LanguageTexts;
-import r01f.locale.LanguageTextsMapBacked;
-import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
 import r01f.objectstreamer.annotations.MarshallField;
 import r01f.objectstreamer.annotations.MarshallField.DateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
-import r01f.opendata.covid19.model.COVID19MetaData;
+import r01f.opendata.covid19.model.COVID19DimensionValuesByDate;
 import r01f.opendata.covid19.model.COVID19MetaDataCollection;
 import r01f.opendata.covid19.model.COVID19ModelObject;
-import r01f.opendata.covid19.model.COVID19IDs.COVID19MetaDataID;
+import r01f.types.geo.GeoMunicipality;
+import r01f.util.types.collections.CollectionUtils;
+import r01f.util.types.collections.Lists;
 
 @MarshallType(as="covid19ByMunicipality")
 @Accessors(prefix="_")
@@ -38,25 +39,56 @@ public class COVID19ByMunicipality
 	@Getter @Setter private Collection<COVID19ByMunicipalityAtDate> _byDateItems;
 	
 	@MarshallField(as="name")
-	@Getter @Setter private LanguageTexts _name = NAME_BY_MUNICIPALY;
+	@Getter @Setter private LanguageTexts _name = COVID19ByMunicipalityMeta.NAME;
 	
 	@MarshallField(as="notes")
-	@Getter @Setter private LanguageTexts _notes = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
-															.add(Language.SPANISH,"Los positivos por municipio provienen de datos de las analíticas a las 08:00 de la mañana. Es por ello que los totales no coinciden con los de los resultados de las analíticas de las 20:00 de la tarde. Puede además que haya pequeñas discrepancias de día a día. La información está continuamente siendo revisada y depurada. En aras de la transparencia puede que haya algún error puntual que posteriormente será corregido")
-															.add(Language.BASQUE,"Udalerriko positiboak analisietako datuetatik datoz, goizeko 08:00etan. Horregatik, guztizkoak ez datoz bat arratsaldeko 20:00etako analisien emaitzekin. Baliteke, gainera, egunez egun desadostasun txikiak egotea. Informazioa etengabe berrikusten eta arazten ari da. Baliteke, gardentasunaren mesedetan, akats puntualen bat egotea, gerora zuzenduko dena");
+	@Getter @Setter private LanguageTexts _notes = COVID19ByMunicipalityMeta.NOTE;
 	
 	@MarshallField(as="metaData",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(new COVID19MetaData(COVID19MetaDataID.forId("geoMunicipality"),
-																													"Municipio",
-																													"Uldala"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("positiveCount"),
-																													"Número de positivos",
-																													"Positiboak"));
+	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(COVID19ByMunicipalityMeta.GEO_MUNICIPALITY,
+																								COVID19ByMunicipalityMeta.POSITIVE_COUNT);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public final static LanguageTexts NAME_BY_MUNICIPALY = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
-																	.add(Language.SPANISH,"Positivos en los municipios de euskadi (08:00 horas)")
-																	.add(Language.BASQUE,"Positiboak euskadiko udalerrietan (08:00 etan)");
+	public Collection<GeoMunicipality> getGeoMunicipalities() {
+		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return Lists.newArrayList();
+		
+		Collection<GeoMunicipality> outMunicipalities = Lists.newArrayList();
+		for (COVID19ByMunicipalityAtDate item : _byDateItems) {
+			Collection<GeoMunicipality> itemMunicipalities = item.getGeoMunicipalities();
+			if (CollectionUtils.isNullOrEmpty(itemMunicipalities)) continue;
+			
+			for (GeoMunicipality municipality : itemMunicipalities) {
+				if (!Iterables.tryFind(outMunicipalities,mun -> mun.getId().is(municipality.getId()))
+							  .isPresent()) {
+					outMunicipalities.add(municipality);
+				}
+			}
+		}
+		return outMunicipalities;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////	
+	public COVID19ByMunicipalityByDate pivotByDate() {
+		COVID19ByMunicipalityByDate out = new COVID19ByMunicipalityByDate();
+		out.setLastUpdateDate(this.getLastUpdateDate());
+		out.setName(this.getName());
+		out.setNotes(this.getNotes());
+		
+		Collection<GeoMunicipality> geoMunicipalities = this.getGeoMunicipalities();
+		for (GeoMunicipality geoMunicipality : geoMunicipalities) {
+			COVID19DimensionValuesByDate<GeoMunicipality,Long> positiveCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByMunicipalityMeta.POSITIVE_COUNT,
+																											   		    geoMunicipality);
+			for (COVID19ByMunicipalityAtDate itemAtDate : _byDateItems) {
+				COVID19ByMunicipalityItem dimItem = itemAtDate.getItemFor(geoMunicipality.getId());
+				if (dimItem != null) {
+					positiveCountByDate.addValueAt(itemAtDate.getDate(),
+												   dimItem.getPositiveCount());
+				}
+			}
+		}
+		return out;
+	}
 }

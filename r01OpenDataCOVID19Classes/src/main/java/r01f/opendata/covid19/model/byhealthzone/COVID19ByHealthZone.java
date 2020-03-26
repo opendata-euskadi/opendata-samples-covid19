@@ -3,22 +3,24 @@ package r01f.opendata.covid19.model.byhealthzone;
 import java.util.Collection;
 import java.util.Date;
 
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import r01f.locale.Language;
 import r01f.locale.LanguageTexts;
-import r01f.locale.LanguageTextsMapBacked;
-import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
 import r01f.objectstreamer.annotations.MarshallField;
 import r01f.objectstreamer.annotations.MarshallField.DateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
-import r01f.opendata.covid19.model.COVID19MetaData;
+import r01f.opendata.covid19.model.COVID19DimensionValuesByDate;
 import r01f.opendata.covid19.model.COVID19MetaDataCollection;
 import r01f.opendata.covid19.model.COVID19ModelObject;
-import r01f.opendata.covid19.model.COVID19IDs.COVID19MetaDataID;
+import r01f.types.geo.GeoRegion;
+import r01f.util.types.collections.CollectionUtils;
+import r01f.util.types.collections.Lists;
 
 @MarshallType(as="covid19ByHealthZone")
 @Accessors(prefix="_")
@@ -38,31 +40,67 @@ public class COVID19ByHealthZone
 	@Getter @Setter private Collection<COVID19ByHealthZoneAtDate> _byDateItems;
 	
 	@MarshallField(as="name")
-	@Getter @Setter private LanguageTexts _name = NAME_BY_HEALTH_ZONE;
+	@Getter @Setter private LanguageTexts _name = COVID19ByHealthZoneMeta.NAME;
 	
 	@MarshallField(as="notes")
-	@Getter @Setter private LanguageTexts _notes = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
-															.add(Language.SPANISH,"Los positivos por zona de salud provienen de datos de las analíticas a las 08:00 de la mañana. Es por ello que los totales no coinciden con los de los resultados de las analíticas de las 20:00 de la tarde. Puede además que haya pequeñas discrepancias de día a día. La información está continuamente siendo revisada y depurada. En aras de la transparencia puede que haya algún error puntual que posteriormente será corregido")
-															.add(Language.BASQUE,"Osasun-eremuaren araberako positiboak analitiken datuetatik datoz, goizeko 08:00etan. Horregatik, guztizkoak ez datoz bat arratsaldeko 20:00etako analisien emaitzekin. Baliteke, gainera, egunez egun desadostasun txikiak egotea. Informazioa etengabe berrikusten eta arazten ari da. Baliteke, gardentasunaren mesedetan, akats puntualen bat egotea, gerora zuzenduko dena.");
+	@Getter @Setter private LanguageTexts _notes = COVID19ByHealthZoneMeta.NOTE;
 	
 	@MarshallField(as="metaData",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(new COVID19MetaData(COVID19MetaDataID.forId("geoRegion"),
-																													"Osasun Eremua",
-																													"Zona sanitaria"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("population"),
-																													"Población",
-																													"Populazioa"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("positiveCount"),
-																													"Positibo kopuruas",
-																													"Número de Positivos"),
-																								new COVID19MetaData(COVID19MetaDataID.forId("positiveRate"),
-																													"Tasa de positivos por 100.000 habitantes",
-																													"100.000 biztanleko tasa"));
+	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(COVID19ByHealthZoneMeta.GEO_REGION,
+																							
+																								COVID19ByHealthZoneMeta.POPULATION,
+																								COVID19ByHealthZoneMeta.POSITIVE_COUNT,
+																								COVID19ByHealthZoneMeta.POSITIVE_RATE);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public final static LanguageTexts NAME_BY_HEALTH_ZONE = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
-																	.add(Language.SPANISH,"Positios en las zonas de salud de Euskadi (08:00 horas)")
-																	.add(Language.BASQUE,"Positiboak Euskadiko eremuetan (08:00 etan)");
+	public Collection<GeoRegion> getGeoRegions() {
+		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return Lists.newArrayList();
+		
+		Collection<GeoRegion> outRegions = Lists.newArrayList();
+		for (COVID19ByHealthZoneAtDate item : _byDateItems) {
+			Collection<GeoRegion> itemRegions = item.getGeoRegions();
+			if (CollectionUtils.isNullOrEmpty(itemRegions)) continue;
+			
+			for (GeoRegion region : itemRegions) {
+				if (!Iterables.tryFind(outRegions,reg -> reg.getId().is(region.getId()))
+							  .isPresent()) {
+					outRegions.add(region);
+				}
+			}
+		}
+		return outRegions;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////	
+	public COVID19ByHealthZoneByDate pivotByDate() {
+		COVID19ByHealthZoneByDate out = new COVID19ByHealthZoneByDate();
+		out.setLastUpdateDate(this.getLastUpdateDate());
+		out.setName(this.getName());
+		out.setNotes(this.getNotes());
+		
+		Collection<GeoRegion> geoRegions = this.getGeoRegions();
+		for (GeoRegion geoRegion : geoRegions) {
+			COVID19DimensionValuesByDate<GeoRegion,Long> populationByDate = new COVID19DimensionValuesByDate<>(COVID19ByHealthZoneMeta.POPULATION,
+																											   geoRegion);
+			COVID19DimensionValuesByDate<GeoRegion,Long> positiveCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByHealthZoneMeta.POSITIVE_COUNT,
+																												  geoRegion);
+			COVID19DimensionValuesByDate<GeoRegion,Float> positiveRateByDate = new COVID19DimensionValuesByDate<>(COVID19ByHealthZoneMeta.POSITIVE_RATE,
+																												  geoRegion);
+			for (COVID19ByHealthZoneAtDate itemAtDate : _byDateItems) {
+				COVID19ByHealthZoneItem dimItem = itemAtDate.getItemFor(geoRegion.getId());
+				if (dimItem != null) {
+					populationByDate.addValueAt(itemAtDate.getDate(),
+												dimItem.getPopulation());
+					positiveCountByDate.addValueAt(itemAtDate.getDate(),
+												   dimItem.getPositiveCount());
+					positiveRateByDate.addValueAt(itemAtDate.getDate(),
+												  dimItem.getPositiveRate());
+				}
+			}
+		}
+		return out;
+	}
 }
