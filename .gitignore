@@ -1,0 +1,72 @@
+# Secret docs
+# ==============================
+/docs/secret/*.*
+
+# General
+# ===============================
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# Binaries
+# ===============================
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.war
+*.ear
+*.sar
+*.class
+bin/
+
+# Maven
+# ===============================
+target/
+
+# Misc
+# ===============================
+release.properties
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.tag
+.flattened-pom.xml
+
+# Eclipse
+# ===============================
+.settings/
+.classpath
+.project
+.metadata
+.loadpath
+.recommenders
+# Java annotation processor (APT)
+.factorypath
+.apt_generated/
+.apt_generated_test/
+# Locally stored [Eclipse launch configurations]
+*.launch
+
+# IntelliJ IDEA
+# ===============================
+# User-specific stuff
+.idea/
+
+# File-based project format
+*.iws
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.
+*.iml
+*.ipr
+
+# AppServer
+# ===============================
+tomcat
