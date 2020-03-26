@@ -16,6 +16,9 @@ import r01f.httpclient.HttpClient;
 import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeathsAtDate;
 import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeathsItem;
 import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeathsTotal;
+import r01f.types.datetime.DayOfMonth;
+import r01f.types.datetime.MonthOfYear;
+import r01f.types.datetime.Year;
 import r01f.types.url.Url;
 import r01f.util.types.Dates;
 import r01f.util.types.Strings;
@@ -39,14 +42,17 @@ public class COVID19ByAgeDeathsImport {
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static Url getByAgeDeathsUrlAt(final Date date) {
-		Url url = Url.from(Strings.customized("https://opendata.euskadi.eus/contenidos/ds_informes_estudios/covid_19_2020/opendata/0320/24/hildakoak-fallecidos-{}.csv",
+		Url url = Url.from(Strings.customized("https://opendata.euskadi.eus/contenidos/ds_informes_estudios/covid_19_2020/opendata/{}{}/{}/hildakoak-fallecidos-{}.csv",
+											  MonthOfYear.of(date).asStringPaddedWithZero(),Year.of(date).asStringInCentury(),DayOfMonth.of(date).asStringPaddedWithZero(),
 											  Dates.format(date,"ddMMyy")));
 		return url;
 	}
 	public static COVID19ByAgeDeathsAtDate importByAgeDeatshAt(final Date date) throws IOException {
-		return COVID19ByAgeDeathsImport.importByAgeDeathsFrom(COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date));
+		return COVID19ByAgeDeathsImport.importByAgeDeathsFrom(COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date),
+															  date);
 	}
-	public static COVID19ByAgeDeathsAtDate importByAgeDeathsFrom(final Url url) throws IOException {
+	public static COVID19ByAgeDeathsAtDate importByAgeDeathsFrom(final Url url,
+																 final Date theDate) throws IOException {
 		// [1] - read the file
 		log.info("Reading [by age deaths] file from: {}",url);
 		InputStream is = HttpClient.forUrl(url)
@@ -126,7 +132,7 @@ public class COVID19ByAgeDeathsImport {
 		
 		// [3] - return 
 		COVID19ByAgeDeathsAtDate out = new COVID19ByAgeDeathsAtDate();
-		out.setDate(new Date());
+		out.setDate(theDate);
 		out.setItems(items);
 		out.setTotal(total);
 		return out;

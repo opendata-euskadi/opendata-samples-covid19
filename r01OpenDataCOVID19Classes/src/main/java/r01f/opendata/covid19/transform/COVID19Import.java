@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -32,13 +34,26 @@ public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static final Path ROOT_PATH = Path.from("c:/develop/temp_dev/covid19");
+	private static final Path ROOT_PATH = Path.from("c:/covid19");
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void main(final String[] args) {
 		try {
-			COVID19Import.doImportAllTo(ROOT_PATH);
+			// truncate the error file
+			_truncateError();
+			
+			Path outPath = ROOT_PATH.joinedWith("data-to-publish");
+			
+			Files.createDirectories(Paths.get(outPath.asAbsoluteString()));
+			
+			// create a token file
+			File tokenFile = new File(outPath.joinedWith("last-run.txt")
+											 .asAbsoluteString());
+			StringPersistenceUtils.save(new Date().toString(),
+										tokenFile);
+			// import
+			COVID19Import.doImportAllTo(ROOT_PATH.joinedWith("data-to-publish"));
 		} catch (IOException ioEx) {
 			log.error("Error while importing COVID19 data: {}",
 					  ioEx.getMessage(),ioEx);
@@ -243,5 +258,8 @@ public class COVID19Import {
 		} catch (Throwable th) {
 			th.printStackTrace(System.out);
 		}
+	}
+	private static void _truncateError() throws IOException {
+		StringPersistenceUtils.save("",ERROR_FILE_PATH);
 	}
 }
