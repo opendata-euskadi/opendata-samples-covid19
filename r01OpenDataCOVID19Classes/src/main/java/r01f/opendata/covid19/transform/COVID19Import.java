@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.google.common.io.ByteStreams;
@@ -32,23 +34,39 @@ import r01f.opendata.covid19.model.history.COVID19History;
 import r01f.types.Path;
 import r01f.types.url.Url;
 import r01f.util.types.Strings;
+import r01f.util.types.collections.CollectionUtils;
 
 @Slf4j
 public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static final Path ROOT_PATH = Path.from("c:/users/IARGUESO/covid19");
-/////////////////////////////////////////////////////////////////////////////////////////
-//	
-/////////////////////////////////////////////////////////////////////////////////////////
 	public static void main(final String[] args) {
+		// Path param
+		Path rootPath = null;
+		if (CollectionUtils.hasData(args)) {
+			String outPathParam = args[0];
+			Pattern paramPattern = Pattern.compile("-outPath\\s*=\\s*(.+)");
+			Matcher m = paramPattern.matcher(outPathParam);
+			if (m.find()) {
+				rootPath = Path.from(m.group(1));
+			} else {
+				log.warn("Usage: java -jar covid19.jar -outPath={path_to_generated_files}");
+				return;
+			}
+		} else {
+			log.warn("Usage: java -jar covid19.jar -outPath={path_to_generated_files}");
+			return;
+		}
+		
+		// run
 		try {
 			// truncate the error file
-			_truncateError();
+			Path logPath = rootPath.joinedWith("__error.log");
+			_truncateError(logPath);
 			
-			Path outPath = ROOT_PATH.joinedWith("data-to-publish");
-			
+			// output dir
+			Path outPath = rootPath.joinedWith("data-to-publish");
 			Files.createDirectories(Paths.get(outPath.asAbsoluteString()));
 			
 			// create a token file
@@ -57,22 +75,24 @@ public class COVID19Import {
 			StringPersistenceUtils.save(new Date().toString(),
 										tokenFile);
 			// import
-			COVID19Import.doImportAllTo(ROOT_PATH.joinedWith("data-to-publish"));
+			COVID19Import.doImportAllTo(outPath);
+			
+			log.info("\n\n\n\n\n\n");
+			log.info("=================================================================");
+			log.info("FINISHED look at {}",outPath);
+			log.info("=================================================================");
 		} catch (IOException ioEx) {
 			log.error("Error while importing COVID19 data: {}",
 					  ioEx.getMessage(),ioEx);
 		}
-		log.info("\n\n\n\n\n\n");
-		log.info("=================================================================");
-		log.info("FINISHED look at {}",ROOT_PATH);
-		log.info("=================================================================");
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static void doImportAllTo(final Path folderPath) throws IOException {
+	public static void doImportAllTo(final Path outPath) throws IOException {
 		Marshaller marshaller = MarshallerBuilder.build();
 		
+		Path logPath = outPath.joinedWith("__error.log");
 		
 		// [1] - Import history
 		log.info("=================================================================");
@@ -83,13 +103,13 @@ public class COVID19Import {
 		
 		String historyJson = marshaller.forWriting()
 									   .toJson(history);
-		Path historyJsonFilePath = folderPath.joinedWith("aurrekoak-anteriores.json");
+		Path historyJsonFilePath = outPath.joinedWith("aurrekoak-anteriores.json");
 		StringPersistenceUtils.save(historyJson,
 									historyJsonFilePath);
 		
 		String historyXml = marshaller.forWriting()
 									  .toXml(history);
-		Path historyXmlFilePath = folderPath.joinedWith("aurrekoak-anteriores.xml");
+		Path historyXmlFilePath = outPath.joinedWith("aurrekoak-anteriores.xml");
 		StringPersistenceUtils.save(historyXml,
 									historyXmlFilePath);
 		
@@ -98,56 +118,63 @@ public class COVID19Import {
 		log.info("=================================================================");
 		log.info("BY HEALTH ZONE:");
 		log.info("=================================================================");
-		COVID19ByHealthZone byHealthZone = _importByHealthZone(history);
+		COVID19ByHealthZone byHealthZone = _importByHealthZone(history,
+															   logPath);
 		COVID19ByHealthZoneByGeoRegionByDate byHealthZoneByDate = byHealthZone.pivotByDate();
 		_writeToFile(marshaller,
-					 folderPath,"osasun_eremuak-zonas_salud",
+					 outPath,"osasun_eremuak-zonas_salud",
 					 byHealthZone,byHealthZoneByDate);
 
 		// By municipality
 		log.info("=================================================================");
 		log.info("BY MUNICIPALITY:");
 		log.info("=================================================================");
-		COVID19ByMunicipality byMunicipality = _importByMunicipality(history);
+		COVID19ByMunicipality byMunicipality = _importByMunicipality(history,
+																	 logPath);
 		COVID19ByMunicipalityByMunicipalityByDate byMunicipalityByDate = byMunicipality.pivotByDate();
 		_writeToFile(marshaller,
-					 folderPath,"udalerriak-municipios",
+					 outPath,"udalerriak-municipios",
 					 byMunicipality,byMunicipalityByDate);
 		
 		// By hospital
 		log.info("=================================================================");
 		log.info("BY HOSPITAL:");
 		log.info("=================================================================");
-		COVID19ByHospital byHospital = _importByHospital(history);
+		COVID19ByHospital byHospital = _importByHospital(history,
+														 logPath);
 		COVID19ByHospitalByHospitalByDate byHospitalByDate = byHospital.pivotByDate();
 		_writeToFile(marshaller,
-					 folderPath,"ospitaleratuak-hospitalizados",
+					 outPath,"ospitaleratuak-hospitalizados",
 					 byHospital,byHospitalByDate);
 		
 		// By age deaths
 		log.info("=================================================================");
 		log.info("BY AGE DEATHS:");
 		log.info("=================================================================");
-		COVID19ByAgeDeaths byAgeDeaths = _importByAgeDeaths(history);
+		COVID19ByAgeDeaths byAgeDeaths = _importByAgeDeaths(history,
+														    logPath);
 		COVID19ByAgeDeathsByAgeRangeByDate byAgeDeathsByDate = byAgeDeaths.pivotByDate();
 		_writeToFile(marshaller,
-					 folderPath,"hildakoak-fallecidos",
+					 outPath,"hildakoak-fallecidos",
 					 byAgeDeaths,byAgeDeathsByDate);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY HEALTH ZONE
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static COVID19ByHealthZone _importByHealthZone(final COVID19History history) {
+	private static COVID19ByHealthZone _importByHealthZone(final COVID19History history,
+														   final Path logPath) {
 		COVID19ByHealthZone out = new COVID19ByHealthZone();
 		out.setLastUpdateDate(new Date());
 		out.setByDateItems(history.getByDateItems()
 								  .stream()
-								  .map(item -> _importByHealthZoneAt(item.getDate()))
+								  .map(item -> _importByHealthZoneAt(item.getDate(),
+										  							 logPath))
 								  .filter(Objects::nonNull)
 								  .collect(Collectors.toList()));
 		return out;
 	}
-	private static COVID19ByHealthZoneAtDate _importByHealthZoneAt(final Date date) {
+	private static COVID19ByHealthZoneAtDate _importByHealthZoneAt(final Date date,
+																   final Path logPath) {
 		// Import [by health zone]
 		COVID19ByHealthZoneAtDate outAt = null;
 		try {
@@ -156,7 +183,8 @@ public class COVID19Import {
 			log.error("Error importing [by health zone] file at={}: {}",
 					  date,
 					  ioEx.getMessage());
-			_appendToError(COVID19ByHealthZoneImport.getByHealthZoneFileUrlAt(date),
+			_appendToError(logPath,
+						   COVID19ByHealthZoneImport.getByHealthZoneFileUrlAt(date),
 						   ioEx.getMessage());
 		}
 		return outAt;
@@ -164,17 +192,20 @@ public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY MUNICIPALITY
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static COVID19ByMunicipality _importByMunicipality(final COVID19History history) {
+	private static COVID19ByMunicipality _importByMunicipality(final COVID19History history,
+															   final Path logPath) {
 		COVID19ByMunicipality out = new COVID19ByMunicipality();
 		out.setLastUpdateDate(new Date());
 		out.setByDateItems(history.getByDateItems()
 								  .stream()
-								  .map(item -> _importByMunicipalityAt(item.getDate()))
+								  .map(item -> _importByMunicipalityAt(item.getDate(),
+										  							   logPath))
 								  .filter(Objects::nonNull)
 								  .collect(Collectors.toList()));
 		return out;
 	}
-	private static COVID19ByMunicipalityAtDate _importByMunicipalityAt(final Date date) {
+	private static COVID19ByMunicipalityAtDate _importByMunicipalityAt(final Date date,
+																	   final Path logPath) {
 		// Import [by municipality]
 		COVID19ByMunicipalityAtDate outAt = null;
 		try {
@@ -183,7 +214,8 @@ public class COVID19Import {
 			log.error("Error importing [by municipality] file at={}: {}",
 					  date,
 					  ioEx.getMessage());
-			_appendToError(COVID19ByMunicipalityImport.getByMunicipalityUrlAt(date),
+			_appendToError(logPath,
+						   COVID19ByMunicipalityImport.getByMunicipalityUrlAt(date),
 						   ioEx.getMessage());
 		}
 		return outAt;
@@ -191,17 +223,20 @@ public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY HOSPITAL
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static COVID19ByHospital _importByHospital(final COVID19History history) {
+	private static COVID19ByHospital _importByHospital(final COVID19History history,
+													   final Path logPath) {
 		COVID19ByHospital out = new COVID19ByHospital();
 		out.setLastUpdateDate(new Date());
 		out.setByDateItems(history.getByDateItems()
 								  .stream()
-								  .map(item -> _importByHospitalAt(item.getDate()))
+								  .map(item -> _importByHospitalAt(item.getDate(),
+										  						   logPath))
 								  .filter(Objects::nonNull)
 								  .collect(Collectors.toList()));
 		return out;
 	}
-	private static COVID19ByHospitalAtDate _importByHospitalAt(final Date date) {
+	private static COVID19ByHospitalAtDate _importByHospitalAt(final Date date,
+															   final Path logPath) {
 		// Import [by AgeDeath]
 		COVID19ByHospitalAtDate outAt = null;
 		try {
@@ -210,7 +245,8 @@ public class COVID19Import {
 			log.error("Error importing [by AgeDeath] file at={}: {}",
 					  date,
 					  ioEx.getMessage());
-			_appendToError(COVID19ByHospitalImport.getByHospitalUrlAt(date),
+			_appendToError(logPath,
+						   COVID19ByHospitalImport.getByHospitalUrlAt(date),
 						   ioEx.getMessage());
 		}
 		return outAt;
@@ -218,17 +254,20 @@ public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY AGE DEATH
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static COVID19ByAgeDeaths _importByAgeDeaths(final COVID19History history) {
+	private static COVID19ByAgeDeaths _importByAgeDeaths(final COVID19History history,
+														 final Path logPath) {
 		COVID19ByAgeDeaths out = new COVID19ByAgeDeaths();
 		out.setLastUpdateDate(new Date());
 		out.setByDateItems(history.getByDateItems()
 								  .stream()
-								  .map(item -> _importByAgeDeathAt(item.getDate()))
+								  .map(item -> _importByAgeDeathAt(item.getDate(),
+										  						   logPath))
 								  .filter(Objects::nonNull)
 								  .collect(Collectors.toList()));
 		return out;
 	}
-	private static COVID19ByAgeDeathsAtDate _importByAgeDeathAt(final Date date) {
+	private static COVID19ByAgeDeathsAtDate _importByAgeDeathAt(final Date date,
+																final Path logPath) {
 		// Import [by AgeDeath]
 		COVID19ByAgeDeathsAtDate outAt = null;
 		try {
@@ -237,7 +276,8 @@ public class COVID19Import {
 			log.error("Error importing [by AgeDeath] file at={}: {}",
 					  date,
 					  ioEx.getMessage());
-			_appendToError(COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date),
+			_appendToError(logPath,
+						   COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date),
 						   ioEx.getMessage());
 		}
 		return outAt;
@@ -282,10 +322,10 @@ public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static final Path ERROR_FILE_PATH = ROOT_PATH.joinedWith("__error.log");
-	private static void _appendToError(final Url url,final String msg) {
+	private static void _appendToError(final Path logPath,
+									   final Url url,final String msg) {
 		try {
-			File dstFile = new File(ERROR_FILE_PATH.asAbsoluteString());
+			File dstFile = new File(logPath.asAbsoluteString());
 			FileOutputStream dstFOS = new FileOutputStream(dstFile,
 														   true);		// append
 			String logLine = Strings.customized("{} > {}\n",
@@ -297,7 +337,7 @@ public class COVID19Import {
 			th.printStackTrace(System.out);
 		}
 	}
-	private static void _truncateError() throws IOException {
-		StringPersistenceUtils.save("",ERROR_FILE_PATH);
+	private static void _truncateError(final Path logPath) throws IOException {
+		StringPersistenceUtils.save("",logPath);
 	}
 }
