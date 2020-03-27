@@ -1,11 +1,9 @@
-package r01f.opendata.covid19.model.history;
+package r01f.opendata.covid19.model.index;
 
 import java.util.Collection;
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import r01f.objectstreamer.annotations.MarshallField;
@@ -15,13 +13,13 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 import r01f.opendata.covid19.model.COVID19ModelObject;
 
-@MarshallType(as="covid19History")
+@MarshallType(as="covid19Index")
 @Accessors(prefix="_")
-@NoArgsConstructor @AllArgsConstructor
-public class COVID19History 
+public class COVID19Index 
   implements COVID19ModelObject {
 
-	private static final long serialVersionUID = 4252380920854908247L;
+	private static final long serialVersionUID = 7355155142967129684L;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //	FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -29,8 +27,26 @@ public class COVID19History
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _lastUpdateDate;
 	
-	@MarshallField(as="byDate",
+	@MarshallField(as="aggregated",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+	@Getter @Setter private Collection<COVID19IndexItem> _aggregatedItems;
+	
+	@MarshallField(as="historyByDate",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="byDateItem"))
 	@Getter @Setter private Collection<COVID19HistoryDate> _byDateItems;
-	
+/////////////////////////////////////////////////////////////////////////////////////////
+//	CONSTRUCTOR
+/////////////////////////////////////////////////////////////////////////////////////////	
+	public COVID19Index(final Date lastUpdateDate,
+						final Collection<COVID19HistoryDate> byDateItems) {
+		_lastUpdateDate = lastUpdateDate;
+		_byDateItems = byDateItems;
+	}
+	public COVID19Index(final Date lastUpdateDate,
+						final Collection<COVID19IndexItem> aggregatedItems,
+						final Collection<COVID19HistoryDate> byDateItems) {
+		_lastUpdateDate = lastUpdateDate;
+		_byDateItems = byDateItems;
+		_aggregatedItems = aggregatedItems;
+	}
 }

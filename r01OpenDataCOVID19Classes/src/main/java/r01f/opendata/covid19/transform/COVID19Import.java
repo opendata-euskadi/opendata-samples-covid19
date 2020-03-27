@@ -16,6 +16,7 @@ import com.google.common.io.ByteStreams;
 
 import lombok.extern.slf4j.Slf4j;
 import r01f.io.util.StringPersistenceUtils;
+import r01f.locale.Language;
 import r01f.objectstreamer.Marshaller;
 import r01f.objectstreamer.MarshallerBuilder;
 import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeaths;
@@ -30,9 +31,11 @@ import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalByHospitalByDate;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipality;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityAtDate;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityByMunicipalityByDate;
-import r01f.opendata.covid19.model.history.COVID19History;
+import r01f.opendata.covid19.model.index.COVID19Index;
+import r01f.opendata.covid19.model.tests.COVID19Tests;
 import r01f.types.Path;
 import r01f.types.url.Url;
+import r01f.util.types.Dates;
 import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
 
@@ -98,27 +101,37 @@ public class COVID19Import {
 		log.info("=================================================================");
 		log.info("HISTORY:");
 		log.info("=================================================================");
-		COVID19HistoryImport historyImport = new COVID19HistoryImport();
-		COVID19History history = historyImport.doImport();
+		COVID19Index index = COVID19HistoryImport.doImport();
 		
-		String historyJson = marshaller.forWriting()
-									   .toJson(history);
-		Path historyJsonFilePath = outPath.joinedWith("aurrekoak-anteriores.json");
-		StringPersistenceUtils.save(historyJson,
-									historyJsonFilePath);
+		String indexJson = marshaller.forWriting()
+									   .toJson(index);
+		Path indexJsonFilePath = outPath.joinedWith("index.json");	// aurrekoak-anteriores.json
+		StringPersistenceUtils.save(indexJson,
+									indexJsonFilePath);
 		
-		String historyXml = marshaller.forWriting()
-									  .toXml(history);
-		Path historyXmlFilePath = outPath.joinedWith("aurrekoak-anteriores.xml");
-		StringPersistenceUtils.save(historyXml,
-									historyXmlFilePath);
+		String indexXml = marshaller.forWriting()
+									  .toXml(index);
+		Path indexXmlFilePath = outPath.joinedWith("index.xml");		// aurrekoak-anteriores.xml;
+		StringPersistenceUtils.save(indexXml,
+									indexXmlFilePath);
+		
+		String indexHTMLes = COVID19HistoryImport.composeIndexHTMLFor(index,Language.SPANISH);
+		Path indexHTMLesFilePath = outPath.joinedWith("index_es.html");
+		StringPersistenceUtils.save(indexHTMLes,
+									indexHTMLesFilePath);
+		
+		String indexHTMLeu = COVID19HistoryImport.composeIndexHTMLFor(index,Language.BASQUE);
+		Path indexHTMLeuFilePath = outPath.joinedWith("index_eu.html");
+		StringPersistenceUtils.save(indexHTMLeu,
+									indexHTMLeuFilePath);
+		
 		
 		// [2] - Import every file
 		// By health zone
 		log.info("=================================================================");
 		log.info("BY HEALTH ZONE:");
 		log.info("=================================================================");
-		COVID19ByHealthZone byHealthZone = _importByHealthZone(history,
+		COVID19ByHealthZone byHealthZone = _importByHealthZone(index,
 															   logPath);
 		COVID19ByHealthZoneByGeoRegionByDate byHealthZoneByDate = byHealthZone.pivotByDate();
 		_writeToFile(marshaller,
@@ -129,7 +142,7 @@ public class COVID19Import {
 		log.info("=================================================================");
 		log.info("BY MUNICIPALITY:");
 		log.info("=================================================================");
-		COVID19ByMunicipality byMunicipality = _importByMunicipality(history,
+		COVID19ByMunicipality byMunicipality = _importByMunicipality(index,
 																	 logPath);
 		COVID19ByMunicipalityByMunicipalityByDate byMunicipalityByDate = byMunicipality.pivotByDate();
 		_writeToFile(marshaller,
@@ -140,7 +153,7 @@ public class COVID19Import {
 		log.info("=================================================================");
 		log.info("BY HOSPITAL:");
 		log.info("=================================================================");
-		COVID19ByHospital byHospital = _importByHospital(history,
+		COVID19ByHospital byHospital = _importByHospital(index,
 														 logPath);
 		COVID19ByHospitalByHospitalByDate byHospitalByDate = byHospital.pivotByDate();
 		_writeToFile(marshaller,
@@ -151,17 +164,27 @@ public class COVID19Import {
 		log.info("=================================================================");
 		log.info("BY AGE DEATHS:");
 		log.info("=================================================================");
-		COVID19ByAgeDeaths byAgeDeaths = _importByAgeDeaths(history,
+		COVID19ByAgeDeaths byAgeDeaths = _importByAgeDeaths(index,
 														    logPath);
 		COVID19ByAgeDeathsByAgeRangeByDate byAgeDeathsByDate = byAgeDeaths.pivotByDate();
 		_writeToFile(marshaller,
 					 outPath,"hildakoak-fallecidos",
 					 byAgeDeaths,byAgeDeathsByDate);
+		
+		// Tests
+		log.info("=================================================================");
+		log.info("TESTS:");
+		log.info("=================================================================");
+		COVID19Tests tests = _importTests(new Date(),		// Dates.fromFormatedString("2020/03/24","yyyy/MM/dd"),
+										  logPath);
+		_writeToFile(marshaller,
+					 outPath,"analisiak-analisis",
+					 tests,null);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY HEALTH ZONE
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static COVID19ByHealthZone _importByHealthZone(final COVID19History history,
+	private static COVID19ByHealthZone _importByHealthZone(final COVID19Index history,
 														   final Path logPath) {
 		COVID19ByHealthZone out = new COVID19ByHealthZone();
 		out.setLastUpdateDate(new Date());
@@ -192,7 +215,7 @@ public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY MUNICIPALITY
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static COVID19ByMunicipality _importByMunicipality(final COVID19History history,
+	private static COVID19ByMunicipality _importByMunicipality(final COVID19Index history,
 															   final Path logPath) {
 		COVID19ByMunicipality out = new COVID19ByMunicipality();
 		out.setLastUpdateDate(new Date());
@@ -223,7 +246,7 @@ public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY HOSPITAL
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static COVID19ByHospital _importByHospital(final COVID19History history,
+	private static COVID19ByHospital _importByHospital(final COVID19Index history,
 													   final Path logPath) {
 		COVID19ByHospital out = new COVID19ByHospital();
 		out.setLastUpdateDate(new Date());
@@ -254,7 +277,7 @@ public class COVID19Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	BY AGE DEATH
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static COVID19ByAgeDeaths _importByAgeDeaths(final COVID19History history,
+	private static COVID19ByAgeDeaths _importByAgeDeaths(final COVID19Index history,
 														 final Path logPath) {
 		COVID19ByAgeDeaths out = new COVID19ByAgeDeaths();
 		out.setLastUpdateDate(new Date());
@@ -283,6 +306,25 @@ public class COVID19Import {
 		return outAt;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
+//	TESTS
+/////////////////////////////////////////////////////////////////////////////////////////
+	private static COVID19Tests _importTests(final Date date,
+											 final Path logPath) {
+		COVID19Tests out = null;
+		try {
+			out = COVID19TestsImport.importTestsAt(date);
+			out.setLastUpdateDate(new Date());
+		} catch (IOException ioEx) {
+			log.error("Error importing [tests] file at={}: {}",
+					  date,
+					  ioEx.getMessage());
+			_appendToError(logPath,
+						   COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date),
+						   ioEx.getMessage());
+		}
+		return out;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	private static <D,B> void _writeToFile(final Marshaller marshaller,
@@ -294,30 +336,34 @@ public class COVID19Import {
 		
 		////////// write files
 		// by dimension
-		String byDimensionJson = marshaller.forWriting()
-										  .toJson(dim);
-		Path byDimensionJsonPath = folderPath.joinedWith("json").joinedWith(fileName + ".json");
-		StringPersistenceUtils.save(byDimensionJson,
-									byDimensionJsonPath);
-		
-		String byDimensionXml = marshaller.forWriting()
-										  .toXml(dim);
-		Path byDimensionXmlPath = folderPath.joinedWith("xml").joinedWith(fileName + ".xml");
-		StringPersistenceUtils.save(byDimensionXml,
-									byDimensionXmlPath);
+		if (dim != null) {
+			String byDimensionJson = marshaller.forWriting()
+											  .toJson(dim);
+			Path byDimensionJsonPath = folderPath.joinedWith("json").joinedWith(fileName + ".json");
+			StringPersistenceUtils.save(byDimensionJson,
+										byDimensionJsonPath);
+			
+			String byDimensionXml = marshaller.forWriting()
+											  .toXml(dim);
+			Path byDimensionXmlPath = folderPath.joinedWith("xml").joinedWith(fileName + ".xml");
+			StringPersistenceUtils.save(byDimensionXml,
+										byDimensionXmlPath);
+		}
 		
 		// by dimension by date
-		String byDimensionByDateJson = marshaller.forWriting()
-										  			.toJson(dimByDate);
-		Path byMunicipalityByDateJsonFilePath = folderPath.joinedWith("json").joinedWith(fileName + "-by_date.json");
-		StringPersistenceUtils.save(byDimensionByDateJson,
-									byMunicipalityByDateJsonFilePath);
-		
-		String byDimensionByDateXml = marshaller.forWriting()
-									  			.toXml(dimByDate);
-		Path byMunicipalityByDateXmlFilePath = folderPath.joinedWith("xml").joinedWith(fileName + "-by_date.xml");
-		StringPersistenceUtils.save(byDimensionByDateXml,
-									byMunicipalityByDateXmlFilePath);
+		if (dimByDate != null) {
+			String byDimensionByDateJson = marshaller.forWriting()
+											  			.toJson(dimByDate);
+			Path byMunicipalityByDateJsonFilePath = folderPath.joinedWith("json").joinedWith(fileName + "-by_date.json");
+			StringPersistenceUtils.save(byDimensionByDateJson,
+										byMunicipalityByDateJsonFilePath);
+			
+			String byDimensionByDateXml = marshaller.forWriting()
+										  			.toXml(dimByDate);
+			Path byMunicipalityByDateXmlFilePath = folderPath.joinedWith("xml").joinedWith(fileName + "-by_date.xml");
+			StringPersistenceUtils.save(byDimensionByDateXml,
+										byMunicipalityByDateXmlFilePath);
+		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	

@@ -18,6 +18,10 @@ public abstract class COVID19ByAgeDeathsMeta {
 													.add(Language.SPANISH,"Fallecidos")
 													.add(Language.BASQUE,"Hildakoak");
 	
+	public final static LanguageTexts NAME_AGGREGATED = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
+																.add(Language.SPANISH,"Fallecidos agrupados por rango de edad y fecha")
+																.add(Language.BASQUE,"Hildakoak adin-tartearen eta dataren arabera multzokatuta");
+	
 	public final static LanguageTexts NOTE = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
 													.add(Language.SPANISH,"Hildakoen kopurua agian ez dator bat egunen batean ospitaleetatik datozen datuekin, bi informazio-sistemen artean dekalaje bat dagoelako, eta dekalaje hori hurrengo egunetan zuzenduko da.")
 													.add(Language.BASQUE,"El número de fallecidos puede que algún día no coincida con los datos que provienen de los hospitales porque existe un decalaje entre ambos sistemas de información que se corregirá en días posteriores");

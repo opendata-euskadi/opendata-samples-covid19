@@ -109,7 +109,7 @@ public class COVID19ByHospitalImport {
 			line = br.readLine();
 		}
 		// release
-		br.hashCode();
+		br.close();
 		is.close();
 
 		// [3] - return 

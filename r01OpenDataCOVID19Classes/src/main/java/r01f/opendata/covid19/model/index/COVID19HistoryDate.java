@@ -1,4 +1,4 @@
-package r01f.opendata.covid19.model.history;
+package r01f.opendata.covid19.model.index;
 
 import java.util.Collection;
 import java.util.Date;
@@ -29,5 +29,5 @@ public class COVID19HistoryDate
 	
 	@MarshallField(as="items",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private Collection<COVID19HistoryItem> _items;
+	@Getter @Setter private Collection<COVID19IndexItem> _items;
 }

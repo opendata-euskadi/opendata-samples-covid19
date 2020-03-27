@@ -83,7 +83,7 @@ public class COVID19ByMunicipalityImport {
 			line = br.readLine();
 		}
 		// release
-		br.hashCode();
+		br.close();
 		is.close();
 		
 		// return 

@@ -89,7 +89,7 @@ public class COVID19ByHealthZoneImport {
 			line = br.readLine();
 		}
 		// release
-		br.hashCode();
+		br.close();
 		is.close();
 		
 		// return 

@@ -177,7 +177,7 @@ public class COVID19ByAgeDeathsImport {
 			line = br.readLine();
 		}
 		// release
-		br.hashCode();
+		br.close();
 		is.close();
 		
 		// [3] - return 

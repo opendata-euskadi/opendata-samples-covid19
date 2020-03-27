@@ -15,8 +15,11 @@ public abstract class COVID19ByHospitalMeta {
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public final static LanguageTexts NAME = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
-													.add(Language.SPANISH,"Información de pacientes hospitalizados (00:00 horas)")
+													.add(Language.SPANISH,"Pacientes hospitalizados (00:00 horas)")
 													.add(Language.BASQUE,"Ospitaleratutako pazienteei buruzko informazioa (00:00 etan)");
+	public final static LanguageTexts NAME_AGGREGATED = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
+																.add(Language.SPANISH,"Pacientes hospitalizados agregados por hospital y fecha (00:00 horas)")
+																.add(Language.BASQUE,"Ospitaleratutako pazienteak, ospitalearen eta dataren arabera gehituta (00: 00etan)");
 	public final static LanguageTexts NOTE = null;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
