@@ -3,7 +3,6 @@ package r01f.opendata.covid19.model.byhealthzone;
 import java.util.Collection;
 import java.util.Date;
 
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 
 import lombok.Getter;
@@ -75,31 +74,31 @@ public class COVID19ByHealthZone
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByHealthZoneByDate pivotByDate() {
-		COVID19ByHealthZoneByDate out = new COVID19ByHealthZoneByDate();
+	public COVID19ByHealthZoneByGeoRegionByDate pivotByDate() {
+		COVID19ByHealthZoneByGeoRegionByDate out = new COVID19ByHealthZoneByGeoRegionByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
 		
 		Collection<GeoRegion> geoRegions = this.getGeoRegions();
 		for (GeoRegion geoRegion : geoRegions) {
-			COVID19DimensionValuesByDate<GeoRegion,Long> populationByDate = new COVID19DimensionValuesByDate<>(COVID19ByHealthZoneMeta.POPULATION,
-																											   geoRegion);
-			COVID19DimensionValuesByDate<GeoRegion,Long> positiveCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByHealthZoneMeta.POSITIVE_COUNT,
-																												  geoRegion);
-			COVID19DimensionValuesByDate<GeoRegion,Float> positiveRateByDate = new COVID19DimensionValuesByDate<>(COVID19ByHealthZoneMeta.POSITIVE_RATE,
-																												  geoRegion);
+			COVID19DimensionValuesByDate<GeoRegion,Long> populationByGeoRegion = new COVID19DimensionValuesByDate<>(geoRegion);
+			COVID19DimensionValuesByDate<GeoRegion,Long> positiveCountByGeoRegion = new COVID19DimensionValuesByDate<>(geoRegion);
+			COVID19DimensionValuesByDate<GeoRegion,Float> positiveRateByGeoRegion = new COVID19DimensionValuesByDate<>(geoRegion);
 			for (COVID19ByHealthZoneAtDate itemAtDate : _byDateItems) {
 				COVID19ByHealthZoneItem dimItem = itemAtDate.getItemFor(geoRegion.getId());
 				if (dimItem != null) {
-					populationByDate.addValueAt(itemAtDate.getDate(),
-												dimItem.getPopulation());
-					positiveCountByDate.addValueAt(itemAtDate.getDate(),
-												   dimItem.getPositiveCount());
-					positiveRateByDate.addValueAt(itemAtDate.getDate(),
-												  dimItem.getPositiveRate());
+					populationByGeoRegion.addValueAt(itemAtDate.getDate(),
+													 dimItem.getPopulation());
+					positiveCountByGeoRegion.addValueAt(itemAtDate.getDate(),
+														dimItem.getPositiveCount());
+					positiveRateByGeoRegion.addValueAt(itemAtDate.getDate(),
+												  	   dimItem.getPositiveRate());
 				}
 			}
+			out.addPopulationByGeoRegion(populationByGeoRegion);
+			out.addPositiveCountByGeoRegion(positiveCountByGeoRegion);
+			out.addPositiveRateByGeoRegion(positiveRateByGeoRegion);
 		}
 		return out;
 	}

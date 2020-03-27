@@ -71,16 +71,15 @@ public class COVID19ByMunicipality
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByMunicipalityByDate pivotByDate() {
-		COVID19ByMunicipalityByDate out = new COVID19ByMunicipalityByDate();
+	public COVID19ByMunicipalityByMunicipalityByDate pivotByDate() {
+		COVID19ByMunicipalityByMunicipalityByDate out = new COVID19ByMunicipalityByMunicipalityByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
 		
 		Collection<GeoMunicipality> geoMunicipalities = this.getGeoMunicipalities();
 		for (GeoMunicipality geoMunicipality : geoMunicipalities) {
-			COVID19DimensionValuesByDate<GeoMunicipality,Long> positiveCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByMunicipalityMeta.POSITIVE_COUNT,
-																											   		    geoMunicipality);
+			COVID19DimensionValuesByDate<GeoMunicipality,Long> positiveCountByDate = new COVID19DimensionValuesByDate<>(geoMunicipality);
 			for (COVID19ByMunicipalityAtDate itemAtDate : _byDateItems) {
 				COVID19ByMunicipalityItem dimItem = itemAtDate.getItemFor(geoMunicipality.getId());
 				if (dimItem != null) {
@@ -88,6 +87,7 @@ public class COVID19ByMunicipality
 												   dimItem.getPositiveCount());
 				}
 			}
+			out.addPositiveCountByMunicipality(positiveCountByDate);
 		}
 		return out;
 	}

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -28,6 +29,10 @@ public class COVID19ByAgeDeathsImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
+	private static final Pattern LINE_MATCHER0 = Pattern.compile("([^;]+);" +	// [1] age range
+																"([0-9]+);" + 	// [2] positive total
+																"([0-9]+);" + 	// [3] total death
+																"([0-9]+,?[0-9]*)%"); 	// [10] lethality
 	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+);" +	// [1] age range
 																"([0-9]+);" + 	// [2] positive men
 																"([0-9]+);" + 	// [3] positive women
@@ -65,7 +70,7 @@ public class COVID19ByAgeDeathsImport {
 		
 		COVID19ByAgeDeathsTotal total = null;
 		Collection<COVID19ByAgeDeathsItem> items = Lists.newArrayList();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim();
@@ -121,7 +126,52 @@ public class COVID19ByAgeDeathsImport {
 					items.add(item);
 				}
 			} else {
-				log.debug("NOT matching line: {}",line);
+				Matcher m2 = LINE_MATCHER0.matcher(line);
+				if (m2.find()) {
+					String ageRange = m2.group(1);
+					
+					String positiveTotal = m2.group(2);
+					String deathTotal = m2.group(3);
+					String lethalityTotal = m2.group(4).replace(',','.');
+					
+					if (ageRange.toUpperCase()
+							    .startsWith("GUZTIRA / TOTAL")) {
+						// ...the item with name="GUZTIRA / TOTAL" is "special"
+						total = new COVID19ByAgeDeathsTotal();
+						
+						total.setPositiveMenCount(-1);
+						total.setPositiveWomenCount(-1);
+						total.setPositiveTotalCount(Long.parseLong(positiveTotal));
+						
+						total.setDeathMenCount(-1);
+						total.setDeathWomenCount(-1);
+						total.setDeathTotalCount(Long.parseLong(deathTotal));
+		
+						total.setMenLethalityRate(-1);
+						total.setWomenLethalityRate(-1);
+						total.setTotalLethalityRate(Float.parseFloat(lethalityTotal));
+					} 
+					else {
+						COVID19ByAgeDeathsItem item = new COVID19ByAgeDeathsItem();
+						item.setAgeRange(ageRange);
+						
+						item.setPositiveMenCount(-1);
+						item.setPositiveWomenCount(-1);
+						item.setPositiveTotalCount(Long.parseLong(positiveTotal));
+						
+						item.setDeathMenCount(-1);
+						item.setDeathWomenCount(-1);
+						item.setDeathTotalCount(Long.parseLong(deathTotal));
+		
+						item.setMenLethalityRate(-1);
+						item.setWomenLethalityRate(-1);
+						item.setTotalLethalityRate(Float.parseFloat(lethalityTotal));
+						
+						items.add(item);
+					}
+				} else {
+					log.debug("NOT matching line: {}",line);
+				}
 			}
 			// next line
 			line = br.readLine();

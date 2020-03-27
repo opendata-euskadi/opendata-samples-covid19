@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -29,11 +30,11 @@ public class COVID19ByHospitalImport {
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+);" +	// [1] hospital
-																"([0-9]+);" + 	// [2] floor people count
-																"([0-9]+);" + 	// [3] icu people cunt
-																"([0-9]+);" + 	// [4] total
-																"([0-9]+);" + 	// [5] releasedPeopleCount
-																"([0-9]+)"); 	// [6] icuReleasedPeopleCount
+																"([0-9]+|-)?;" + 	// [2] floor people count
+																"([0-9]+|-)?;" + 	// [3] icu people cunt
+																"([0-9]+|-)?;" + 	// [4] total
+																"([0-9]+|-)?;" + 	// [5] releasedPeopleCount
+																"([0-9]+|-)?"); 	// [6] icuReleasedPeopleCount
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +62,7 @@ public class COVID19ByHospitalImport {
 		
 		COVID19ByHospitalTotal total = null;
 		Collection<COVID19ByHospitalItem> items = Lists.newArrayList();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim();
@@ -81,23 +82,23 @@ public class COVID19ByHospitalImport {
 					// ...the item with name="GUZTIRA / TOTAL" is "special"
 					total = new COVID19ByHospitalTotal();
 					
-					total.setFloorPeopleCount(Integer.parseInt(floorPeopleCount));
-					total.setIcuPeopleCount(Integer.parseInt(icuPeopleCount));
-					total.setTotalPeopleCount(Integer.parseInt(totalPeopleCount));
+					total.setFloorPeopleCount(Strings.isNOTNullOrEmpty(floorPeopleCount) && !floorPeopleCount.equals("-") ? Integer.parseInt(floorPeopleCount) : -1);
+					total.setIcuPeopleCount(Strings.isNOTNullOrEmpty(icuPeopleCount) && !icuPeopleCount.equals("-") ? Integer.parseInt(icuPeopleCount) : -1);
+					total.setTotalPeopleCount(Strings.isNOTNullOrEmpty(totalPeopleCount) && !totalPeopleCount.equals("-") ? Integer.parseInt(totalPeopleCount) : -1);
 					
-					total.setReleasedPeopleCount(Integer.parseInt(releasedPeopleCount));
-					total.setIcuReleasedPeopleCount(Integer.parseInt(icuReleasedPeopleCount));
+					total.setReleasedPeopleCount(Strings.isNOTNullOrEmpty(releasedPeopleCount) && !releasedPeopleCount.equals("-") ? Integer.parseInt(releasedPeopleCount) : -1);
+					total.setIcuReleasedPeopleCount(Strings.isNOTNullOrEmpty(icuReleasedPeopleCount) && !icuReleasedPeopleCount.equals("-") ? Integer.parseInt(icuReleasedPeopleCount) : -1);
 					
 				} else {
 					COVID19ByHospitalItem item = new COVID19ByHospitalItem();
 					item.setHospital(hospital);
 					
-					item.setFloorPeopleCount(Integer.parseInt(floorPeopleCount));
-					item.setIcuPeopleCount(Integer.parseInt(icuPeopleCount));
-					item.setTotalPeopleCount(Integer.parseInt(totalPeopleCount));
+					item.setFloorPeopleCount(Strings.isNOTNullOrEmpty(floorPeopleCount) && !floorPeopleCount.equals("-") ? Integer.parseInt(floorPeopleCount) : -1);
+					item.setIcuPeopleCount(Strings.isNOTNullOrEmpty(icuPeopleCount) && !icuPeopleCount.equals("-") ? Integer.parseInt(icuPeopleCount) : -1);
+					item.setTotalPeopleCount(Strings.isNOTNullOrEmpty(totalPeopleCount) && !totalPeopleCount.equals("-") ? Integer.parseInt(totalPeopleCount) : -1);
 					
-					item.setReleasedPeopleCount(Integer.parseInt(releasedPeopleCount));
-					item.setIcuReleasedPeopleCount(Integer.parseInt(icuReleasedPeopleCount));
+					item.setReleasedPeopleCount(Strings.isNOTNullOrEmpty(releasedPeopleCount) && !releasedPeopleCount.equals("-") ? Integer.parseInt(releasedPeopleCount) : -1);
+					item.setIcuReleasedPeopleCount(Strings.isNOTNullOrEmpty(icuReleasedPeopleCount) && !icuReleasedPeopleCount.equals("-") ? Integer.parseInt(icuReleasedPeopleCount) : -1);
 					
 					items.add(item);
 				}

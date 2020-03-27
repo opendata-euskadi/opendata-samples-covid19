@@ -13,10 +13,19 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 
-@MarshallType(as="covid19DimensionAtDateValue")
+
+/**
+ * <pre>
+ * 		{@link COVID19Dimensions}
+ * 			+- N {@link COVID19DimensionValuesByDate}
+ * 					+ N {@link COVID19DimensionValueAtDate}
+ * </pre> 
+ * @param <V>
+ */
+@MarshallType(as="covid19DimensionValueAtDate")
 @Accessors(prefix="_")
 @NoArgsConstructor @AllArgsConstructor
-public class COVID19DimensionAtDateValue<V>
+public class COVID19DimensionValueAtDate<V>
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = -5162355361477179247L;

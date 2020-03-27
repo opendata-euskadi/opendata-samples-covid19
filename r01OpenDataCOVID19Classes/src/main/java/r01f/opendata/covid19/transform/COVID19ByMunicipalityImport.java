@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -58,7 +59,7 @@ public class COVID19ByMunicipalityImport {
 		// process the file
 		log.info("Processing [by municipality] file at: {}",url);
 		Collection<COVID19ByMunicipalityItem> items = Lists.newArrayList();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim();

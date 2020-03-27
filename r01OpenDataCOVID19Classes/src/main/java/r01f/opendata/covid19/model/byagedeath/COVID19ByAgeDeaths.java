@@ -83,8 +83,8 @@ public class COVID19ByAgeDeaths
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByAgeDeathsByDate pivotByDate() {
-		COVID19ByAgeDeathsByDate out = new COVID19ByAgeDeathsByDate();
+	public COVID19ByAgeDeathsByAgeRangeByDate pivotByDate() {
+		COVID19ByAgeDeathsByAgeRangeByDate out = new COVID19ByAgeDeathsByAgeRangeByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
@@ -92,26 +92,17 @@ public class COVID19ByAgeDeaths
 		Collection<String> ageRanges = this.getAgeRanges();
 		for (String ageRange : ageRanges) {
 			// positives
-			COVID19DimensionValuesByDate<String,Long> positiveMenCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.POSITIVE_MEN_COUNT,
-																											   	  ageRange);
-			COVID19DimensionValuesByDate<String,Long> positiveWomenCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.POSITIVE_WOMEN_COUNT,
-																											   	  	ageRange);
-			COVID19DimensionValuesByDate<String,Long> positiveTotalCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.POSITIVE_TOTAL_COUNT,
-																											   	  	ageRange);
+			COVID19DimensionValuesByDate<String,Long> positiveMenCountByDate = new COVID19DimensionValuesByDate<>(ageRange);
+			COVID19DimensionValuesByDate<String,Long> positiveWomenCountByDate = new COVID19DimensionValuesByDate<>(ageRange);
+			COVID19DimensionValuesByDate<String,Long> positiveTotalCountByDate = new COVID19DimensionValuesByDate<>(ageRange);
 			// deaths
-			COVID19DimensionValuesByDate<String,Long> deathMenCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.DEATH_MEN_COUNT,
-																											   ageRange);
-			COVID19DimensionValuesByDate<String,Long> deathWomeCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.DEATH_WOMEN_COUNT,
-																											   	ageRange);
-			COVID19DimensionValuesByDate<String,Long> deathTotalCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.DEATH_TOTAL_COUNT,
-																											   	 ageRange);
+			COVID19DimensionValuesByDate<String,Long> deathMenCountByDate = new COVID19DimensionValuesByDate<>(ageRange);
+			COVID19DimensionValuesByDate<String,Long> deathWomeCountByDate = new COVID19DimensionValuesByDate<>(ageRange);
+			COVID19DimensionValuesByDate<String,Long> deathTotalCountByDate = new COVID19DimensionValuesByDate<>(ageRange);
 			// lethality
-			COVID19DimensionValuesByDate<String,Float> menLethalityRateByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.MEN_LETHALITY_RATE,
-																											   	   ageRange);
-			COVID19DimensionValuesByDate<String,Float> womenLethalityRateByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.WOMEN_LETHALITY_RATE,
-																											   	   	 ageRange);
-			COVID19DimensionValuesByDate<String,Float> totalLethalityRateByDate = new COVID19DimensionValuesByDate<>(COVID19ByAgeDeathsMeta.TOTAL_LETHALITY_RATE,
-																											   	   	 ageRange);
+			COVID19DimensionValuesByDate<String,Float> menLethalityRateByDate = new COVID19DimensionValuesByDate<>(ageRange);
+			COVID19DimensionValuesByDate<String,Float> womenLethalityRateByDate = new COVID19DimensionValuesByDate<>(ageRange);
+			COVID19DimensionValuesByDate<String,Float> totalLethalityRateByDate = new COVID19DimensionValuesByDate<>(ageRange);
 			
 			for (COVID19ByAgeDeathsAtDate itemAtDate : _byDateItems) {
 				COVID19ByAgeDeathsItem dimItem = itemAtDate.getItemFor(ageRange);
@@ -139,6 +130,18 @@ public class COVID19ByAgeDeaths
 														dimItem.getTotalLethalityRate());
 				}
 			}
+			out.addPositiveMenCountByAgeRange(positiveMenCountByDate);
+			out.addPositiveWomenCountByAgeRange(positiveWomenCountByDate);
+			out.addPositiveTotalCountByAgeRange(positiveTotalCountByDate);
+			
+			out.addDeathMenCountByAgeRange(deathMenCountByDate);
+			out.addDeathWomenCountByAgeRange(deathWomeCountByDate);
+			out.addDeathTotalCountByAgeRange(deathTotalCountByDate);
+			
+			out.addMenLethalityRateByAgeRange(menLethalityRateByDate);
+			out.addWomenLethalityRateByAgeRange(womenLethalityRateByDate);
+			out.addTotalLethalityRateByAgeRange(totalLethalityRateByDate);
+			
 		}
 		return out;
 	}

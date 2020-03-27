@@ -78,8 +78,8 @@ public class COVID19ByHospital
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByHospitalByDate pivotByDate() {
-		COVID19ByHospitalByDate out = new COVID19ByHospitalByDate();
+	public COVID19ByHospitalByHospitalByDate pivotByDate() {
+		COVID19ByHospitalByHospitalByDate out = new COVID19ByHospitalByHospitalByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
@@ -87,17 +87,12 @@ public class COVID19ByHospital
 		Collection<String> hospitals = this.getHospitals();
 		for (String hospital : hospitals) {
 			// people
-			COVID19DimensionValuesByDate<String,Integer> floorPeopleCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByHospitalMeta.FLOOR_PEOPLE_COUNT,
-																											   	  	 hospital);
-			COVID19DimensionValuesByDate<String,Integer> icuPeopleCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByHospitalMeta.ICU_PEOPLE_COUNT,
-																											   	   hospital);
-			COVID19DimensionValuesByDate<String,Integer> totalPeopleCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByHospitalMeta.TOTAL_PEOPLE_COUNT,
-																													 hospital);
+			COVID19DimensionValuesByDate<String,Integer> floorPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
+			COVID19DimensionValuesByDate<String,Integer> icuPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
+			COVID19DimensionValuesByDate<String,Integer> totalPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
 			// released
-			COVID19DimensionValuesByDate<String,Integer> icuReleasePeopleCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByHospitalMeta.ICU_RELEASE_PEOPLE_COUNT,
-																											   		   	  hospital);
-			COVID19DimensionValuesByDate<String,Integer> releasePeopeCountByDate = new COVID19DimensionValuesByDate<>(COVID19ByHospitalMeta.RELEASE_PEOPLE_COUNT,
-																													  hospital);
+			COVID19DimensionValuesByDate<String,Integer> icuReleasePeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
+			COVID19DimensionValuesByDate<String,Integer> releasePeopeCountByDate = new COVID19DimensionValuesByDate<>(hospital);
 			
 			for (COVID19ByHospitalAtDate itemAtDate : _byDateItems) {
 				COVID19ByHospitalItem dimItem = itemAtDate.getItemFor(hospital);
@@ -116,6 +111,12 @@ public class COVID19ByHospital
 													dimItem.getReleasedPeopleCount());
 				}
 			}
+			out.addFloorPeopleCountByHospital(floorPeopleCountByDate);
+			out.addIcuPeopleCountByHospital(icuPeopleCountByDate);
+			out.addTotalPeopleCountByHospital(totalPeopleCountByDate);
+			
+			out.addIcuPeopleCountByHospital(icuReleasePeopleCountByDate);
+			out.addReleasePeopleCountByHospital(releasePeopeCountByDate);
 		}
 		return out;
 	}
