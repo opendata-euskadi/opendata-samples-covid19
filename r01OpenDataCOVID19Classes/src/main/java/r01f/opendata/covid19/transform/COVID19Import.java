@@ -12,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.joda.time.LocalDate;
+
 import com.google.common.io.ByteStreams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -312,8 +314,31 @@ public class COVID19Import {
 											 final Path logPath) {
 		COVID19Tests out = null;
 		try {
-			out = COVID19TestsImport.importTestsAt(date);
-			out.setLastUpdateDate(new Date());
+			// if the [test] file for the current date is NOT present, try 3 days before
+			LocalDate testDate = new LocalDate(date);
+			int tryCount = 3;
+			do {
+				boolean existsForDate = COVID19TestsImport.existsTestFileAt(testDate.toDate());
+				if (existsForDate) break;
+				
+				testDate = testDate.minusDays(1);
+				tryCount--;
+				if (tryCount >= 0) log.warn("Could NOT find the [test] file at {}, trying {}",
+											testDate.plusDays(1),testDate);
+			} while (tryCount < 0);
+			
+			// at this point, the file might be found... or not
+			if (tryCount < 0) {
+				// no suitable file
+				log.error("Could NOT find any [test] file for the last days");
+				_appendToError(logPath,
+							   COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date),
+							   "Could NOT find any [test] file for the last days");
+			} else {
+				// suitable file found
+				out = COVID19TestsImport.importTestsAt(testDate.toDate());
+				out.setLastUpdateDate(new Date());
+			}
 		} catch (IOException ioEx) {
 			log.error("Error importing [tests] file at={}: {}",
 					  date,

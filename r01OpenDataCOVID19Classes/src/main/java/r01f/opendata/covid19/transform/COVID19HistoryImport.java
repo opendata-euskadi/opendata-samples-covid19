@@ -27,6 +27,7 @@ import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeathsMeta;
 import r01f.opendata.covid19.model.byhealthzone.COVID19ByHealthZoneMeta;
 import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalMeta;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityMeta;
+import r01f.opendata.covid19.model.index.COVID19DataFormat;
 import r01f.opendata.covid19.model.index.COVID19HistoryDate;
 import r01f.opendata.covid19.model.index.COVID19Index;
 import r01f.opendata.covid19.model.index.COVID19IndexItem;
@@ -64,16 +65,20 @@ public class COVID19HistoryImport {
 		
 		// Aggregated
 		if (CollectionUtils.hasData(index.getAggregatedItems())) {
-			String title = lang.is(Language.SPANISH) ? "Datos agregados"
-													 : "Datu agregatuak";
-			sb.append("<h2>").append(title).append("</h2>\n");
-			sb.append("<ul class='covid19-opendataitems'>\n");
-			for (COVID19IndexItem item : index.getAggregatedItems()) {
-				sb.append("<li>")
-				  .append("<a href='").append(item.getUrl()).append("'>").append(item.getName().get(lang)).append("</a>")
-				  .append("</li>\n");
-			}
-			sb.append("</ul>\n");
+			// Json
+			String titleJson = lang.is(Language.SPANISH) ? "Datos agregados (" + COVID19DataFormat.JSON + ")"
+														 : "Datu agregatuak (" + COVID19DataFormat.JSON + ")";
+			sb.append("<h2>").append(titleJson).append("</h2>\n");
+			_appendIndexItems(index.getAggregatedItemsIn(COVID19DataFormat.JSON),
+							  lang,
+							  sb);
+			// xml
+			String titleXml = lang.is(Language.SPANISH) ? "Datos agregados (" + COVID19DataFormat.XML + ")"
+														: "Datu agregatuak (" + COVID19DataFormat.XML + ")";
+			sb.append("<h2>").append(titleXml).append("</h2>\n");
+			_appendIndexItems(index.getAggregatedItemsIn(COVID19DataFormat.XML),
+							  lang,
+							  sb);
 		}
 		// By date
 		if (CollectionUtils.hasData(index.getByDateItems())) {
@@ -81,23 +86,35 @@ public class COVID19HistoryImport {
 													 : "Datuak eguneko";
 			sb.append("<h2>").append(title).append("</h2>\n");
 			for (COVID19HistoryDate item : index.getByDateItems()) {
-				if (CollectionUtils.isNullOrEmpty(item.getItems())) continue;
 				
-				sb.append("<ul class='covid19-opendataitems'>\n");
-				for (COVID19IndexItem dateItem : index.getAggregatedItems()) {
-					String itemTitle = Strings.customized("<span class='covid-19-date'>{}</span> {}",
-													 	  DateLangFormat.of(lang).formatDate(item.getDate()),
-													 	  dateItem.getName().get(lang));
-					sb.append("<li>")
-					  .append("<a href='").append(dateItem.getUrl()).append("'>").append(itemTitle).append("</a>")
-					  .append("</li>\n");
-				}
-				sb.append("</ul>\n");
+				if (CollectionUtils.isNullOrEmpty(item.getItems())) continue;
+
+				sb.append("<h3'>").append(DateLangFormat.of(lang).formatDate(item.getDate())).append("</h3>\n");
+								
+				_appendIndexItems(item.getItemsIn(COVID19DataFormat.CSV),
+								  lang,
+								  sb);
+				_appendIndexItems(item.getItemsIn(COVID19DataFormat.EXCEL),
+								  lang,
+								  sb);
 			}
 		}
 		sb.append("</ul>\n");
 		sb.append("</div>");
 		return sb.toString();
+	}
+	private static void _appendIndexItems(final Collection<COVID19IndexItem> items,
+										  final Language lang,
+										  final StringBuilder sb) {
+		if (CollectionUtils.hasData(items)) {
+			sb.append("<ul class='covid19-opendataitems'>\n");
+			for (COVID19IndexItem item : items) {
+				sb.append("<li>")
+				  .append("<a href='").append(item.getUrl()).append("'>").append(item.getName().get(lang)).append(" (").append(item.getFormat()).append(") ").append("</a>")
+				  .append("</li>\n");
+			}
+			sb.append("</ul>\n");
+		} 
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
@@ -194,27 +211,27 @@ public class COVID19HistoryImport {
 								 .getFileName();
 			if (fileName.startsWith("covid19-")) {
 				COVID19IndexItem excelItem = new COVID19IndexItem(url,
-																	  NAME_EXCEL);
+																  COVID19DataFormat.EXCEL,NAME_EXCEL);
 				outItems.add(excelItem);
 			}
 			else if (fileName.startsWith("ospitaleratuak-hospitalizados-")) {
 				COVID19IndexItem csvItem = new COVID19IndexItem(url,
-																	COVID19ByHospitalMeta.NAME);	
+															    COVID19DataFormat.from(url),COVID19ByHospitalMeta.NAME);	
 				outItems.add(csvItem);				
 			} 
 			else if (fileName.startsWith("udalerriak-municipios-")) {
 				COVID19IndexItem csvItem = new COVID19IndexItem(url,
-																	COVID19ByMunicipalityMeta.NAME);
+																COVID19DataFormat.from(url),COVID19ByMunicipalityMeta.NAME);
 				outItems.add(csvItem);	
 			}
 			else if (fileName.startsWith("osasun_eremuak-zonas_salud-")) {
 				COVID19IndexItem csvItem = new COVID19IndexItem(url,
-																	COVID19ByHealthZoneMeta.NAME);	
+																COVID19DataFormat.from(url),COVID19ByHealthZoneMeta.NAME);	
 				outItems.add(csvItem);	
 			}
 			else if (fileName.startsWith("hildakoak-fallecidos")) {
 				COVID19IndexItem csvItem = new COVID19IndexItem(url,
-																	COVID19ByHealthZoneMeta.NAME);	
+																COVID19DataFormat.from(url),COVID19ByHealthZoneMeta.NAME);	
 				outItems.add(csvItem);	
 			}
 			return outItems.stream();
@@ -226,45 +243,45 @@ public class COVID19HistoryImport {
 	private static Collection<COVID19IndexItem> _composeAggregatedItems() {
 		Url baseUrl = Url.from("https://opendata.euskadi.eus/contenidos/ds_informes_estudios/covid_19_2020/opendata/aggregated/");
 		Collection<COVID19IndexItem> json = Lists.newArrayList(new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/hildakoak-fallecidos.json")),
-															  					   COVID19ByAgeDeathsMeta.NAME),
+															  					    COVID19DataFormat.JSON,COVID19ByAgeDeathsMeta.NAME),
 														       new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/osasun_eremuak-zonas_salud.json")),
-															  					    COVID19ByHealthZoneMeta.NAME),
+															  					    COVID19DataFormat.JSON,COVID19ByHealthZoneMeta.NAME),
 														       new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/ospitaleratuak-hospitalizados.json")),
-															  					    COVID19ByHospitalMeta.NAME),
+															  					    COVID19DataFormat.JSON,COVID19ByHospitalMeta.NAME),
 														       new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/udalerriak-municipios.json")),
-															  					    COVID19ByMunicipalityMeta.NAME));
+															  					    COVID19DataFormat.JSON,COVID19ByMunicipalityMeta.NAME));
 		
 		Collection<COVID19IndexItem> jsonAggr = Lists.newArrayList(new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/hildakoak-fallecidos-by_date.json")),
-															  					   	    COVID19ByAgeDeathsMeta.NAME_AGGREGATED),
+															  					   	    COVID19DataFormat.JSON,COVID19ByAgeDeathsMeta.NAME_AGGREGATED),
 														       	   new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/osasun_eremuak-zonas_salud-by_date.json")),
-															  					    	COVID19ByHealthZoneMeta.NAME_AGGREGATED),
+															  					    	COVID19DataFormat.JSON,COVID19ByHealthZoneMeta.NAME_AGGREGATED),
 														       	   new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/ospitaleratuak-hospitalizados-by_date.json")),
-															  					    	COVID19ByHospitalMeta.NAME_AGGREGATED),
+															  					    	COVID19DataFormat.JSON,COVID19ByHospitalMeta.NAME_AGGREGATED),
 														       	   new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/udalerriak-municipios-by_date.json")),
-														       			   				COVID19ByMunicipalityMeta.NAME_AGGREGATED));
+														       			   				COVID19DataFormat.JSON,COVID19ByMunicipalityMeta.NAME_AGGREGATED));
 		
 		Collection<COVID19IndexItem> xml = Lists.newArrayList(new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/hildakoak-fallecidos.xml")),
-															  					   COVID19ByAgeDeathsMeta.NAME),
+															  					   COVID19DataFormat.XML,COVID19ByAgeDeathsMeta.NAME),
 														      new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/osasun_eremuak-zonas_salud.xml")),
-															  					   COVID19ByHealthZoneMeta.NAME),
+															  					   COVID19DataFormat.XML,COVID19ByHealthZoneMeta.NAME),
 														      new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/ospitaleratuak-hospitalizados.xml")),
-															  					   COVID19ByHospitalMeta.NAME),
+															  					   COVID19DataFormat.XML,COVID19ByHospitalMeta.NAME),
 														      new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/udalerriak-municipios.xml")),
-															  					   COVID19ByMunicipalityMeta.NAME));
+															  					   COVID19DataFormat.XML,COVID19ByMunicipalityMeta.NAME));
 		
 		Collection<COVID19IndexItem> xmlAggr = Lists.newArrayList(new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/hildakoak-fallecidos-by_date.xml")),
-															  					   	    COVID19ByAgeDeathsMeta.NAME_AGGREGATED),
+															  					   	   COVID19DataFormat.XML,COVID19ByAgeDeathsMeta.NAME_AGGREGATED),
 														       	   new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/osasun_eremuak-zonas_salud-by_date.xml")),
-															  					    	COVID19ByHealthZoneMeta.NAME_AGGREGATED),
+															  					    	COVID19DataFormat.XML,COVID19ByHealthZoneMeta.NAME_AGGREGATED),
 														       	   new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/ospitaleratuak-hospitalizados-by_date.xml")),
-															  					    	COVID19ByHospitalMeta.NAME_AGGREGATED),
+															  					    	COVID19DataFormat.XML,COVID19ByHospitalMeta.NAME_AGGREGATED),
 														       	   new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/udalerriak-municipios-by_date.xml")),
-														       			   				COVID19ByMunicipalityMeta.NAME_AGGREGATED));
+														       			   				COVID19DataFormat.XML,COVID19ByMunicipalityMeta.NAME_AGGREGATED));
 		
 		COVID19IndexItem testsJson = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/analisiak-analisis.json")),
-														  COVID19TestsMeta.NAME);
+														  COVID19DataFormat.JSON,COVID19TestsMeta.NAME);
 		COVID19IndexItem testsXml = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/analisiak-analisis.xml")),
-														  COVID19TestsMeta.NAME);
+														 COVID19DataFormat.XML,COVID19TestsMeta.NAME);
 		
 		Collection<COVID19IndexItem> outList = Lists.newArrayList();
 		outList.addAll(json);

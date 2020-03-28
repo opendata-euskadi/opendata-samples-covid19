@@ -2,6 +2,7 @@ package r01f.opendata.covid19.model.index;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,8 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 import r01f.opendata.covid19.model.COVID19ModelObject;
+import r01f.util.types.collections.CollectionUtils;
+import r01f.util.types.collections.Lists;
 
 @MarshallType(as="covid19Index")
 @Accessors(prefix="_")
@@ -48,5 +51,16 @@ public class COVID19Index
 		_lastUpdateDate = lastUpdateDate;
 		_byDateItems = byDateItems;
 		_aggregatedItems = aggregatedItems;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	public Collection<COVID19IndexItem> getAggregatedItemsIn(final COVID19DataFormat format) {
+		return CollectionUtils.hasData(this.getAggregatedItems())
+					? this.getAggregatedItems()
+						  .stream()
+						  .filter(item -> item.getFormat() == format)
+						  .collect(Collectors.toList())
+					: Lists.newArrayList();
 	}
 }

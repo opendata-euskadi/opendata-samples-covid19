@@ -55,6 +55,21 @@ public class COVID19TestsImport {
 											  Dates.format(date,"ddMMyy")));
 		return url;
 	}
+	public static boolean existsTestFileAt(final Date date) throws IOException {
+		Url url = COVID19TestsImport.getByAgeDeathsUrlAt(date);
+		
+		log.info("Reading [tests] file from: {}",url);
+		try {
+			int response = HttpClient.forUrl(url)
+									   .HEAD()
+									   .getResponse()
+									   .directNoAuthConnected()
+									   .getCodeNumber();
+			return response == 200;
+		} catch (IOException ioEx) {
+			return false;
+		}
+	}
 	public static COVID19Tests importTestsAt(final Date date) throws IOException {
 		return COVID19TestsImport.importTestsAt(COVID19TestsImport.getByAgeDeathsUrlAt(date),
 												date);
