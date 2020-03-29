@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -38,6 +39,7 @@ import r01f.opendata.covid19.model.tests.COVID19Tests;
 import r01f.types.Path;
 import r01f.types.url.Url;
 import r01f.util.types.Dates;
+import r01f.util.types.StringEncodeUtils;
 import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
 
@@ -106,26 +108,26 @@ public class COVID19Import {
 		COVID19Index index = COVID19HistoryImport.doImport();
 		
 		String indexJson = marshaller.forWriting()
-									   .toJson(index);
+									 .toJson(index);
 		Path indexJsonFilePath = outPath.joinedWith("index.json");	// aurrekoak-anteriores.json
 		StringPersistenceUtils.save(indexJson,
 									indexJsonFilePath);
 		
 		String indexXml = marshaller.forWriting()
-									  .toXml(index);
+								    .toXml(index);
 		Path indexXmlFilePath = outPath.joinedWith("index.xml");		// aurrekoak-anteriores.xml;
 		StringPersistenceUtils.save(indexXml,
-									indexXmlFilePath);
+									indexXmlFilePath,Charset.forName("ISO-8859-1"));
 		
 		String indexHTMLes = COVID19HistoryImport.composeIndexHTMLFor(index,Language.SPANISH);
 		Path indexHTMLesFilePath = outPath.joinedWith("index_es.html");
 		StringPersistenceUtils.save(indexHTMLes,
-									indexHTMLesFilePath);
+									indexHTMLesFilePath,Charset.forName("ISO-8859-1"));
 		
 		String indexHTMLeu = COVID19HistoryImport.composeIndexHTMLFor(index,Language.BASQUE);
 		Path indexHTMLeuFilePath = outPath.joinedWith("index_eu.html");
 		StringPersistenceUtils.save(indexHTMLeu,
-									indexHTMLeuFilePath);
+									indexHTMLeuFilePath,Charset.forName("ISO-8859-1"));
 		
 		
 		// [2] - Import every file
@@ -366,13 +368,13 @@ public class COVID19Import {
 											  .toJson(dim);
 			Path byDimensionJsonPath = folderPath.joinedWith("json").joinedWith(fileName + ".json");
 			StringPersistenceUtils.save(byDimensionJson,
-										byDimensionJsonPath);
+										byDimensionJsonPath,Charset.forName("ISO-8859-1"));
 			
 			String byDimensionXml = marshaller.forWriting()
 											  .toXml(dim);
 			Path byDimensionXmlPath = folderPath.joinedWith("xml").joinedWith(fileName + ".xml");
 			StringPersistenceUtils.save(byDimensionXml,
-										byDimensionXmlPath);
+										byDimensionXmlPath,Charset.forName("ISO-8859-1"));
 		}
 		
 		// by dimension by date
@@ -381,13 +383,13 @@ public class COVID19Import {
 											  			.toJson(dimByDate);
 			Path byMunicipalityByDateJsonFilePath = folderPath.joinedWith("json").joinedWith(fileName + "-by_date.json");
 			StringPersistenceUtils.save(byDimensionByDateJson,
-										byMunicipalityByDateJsonFilePath);
+										byMunicipalityByDateJsonFilePath,Charset.forName("ISO-8859-1"));
 			
 			String byDimensionByDateXml = marshaller.forWriting()
 										  			.toXml(dimByDate);
 			Path byMunicipalityByDateXmlFilePath = folderPath.joinedWith("xml").joinedWith(fileName + "-by_date.xml");
 			StringPersistenceUtils.save(byDimensionByDateXml,
-										byMunicipalityByDateXmlFilePath);
+										byMunicipalityByDateXmlFilePath,Charset.forName("ISO-8859-1"));
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -61,6 +61,9 @@ public class COVID19HistoryImport {
 											 final Language lang) {
 		StringBuilder sb = new StringBuilder("");
 		sb.append("<div class='covid19-index'>\n");
+		String headTitle = lang.is(Language.SPANISH) ? "Evolución del coronavirus (COVID-19) en Euskadi: Listado completo de datos en diferentes formatos"
+												 : "Koronabirusen bilakaera Euskadin (COVID-19): Datuen zerrenda osoa hainbat formatutan";
+		sb.append("<h1>").append(headTitle).append("</h1>\n");
 		sb.append("<span class='covid19-lastupdated'>").append("Last updated: ").append(DateLangFormat.of(lang).formatDate(index.getLastUpdateDate())).append("</span>\n");
 		
 		// Aggregated
