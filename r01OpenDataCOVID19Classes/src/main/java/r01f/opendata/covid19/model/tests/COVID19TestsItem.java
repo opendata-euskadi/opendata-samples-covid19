@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import r01f.objectstreamer.annotations.MarshallField;
+import r01f.objectstreamer.annotations.MarshallField.DateFormat;
+import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 import r01f.opendata.covid19.model.COVID19ModelObject;
@@ -19,8 +21,8 @@ public class COVID19TestsItem
 /////////////////////////////////////////////////////////////////////////////////////////
 //	FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
-	@MarshallField(as="date",escape=true,
-				   whenXml=@MarshallFieldAsXml(asParentElementValue=true))
+	@MarshallField(as="date",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
+				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _date;
 	////////// --- Euskadi
 	@MarshallField(as="positiveCountEuskadi",

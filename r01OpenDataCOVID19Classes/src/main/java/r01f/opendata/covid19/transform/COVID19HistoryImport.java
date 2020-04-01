@@ -234,7 +234,7 @@ public class COVID19HistoryImport {
 			}
 			else if (fileName.startsWith("hildakoak-fallecidos")) {
 				COVID19IndexItem csvItem = new COVID19IndexItem(url,
-																COVID19DataFormat.from(url),COVID19ByHealthZoneMeta.NAME);	
+																COVID19DataFormat.from(url),COVID19ByAgeDeathsMeta.NAME);	
 				outItems.add(csvItem);	
 			}
 			return outItems.stream();

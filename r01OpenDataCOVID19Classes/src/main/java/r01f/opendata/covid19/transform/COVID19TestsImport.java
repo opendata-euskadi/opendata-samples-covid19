@@ -100,17 +100,17 @@ public class COVID19TestsImport {
 				String negativeEuskadi = m.group(3);
 				String totalEuskadi = m.group(4);
 				
-				String positiveBizkaia = m.group(5);
-				String negativeBizkaia = m.group(6);
-//				String totalBizkaia = m.group(7);
+				String positiveAraba = m.group(5);
+				String negativeAraba = m.group(6);
+//				String totalAraba = m.group(7);
 				
-				String positiveGipuzkoa = m.group(7);
-				String negativeGipuzkoa = m.group(8);
-//				String totalGipuzkoa = m.group(10);
+				String positiveBizkaia = m.group(7);
+				String negativeBizkaia = m.group(8);
+//				String totalBizkaia = m.group(10);
 				
-				String positiveAraba = m.group(9);
-				String negativeAraba = m.group(10);
-//				String totalAraba = m.group(13);
+				String positiveGipuzkoa = m.group(9);
+				String negativeGipuzkoa = m.group(10);
+//				String totalGipuzkoa = m.group(13);
 				
 				
 				if (date.toUpperCase()
