@@ -18,6 +18,7 @@ import org.joda.time.LocalDate;
 import com.google.common.io.ByteStreams;
 
 import lombok.extern.slf4j.Slf4j;
+import r01f.exceptions.Throwables;
 import r01f.io.util.StringPersistenceUtils;
 import r01f.locale.Language;
 import r01f.objectstreamer.Marshaller;
@@ -38,13 +39,15 @@ import r01f.opendata.covid19.model.index.COVID19Index;
 import r01f.opendata.covid19.model.tests.COVID19Tests;
 import r01f.types.Path;
 import r01f.types.url.Url;
-import r01f.util.types.Dates;
-import r01f.util.types.StringEncodeUtils;
 import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
 
 @Slf4j
 public class COVID19Import {
+/////////////////////////////////////////////////////////////////////////////////////////
+//	CONSTANTS
+/////////////////////////////////////////////////////////////////////////////////////////
+	private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\" ?>";
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -113,8 +116,8 @@ public class COVID19Import {
 		StringPersistenceUtils.save(indexJson,
 									indexJsonFilePath);
 		
-		String indexXml = marshaller.forWriting()
-								    .toXml(index);
+		String indexXml = XML_HEADER + marshaller.forWriting()
+								    			 .toXml(index);
 		Path indexXmlFilePath = outPath.joinedWith("index.xml");		// aurrekoak-anteriores.xml;
 		StringPersistenceUtils.save(indexXml,
 									indexXmlFilePath,Charset.forName("ISO-8859-1"));
@@ -212,7 +215,7 @@ public class COVID19Import {
 					  ioEx.getMessage());
 			_appendToError(logPath,
 						   COVID19ByHealthZoneImport.getByHealthZoneFileUrlAt(date),
-						   ioEx.getMessage());
+						   Throwables.getStackTraceAsString(ioEx));
 		}
 		return outAt;
 	}
@@ -243,7 +246,7 @@ public class COVID19Import {
 					  ioEx.getMessage());
 			_appendToError(logPath,
 						   COVID19ByMunicipalityImport.getByMunicipalityUrlAt(date),
-						   ioEx.getMessage());
+						   Throwables.getStackTraceAsString(ioEx));
 		}
 		return outAt;
 	}
@@ -274,7 +277,7 @@ public class COVID19Import {
 					  ioEx.getMessage());
 			_appendToError(logPath,
 						   COVID19ByHospitalImport.getByHospitalUrlAt(date),
-						   ioEx.getMessage());
+						   Throwables.getStackTraceAsString(ioEx));
 		}
 		return outAt;
 	}
@@ -305,7 +308,7 @@ public class COVID19Import {
 					  ioEx.getMessage());
 			_appendToError(logPath,
 						   COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date),
-						   ioEx.getMessage());
+						   Throwables.getStackTraceAsString(ioEx));
 		}
 		return outAt;
 	}
@@ -325,16 +328,16 @@ public class COVID19Import {
 				
 				testDate = testDate.minusDays(1);
 				tryCount--;
-				if (tryCount >= 0) log.warn("Could NOT find the [test] file at {}, trying {}",
+				if (tryCount == 0) log.warn("Could NOT find the [test] file at {}, trying {}",
 											testDate.plusDays(1),testDate);
-			} while (tryCount < 0);
+			} while (tryCount > 0);
 			
 			// at this point, the file might be found... or not
-			if (tryCount < 0) {
+			if (tryCount <= 0) {
 				// no suitable file
 				log.error("Could NOT find any [test] file for the last days");
 				_appendToError(logPath,
-							   COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date),
+							   COVID19TestsImport.geTestsUrlAt(date),
 							   "Could NOT find any [test] file for the last days");
 			} else {
 				// suitable file found
@@ -346,8 +349,8 @@ public class COVID19Import {
 					  date,
 					  ioEx.getMessage());
 			_appendToError(logPath,
-						   COVID19ByAgeDeathsImport.getByAgeDeathsUrlAt(date),
-						   ioEx.getMessage());
+						   COVID19TestsImport.geTestsUrlAt(date),
+						   Throwables.getStackTraceAsString(ioEx));
 		}
 		return out;
 	}
@@ -370,8 +373,8 @@ public class COVID19Import {
 			StringPersistenceUtils.save(byDimensionJson,
 										byDimensionJsonPath,Charset.forName("ISO-8859-1"));
 			
-			String byDimensionXml = marshaller.forWriting()
-											  .toXml(dim);
+			String byDimensionXml = XML_HEADER + marshaller.forWriting()
+											  			   .toXml(dim);
 			Path byDimensionXmlPath = folderPath.joinedWith("xml").joinedWith(fileName + ".xml");
 			StringPersistenceUtils.save(byDimensionXml,
 										byDimensionXmlPath,Charset.forName("ISO-8859-1"));
@@ -385,8 +388,8 @@ public class COVID19Import {
 			StringPersistenceUtils.save(byDimensionByDateJson,
 										byMunicipalityByDateJsonFilePath,Charset.forName("ISO-8859-1"));
 			
-			String byDimensionByDateXml = marshaller.forWriting()
-										  			.toXml(dimByDate);
+			String byDimensionByDateXml = XML_HEADER + marshaller.forWriting()
+										  						 .toXml(dimByDate);
 			Path byMunicipalityByDateXmlFilePath = folderPath.joinedWith("xml").joinedWith(fileName + "-by_date.xml");
 			StringPersistenceUtils.save(byDimensionByDateXml,
 										byMunicipalityByDateXmlFilePath,Charset.forName("ISO-8859-1"));
@@ -401,7 +404,7 @@ public class COVID19Import {
 			File dstFile = new File(logPath.asAbsoluteString());
 			FileOutputStream dstFOS = new FileOutputStream(dstFile,
 														   true);		// append
-			String logLine = Strings.customized("{} > {}\n",
+			String logLine = Strings.customized("{}\n{}\n==========================================================================================\n",
 												 url,msg);
 			long copied = ByteStreams.copy(new ByteArrayInputStream(logLine.getBytes()),
 										   dstFOS);

@@ -49,14 +49,14 @@ public class COVID19TestsImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static Url getByAgeDeathsUrlAt(final Date date) {
+	public static Url geTestsUrlAt(final Date date) {
 		Url url = Url.from(Strings.customized("https://opendata.euskadi.eus/contenidos/ds_informes_estudios/covid_19_2020/opendata/{}{}/{}/analisiak-analisis-{}.csv",
 											  MonthOfYear.of(date).asStringPaddedWithZero(),Year.of(date).asStringInCentury(),DayOfMonth.of(date).asStringPaddedWithZero(),
 											  Dates.format(date,"ddMMyy")));
 		return url;
 	}
 	public static boolean existsTestFileAt(final Date date) throws IOException {
-		Url url = COVID19TestsImport.getByAgeDeathsUrlAt(date);
+		Url url = COVID19TestsImport.geTestsUrlAt(date);
 		
 		log.info("Reading [tests] file from: {}",url);
 		try {
@@ -71,7 +71,7 @@ public class COVID19TestsImport {
 		}
 	}
 	public static COVID19Tests importTestsAt(final Date date) throws IOException {
-		return COVID19TestsImport.importTestsAt(COVID19TestsImport.getByAgeDeathsUrlAt(date),
+		return COVID19TestsImport.importTestsAt(COVID19TestsImport.geTestsUrlAt(date),
 												date);
 	}
 	public static COVID19Tests importTestsAt(final Url url,

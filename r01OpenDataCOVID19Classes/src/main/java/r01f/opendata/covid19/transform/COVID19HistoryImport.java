@@ -129,9 +129,9 @@ public class COVID19HistoryImport {
 		// Load the file
 		log.info("Reading history file from: {}",historyUrl);
 		InputStream is = HttpClient.forUrl(historyUrl)
-								  .GET()
-								  .loadAsStream()
-								  .directNoAuthConnected();
+								   .GET()
+								   .loadAsStream()
+								   .directNoAuthConnected();
 		// Process it
 		log.info("Processing history file at: {}",historyUrl);
 		Collection<COVID19HistorySourceRecord> records = Lists.newArrayList();
