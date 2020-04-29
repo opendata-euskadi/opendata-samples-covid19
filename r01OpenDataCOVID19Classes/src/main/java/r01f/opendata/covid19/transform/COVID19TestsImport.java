@@ -1,6 +1,8 @@
 package r01f.opendata.covid19.transform;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,6 +19,7 @@ import r01f.httpclient.HttpClient;
 import r01f.opendata.covid19.model.tests.COVID19Tests;
 import r01f.opendata.covid19.model.tests.COVID19TestsItem;
 import r01f.opendata.covid19.model.tests.COVID19TestsTotal;
+import r01f.types.Path;
 import r01f.types.datetime.DayOfMonth;
 import r01f.types.datetime.MonthOfYear;
 import r01f.types.datetime.Year;
@@ -26,36 +29,36 @@ import r01f.util.types.Strings;
 
 @Slf4j
 public class COVID19TestsImport {
+	
+	private static final String FILENAME = "testak-tests";
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+);" +	// [1] date
 
-																"([0-9]+);" + 	// [2] positive euskadi
-																"([0-9]+);" + 	// [3] negative euskadi
-																"([0-9]+);" + 	// [4] total euskadi
+																"([0-9]+);" + 	// [2] CAE: PCRs Tests 
+																"([0-9]*);" + 	// [3] CAE: Quick Tests
 																
-																"([0-9]+);" + 	// [5] positive araba
-																"([0-9]+);" + 	// [6] negative araba
-//																"([0-9]+);" + 	// [7] total araba
+																"([0-9]*);" + 	// [4] Álava: PCRs Tests															
+																"([0-9]*);" + 	// [5] Álava: Quick Tests
 																
-																"([0-9]+);" + 	// [8] positive bizkaia
-																"([0-9]+);" + 	// [9] negative bizkaia
-//																"([0-9]+);" + 	// [10] total bizkaia
+																"([0-9]*);" + 	// [6] Bizkaia: PCRs Tests
+																"([0-9]*);" + 	// [7] Bizkaia: Quick Tests
 																
-																"([0-9]+);" + 	// [11] positive gipuzkoa
-																"([0-9]+)"); 	// [12] negative gipuzkoa
-//																"([0-9]+)"); 	// [13] negative gipuzkoa
+																"([0-9]*);" + 	// [8] Gipuzkoa: PCRs Tests
+																"([0-9]*)"  	// [9] Gipuzkoa: Quick Tests
+																);			
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static Url geTestsUrlAt(final Date date) {
-		Url url = Url.from(Strings.customized("https://opendata.euskadi.eus/contenidos/ds_informes_estudios/covid_19_2020/opendata/{}{}/{}/analisiak-analisis-{}.csv",
+		Url url = Url.from(Strings.customized("https://opendata.euskadi.eus/contenidos/ds_informes_estudios/covid_19_2020/opendata/{}{}/{}/" + COVID19TestsImport.FILENAME + "-{}.csv",
 											  MonthOfYear.of(date).asStringPaddedWithZero(),Year.of(date).asStringInCentury(),DayOfMonth.of(date).asStringPaddedWithZero(),
 											  Dates.format(date,"ddMMyy")));
 		return url;
 	}
-	public static boolean existsTestFileAt(final Date date) throws IOException {
+	public static boolean existsTestFileAt(final Date date,
+										   final Path localPath)  {
 		Url url = COVID19TestsImport.geTestsUrlAt(date);
 		
 		log.info("Reading [tests] file from: {}",url);
@@ -67,21 +70,36 @@ public class COVID19TestsImport {
 									   .getCodeNumber();
 			return response == 200;
 		} catch (IOException ioEx) {
-			return false;
+			//Search in local
+			File file = new File( Strings.customized(localPath.joinedWith("{}{}/{}/" + COVID19TestsImport.FILENAME + "-{}.csv").asAbsoluteString(),
+											   					  MonthOfYear.of(date).asStringPaddedWithZero(),Year.of(date).asStringInCentury(),DayOfMonth.of(date).asStringPaddedWithZero(),
+											   					  Dates.format(date,"ddMMyy")));
+			
+			return file.exists();
 		}
 	}
-	public static COVID19Tests importTestsAt(final Date date) throws IOException {
+	public static COVID19Tests importTestsAt(final Date date,
+											 final Path localPath) throws IOException {
 		return COVID19TestsImport.importTestsAt(COVID19TestsImport.geTestsUrlAt(date),
-												date);
+												date,
+												localPath);
 	}
 	public static COVID19Tests importTestsAt(final Url url,
-											 final Date theDate) throws IOException {
+											 final Date theDate,
+											 final Path localPath) throws IOException {
 		// [1] - read the file
 		log.info("Reading [tests] file from: {}",url);
-		InputStream is = HttpClient.forUrl(url)
-								   .GET()
-								   .loadAsStream()
-								   .directNoAuthConnected();
+		InputStream is;
+		try {
+			is = HttpClient.forUrl(url)
+									   .GET()
+									   .loadAsStream()
+									   .directNoAuthConnected();
+		} catch (IOException e) {
+			is = new FileInputStream(new File( Strings.customized(localPath.joinedWith("{}{}/{}/" + COVID19TestsImport.FILENAME + "-{}.csv").asAbsoluteString(),
+ 					  MonthOfYear.of(theDate).asStringPaddedWithZero(),Year.of(theDate).asStringInCentury(),DayOfMonth.of(theDate).asStringPaddedWithZero(),
+ 					  Dates.format(theDate,"ddMMyy"))));
+		}
 		
 		// [2] - process the file
 		log.info("Processing [tests] file at: {}",url);
@@ -92,25 +110,22 @@ public class COVID19TestsImport {
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim();
+			
 			Matcher m = LINE_MATCHER.matcher(line);
 			if (m.find()) {
-				String date = m.group(1);
+				String date = m.group(1) + " 23:00"; // marshaller fix -2 hours. eg: 24/04/2020 21:00
 				
-				String positiveEuskadi = m.group(2);
-				String negativeEuskadi = m.group(3);
-				String totalEuskadi = m.group(4);
+				String pcrTestEuskadi = m.group(2);
+				String quickTestEuskadi = m.group(3);
 				
-				String positiveAraba = m.group(5);
-				String negativeAraba = m.group(6);
-//				String totalAraba = m.group(7);
+				String pcrTestAraba = m.group(4);
+				String quickTestAraba = m.group(5);
 				
-				String positiveBizkaia = m.group(7);
-				String negativeBizkaia = m.group(8);
-//				String totalBizkaia = m.group(10);
+				String pcrTestBizkaia = m.group(6);
+				String quickTestBizkaia = m.group(7);
 				
-				String positiveGipuzkoa = m.group(9);
-				String negativeGipuzkoa = m.group(10);
-//				String totalGipuzkoa = m.group(13);
+				String pcrTestGipuzkoa = m.group(8);
+				String quickTestGipuzkoa = m.group(9);
 				
 				
 				if (date.toUpperCase()
@@ -118,44 +133,38 @@ public class COVID19TestsImport {
 					// ...the item with name="GUZTIRA / TOTAL" is "special"
 					total = new COVID19TestsTotal();
 					
-					total.setPositiveCountEuskadi(Long.parseLong(positiveEuskadi));
-					total.setNegativeCountEuskadi(Long.parseLong(negativeEuskadi));
-					total.setTotalCountEuskadi(Long.parseLong(totalEuskadi));
+					total.setPcrTestCountEuskadi(Strings.isNOTNullOrEmpty(pcrTestEuskadi) ? Long.parseLong(pcrTestEuskadi) : 0); 
+					total.setQuickTestCountEuskadi(Strings.isNOTNullOrEmpty(quickTestEuskadi) ? Long.parseLong(quickTestEuskadi) : 0);		
 					
-					total.setPositiveCountBizkaia(Long.parseLong(positiveBizkaia));
-					total.setNegativeCountBizkaia(Long.parseLong(negativeBizkaia));
-//					total.setTotalCountBizkaia(Long.parseLong(totalBizkaia));
+					total.setPcrTestCountBizkaia(Strings.isNOTNullOrEmpty(pcrTestBizkaia) ? Long.parseLong(pcrTestBizkaia) : 0);
+					total.setQuickTestCountBizkaia(Strings.isNOTNullOrEmpty(quickTestBizkaia) ? Long.parseLong(quickTestBizkaia) : 0);
+
 					
-					total.setPositiveCountGipuzkoa(Long.parseLong(positiveGipuzkoa));
-					total.setNegativeCountGipuzkoa(Long.parseLong(negativeGipuzkoa));
-//					total.setTotalCountGipuzkoa(Long.parseLong(totalGipuzkoa));
+					total.setPcrTestCountGipuzkoa(Strings.isNOTNullOrEmpty(pcrTestGipuzkoa) ? Long.parseLong(pcrTestGipuzkoa) : 0);
+					total.setQuickTestCountGipuzkoa(Strings.isNOTNullOrEmpty(quickTestGipuzkoa) ? Long.parseLong(quickTestGipuzkoa) : 0);
 					
-					total.setPositiveCountAraba(Long.parseLong(positiveAraba));
-					total.setNegativeCountAraba(Long.parseLong(negativeAraba));
-//					total.setTotalCountAraba(Long.parseLong(totalAraba));
+					total.setPcrTestCountAraba(Strings.isNOTNullOrEmpty(pcrTestAraba) ? Long.parseLong(pcrTestAraba) : 0);
+					total.setQuickTestCountAraba(Strings.isNOTNullOrEmpty(quickTestAraba) ? Long.parseLong(quickTestAraba) : 0);
+
 				} 
 				else {
 					COVID19TestsItem item = new COVID19TestsItem();
 					
-					Date itemDate = Dates.fromFormatedString(date,"dd/MM/yyyy");
+					Date itemDate = Dates.fromFormatedString(date,"dd/MM/yyyy HH:mm");
 					
-					item.setDate(itemDate);
+					item.setDate(itemDate);				
 					
-					item.setPositiveCountEuskadi(Long.parseLong(positiveEuskadi));
-					item.setNegativeCountEuskadi(Long.parseLong(negativeEuskadi));
-					item.setTotalCountEuskadi(Long.parseLong(totalEuskadi));
+					item.setPcrTestCountEuskadi(Strings.isNOTNullOrEmpty(pcrTestEuskadi) ? Long.parseLong(pcrTestEuskadi) : 0);
+					item.setQuickTestCountEuskadi(Strings.isNOTNullOrEmpty(quickTestEuskadi) ? Long.parseLong(quickTestEuskadi) : 0);					
 					
-					item.setPositiveCountBizkaia(Long.parseLong(positiveBizkaia));
-					item.setNegativeCountBizkaia(Long.parseLong(negativeBizkaia));
-//					item.setTotalCountBizkaia(Long.parseLong(totalBizkaia));
+					item.setPcrTestCountBizkaia(Strings.isNOTNullOrEmpty(pcrTestBizkaia) ? Long.parseLong(pcrTestBizkaia) : 0);	
+					item.setQuickTestCountBizkaia(Strings.isNOTNullOrEmpty(quickTestBizkaia) ? Long.parseLong(quickTestBizkaia) : 0);	
 					
-					item.setPositiveCountGipuzkoa(Long.parseLong(positiveGipuzkoa));
-					item.setNegativeCountGipuzkoa(Long.parseLong(negativeGipuzkoa));
-//					item.setTotalCountGipuzkoa(Long.parseLong(totalGipuzkoa));
+					item.setPcrTestCountGipuzkoa(Strings.isNOTNullOrEmpty(pcrTestGipuzkoa) ? Long.parseLong(pcrTestGipuzkoa) : 0);
+					item.setQuickTestCountGipuzkoa(Strings.isNOTNullOrEmpty(quickTestGipuzkoa) ? Long.parseLong(quickTestGipuzkoa) : 0);	
 					
-					item.setPositiveCountAraba(Long.parseLong(positiveAraba));
-					item.setNegativeCountAraba(Long.parseLong(negativeAraba));
-//					item.setTotalCountAraba(Long.parseLong(totalAraba));
+					item.setPcrTestCountAraba(Strings.isNOTNullOrEmpty(pcrTestAraba) ? Long.parseLong(pcrTestAraba) : 0);	
+					item.setQuickTestCountAraba(Strings.isNOTNullOrEmpty(quickTestAraba) ? Long.parseLong(quickTestAraba) : 0);	
 					
 					items.add(item);
 				}

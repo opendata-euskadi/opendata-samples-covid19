@@ -1,6 +1,8 @@
 package r01f.opendata.covid19.transform;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,6 +19,7 @@ import r01f.httpclient.HttpClient;
 import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalAtDate;
 import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalItem;
 import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalTotal;
+import r01f.types.Path;
 import r01f.types.datetime.DayOfMonth;
 import r01f.types.datetime.MonthOfYear;
 import r01f.types.datetime.Year;
@@ -44,18 +47,29 @@ public class COVID19ByHospitalImport {
 											  Dates.format(date,"ddMMyy")));
 		return url;
 	}
-	public static COVID19ByHospitalAtDate importByHospitalAt(final Date date) throws IOException {
+	public static COVID19ByHospitalAtDate importByHospitalAt(final Date date,
+															 final Path localPath) throws IOException {
 		return COVID19ByHospitalImport.importByHospitalFrom(COVID19ByHospitalImport.getByHospitalUrlAt(date),
-															date);
+															date,
+															localPath);
 	}
 	public static COVID19ByHospitalAtDate importByHospitalFrom(final Url url,
-															   final Date theDate) throws IOException {
+															   final Date theDate,
+															   final Path localPath) throws IOException {
 		// [1] - read the file
 		log.info("Reading [by hospital] file from: {}",url);
-		InputStream is = HttpClient.forUrl(url)
-								   .GET()
-								   .loadAsStream()
-								   .directNoAuthConnected();
+		InputStream is = null;
+		try {
+			is = HttpClient.forUrl(url)
+									   .GET()
+									   .loadAsStream()
+									   .directNoAuthConnected();
+		} catch (IOException e) {
+			//Search in local
+			is = new FileInputStream(new File( Strings.customized(localPath.joinedWith("{}{}/{}/ospitaleratuak-hospitalizados-{}.csv").asAbsoluteString(),
+											   					  MonthOfYear.of(theDate).asStringPaddedWithZero(),Year.of(theDate).asStringInCentury(),DayOfMonth.of(theDate).asStringPaddedWithZero(),
+											   					  Dates.format(theDate,"ddMMyy"))));	
+		}
 		
 		// [2] - process the file
 		log.info("Processing [by hospital] file at: {}",url);

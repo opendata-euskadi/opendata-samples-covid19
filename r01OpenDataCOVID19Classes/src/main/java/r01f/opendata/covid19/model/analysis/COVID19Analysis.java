@@ -1,4 +1,4 @@
-package r01f.opendata.covid19.model.tests;
+package r01f.opendata.covid19.model.analysis;
 
 import java.util.Collection;
 import java.util.Date;
@@ -16,15 +16,15 @@ import r01f.objectstreamer.annotations.MarshallType;
 import r01f.opendata.covid19.model.COVID19MetaDataCollection;
 import r01f.opendata.covid19.model.COVID19ModelObject;
 
-@MarshallType(as="covid19Tests")
+@MarshallType(as="covid19Analysis")
 @Accessors(prefix="_")
 @NoArgsConstructor
-public class COVID19Tests
+public class COVID19Analysis
   implements COVID19ModelObject {
 
-	private static final long serialVersionUID = 3726110020072586922L;
+	private static final long serialVersionUID = 7123725519366618986L;
 
-/////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
 //	FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
 	@MarshallField(as="lastUpdateDate",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
@@ -32,34 +32,28 @@ public class COVID19Tests
 	@Getter @Setter private Date _lastUpdateDate;
 	
 	@MarshallField(as="total")
-	@Getter @Setter private COVID19TestsTotal _total;
+	@Getter @Setter private COVID19AnalysisTotal _total;
 	
 	@MarshallField(as="byDate",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="byDateItem"))
-	@Getter @Setter private Collection<COVID19TestsItem> _byDateItems;
+	@Getter @Setter private Collection<COVID19AnalysisItem> _byDateItems;
 	
 	@MarshallField(as="name")
-	@Getter @Setter private LanguageTexts _name = COVID19TestsMeta.NAME;
+	@Getter @Setter private LanguageTexts _name = COVID19AnalysisMeta.NAME;
 	
 	@MarshallField(as="notes")
-	@Getter @Setter private LanguageTexts _notes = COVID19TestsMeta.NOTE;
+	@Getter @Setter private LanguageTexts _notes = COVID19AnalysisMeta.NOTE;
 	
 	@MarshallField(as="metaData",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(COVID19TestsMeta.DATE,
+	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(COVID19AnalysisMeta.DATE,
 			
-																								COVID19TestsMeta.PCR_TEST_COUNT_EUSKADI,
-																								COVID19TestsMeta.QUICK_TEST_COUNT_EUSKADI,	
+																								COVID19AnalysisMeta.POSITIVE_COUNT_EUSKADI,
 																								
-																								COVID19TestsMeta.PCR_TEST_COUNT_ARABA,
-																								COVID19TestsMeta.QUICK_TEST_COUNT_ARABA,
+																								COVID19AnalysisMeta.POSITIVE_COUNT_ARABA,
 																								
-																								COVID19TestsMeta.PCR_TEST_COUNT_BIZKAIA,
-																								COVID19TestsMeta.QUICK_TEST_COUNT_BIZKAIA,																								
+																								COVID19AnalysisMeta.POSITIVE_COUNT_BIZKAIA,																						
 																								
-																								COVID19TestsMeta.PCR_TEST_COUNT_GIPUZKOA,
-																								COVID19TestsMeta.QUICK_TEST_COUNT_GIPUZKOA																								
-																								
-																								
+																								COVID19AnalysisMeta.POSITIVE_COUNT_GIPUZKOA
 																								);
 }

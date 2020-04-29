@@ -44,12 +44,38 @@
 			<version>${r01f.version}</version>
 		</dependency>
 		<!-- ///////////////////////////////////////// -->
+		<!-- FileStore                                -->
+		<!-- ///////////////////////////////////////// -->
+		<dependency>
+			<groupId>r01.r01f.filestore</groupId>
+			<artifactId>r01fFileStoreClasses</artifactId>
+			<version>${r01f.version}</version>
+		</dependency>
+		<!-- ///////////////////////////////////////// -->
 		<!-- HttpClient                                -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
 			<groupId>r01.r01f.httpclient</groupId>
 			<artifactId>r01fHttpClientClasses</artifactId>
 			<version>${r01f.version}</version>
+		</dependency>
+		<!-- ///////////////////////////////////////// -->
+		<!-- POI                                -->
+		<!-- ///////////////////////////////////////// -->
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi</artifactId>
+		    <version>4.1.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>4.1.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-scratchpad</artifactId>
+		    <version>4.1.2</version>
 		</dependency>
 	</dependencies>
 	

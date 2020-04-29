@@ -1,6 +1,8 @@
 package r01f.opendata.covid19.transform;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,6 +19,7 @@ import r01f.httpclient.HttpClient;
 import r01f.locale.Language;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityAtDate;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityItem;
+import r01f.types.Path;
 import r01f.types.datetime.DayOfMonth;
 import r01f.types.datetime.MonthOfYear;
 import r01f.types.datetime.Year;
@@ -43,18 +46,29 @@ public class COVID19ByMunicipalityImport {
 											  Dates.format(date,"ddMMyy")));
 		return url;
 	}
-	public static COVID19ByMunicipalityAtDate importByMunicipalityAt(final Date date) throws IOException {
+	public static COVID19ByMunicipalityAtDate importByMunicipalityAt(final Date date,
+																	 final Path localPath) throws IOException {
 		return COVID19ByMunicipalityImport.importByMunicipalityFrom(COVID19ByMunicipalityImport.getByMunicipalityUrlAt(date),
-																	date);
+																	date,
+																	localPath);
 	}
 	public static COVID19ByMunicipalityAtDate importByMunicipalityFrom(final Url url,
-																	   final Date theDate) throws IOException {
+																	   final Date theDate,
+																	   final Path localPath) throws IOException {
 		// read the file
 		log.info("Reading [by municipality] file from: {}",url);
-		InputStream is = HttpClient.forUrl(url)
-								   .GET()
-								   .loadAsStream()
-								   .directNoAuthConnected();
+		InputStream is = null;
+		try {
+			is = HttpClient.forUrl(url)
+									   .GET()
+									   .loadAsStream()
+									   .directNoAuthConnected();
+		} catch (IOException e) {
+			//Search in local
+			is = new FileInputStream(new File( Strings.customized(localPath.joinedWith("{}{}/{}/udalerriak-municipios-{}.csv").asAbsoluteString(),
+											   					  MonthOfYear.of(theDate).asStringPaddedWithZero(),Year.of(theDate).asStringInCentury(),DayOfMonth.of(theDate).asStringPaddedWithZero(),
+											   					  Dates.format(theDate,"ddMMyy"))));	
+		}
 		
 		// process the file
 		log.info("Processing [by municipality] file at: {}",url);

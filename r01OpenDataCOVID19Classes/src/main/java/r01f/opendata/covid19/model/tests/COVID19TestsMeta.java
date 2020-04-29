@@ -15,8 +15,8 @@ public abstract class COVID19TestsMeta {
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public final static LanguageTexts NAME = new LanguageTextsMapBacked(LangTextNotFoundBehabior.RETURN_NULL)
-													.add(Language.SPANISH,"ANÁLISIS (20:00 horas)")
-													.add(Language.BASQUE,"ANALISIAK (20:00etan)");
+													.add(Language.SPANISH,"TESTS ACUMULADOS")
+													.add(Language.BASQUE,"TESTAK METATUTA");
 	
 	public final static LanguageTexts NOTE = null;
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -26,45 +26,36 @@ public abstract class COVID19TestsMeta {
 																				 		   "Fecha",                              
 																				 		   "Data");
 	// EUSKADI
-	public final static COVID19MetaData POSITIVE_COUNT_EUSKADI = new COVID19MetaData(COVID19MetaDataID.forId("positiveCountEuskadi"),    
-																				   "CAE: Positivo",                               
-																				   "EAE: Positiboa");                         
-	public final static COVID19MetaData NEGATIVE_COUNT_EUSKADI = new COVID19MetaData(COVID19MetaDataID.forId("negativeCountEuskadi"),    
-																				    "CAE: No positivo",                                          
-																				   	"EAE: Ez positiboa");                                    
-	public final static COVID19MetaData TOTAL_COUNT_EUSKADI = new COVID19MetaData(COVID19MetaDataID.forId("totalCountEuskadi"),         
-															  				  	  "CAE: Total",                        
-																			  	  "EAE: Guztira");
+	public final static COVID19MetaData PCR_TEST_COUNT_EUSKADI = new COVID19MetaData(COVID19MetaDataID.forId("pcrTestCountEuskadi"),    
+																				   "CAE: Tests PCRs acumulados",                               
+																				   "EAE: PCR testak metatuta");	
+	public final static COVID19MetaData QUICK_TEST_COUNT_EUSKADI = new COVID19MetaData(COVID19MetaDataID.forId("quickTestCountEuskadi"),    
+																				    "CAE: Tests rápidos acumulados",                                          
+																				   	"EAE: Test azkarrak metatuta");                                    
+
+	// ARABA
+	public final static COVID19MetaData PCR_TEST_COUNT_ARABA = new COVID19MetaData(COVID19MetaDataID.forId("pcrTestCountAraba"),    
+																				   "Álava: Tests PCRs acumulados",                               
+																				   "Araba: PCR testak metatuta");                         
+	public final static COVID19MetaData QUICK_TEST_COUNT_ARABA = new COVID19MetaData(COVID19MetaDataID.forId("quickTestCountAraba"),    
+																				    "Álava: Tests rápidos acumulados",                                          
+																				   	"Araba: test azkarrak metatuta");           
 	// BIZKAIA
-	public final static COVID19MetaData POSITIVE_COUNT_BIZKAIA = new COVID19MetaData(COVID19MetaDataID.forId("positiveCountBizkaia"),    
-																				   "Bizkaia: Positivo",                               
-																				   "Bizkaia: Positiboa");                         
-	public final static COVID19MetaData NEGATIVE_COUNT_BIZKAIA = new COVID19MetaData(COVID19MetaDataID.forId("negativeCountBizkaia"),    
-																				    "Bizkaia: No positivo",                                          
-																				   	"Bizkaia: Ez positiboa");                                    
-	public final static COVID19MetaData TOTAL_COUNT_BIZKAIA = new COVID19MetaData(COVID19MetaDataID.forId("totalCountBizkaia"),         
-															  				  	  "Bizkaia: Total",                        
-																			  	  "Bizkaia: Guztira");
+	public final static COVID19MetaData PCR_TEST_COUNT_BIZKAIA = new COVID19MetaData(COVID19MetaDataID.forId("pcrTestCountBizkaia"),    
+																				   "Bizkaia: Tests PCRs acumulados",                               
+																				   "Bizkaia: PCR testak metatuta");                         
+	public final static COVID19MetaData QUICK_TEST_COUNT_BIZKAIA = new COVID19MetaData(COVID19MetaDataID.forId("quickTestCountBizkaia"),    
+																				    "Bizkaia: Tests rápidos acumulados",                                          
+																				   	"Bizkaia: test azkarrak metatuta");                          
 	
 	// GIPUZKOA
-	public final static COVID19MetaData POSITIVE_COUNT_GIPUZKOA = new COVID19MetaData(COVID19MetaDataID.forId("positiveCountGipuzkoa"),    
-																				   "Gipuzkoa: Positivo",                               
-																				   "Gipuzkoa: Positiboa");                         
-	public final static COVID19MetaData NEGATIVE_COUNT_GIPUZKOA = new COVID19MetaData(COVID19MetaDataID.forId("negativeCountGipuzkoa"),    
-																				    "Gipuzkoa: No positivo",                                          
-																				   	"Gipuzkoa: Ez positiboa");                                    
-	public final static COVID19MetaData TOTAL_COUNT_GIPUZKOA = new COVID19MetaData(COVID19MetaDataID.forId("totalCountGipuzkoa"),         
-															  				  	  "Gipuzkoa: Total",                        
-																			  	  "Gipuzkoa: Guztira");
+	public final static COVID19MetaData PCR_TEST_COUNT_GIPUZKOA = new COVID19MetaData(COVID19MetaDataID.forId("pcrTestCountGipuzkoa"),    
+																				   "Gipuzkoa: Tests PCRs acumulados",                               
+																				   "Gipuzkoa: PCR testak metatuta");                         
+	public final static COVID19MetaData QUICK_TEST_COUNT_GIPUZKOA = new COVID19MetaData(COVID19MetaDataID.forId("quickTestCountGipuzkoa"),    
+																				    "Gipuzkoa: Tests rápidos acumulados",                                          
+																				   	"Gipuzkoa: test azkarrak metatuta");                                    
+
 	
-	// ARABA
-	public final static COVID19MetaData POSITIVE_COUNT_ARABA = new COVID19MetaData(COVID19MetaDataID.forId("positiveCountAraba"),    
-																				   "Araba: Positivo",                               
-																				   "Araba: Positiboa");                         
-	public final static COVID19MetaData NEGATIVE_COUNT_ARABA = new COVID19MetaData(COVID19MetaDataID.forId("negativeCountAraba"),    
-																				    "Araba: No positivo",                                          
-																				   	"Araba: Ez positiboa");                                    
-	public final static COVID19MetaData TOTAL_COUNT_ARABA = new COVID19MetaData(COVID19MetaDataID.forId("totalCountAraba"),         
-															  				  	  "Araba: Total",                        
-																			  	  "Araba: Guztira");
+	                         
 }

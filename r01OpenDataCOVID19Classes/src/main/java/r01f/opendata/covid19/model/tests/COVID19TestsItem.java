@@ -24,52 +24,41 @@ public class COVID19TestsItem
 	@MarshallField(as="date",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _date;
-	////////// --- Euskadi
-	@MarshallField(as="positiveCountEuskadi",
+	//////////--- Euskadi
+	@MarshallField(as="pcrTestCountEuskadi",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _positiveCountEuskadi;
+	@Getter @Setter private long _pcrTestCountEuskadi;
 	
-	@MarshallField(as="negativeCountEuskadi",
+	@MarshallField(as="quickTestCountEuskadi",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _negativeCountEuskadi;
-
-	@MarshallField(as="totalCountEuskadi",
+	@Getter @Setter private long _quickTestCountEuskadi;
+	
+	//////////--- Araba
+	@MarshallField(as="pcrTestCountAraba",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _totalCountEuskadi;
+	@Getter @Setter private long _pcrTestCountAraba;
+	
+	@MarshallField(as="quickTestCountAraba",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _quickTestCountAraba;
 	////////// --- Bizkaia
-	@MarshallField(as="positiveCountBizkaia",
+	@MarshallField(as="pcrTestCountBizkaia",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _positiveCountBizkaia;
+	@Getter @Setter private long _pcrTestCountBizkaia;
 	
-	@MarshallField(as="negativeCountBizkaia",
+	@MarshallField(as="quickTestCountBizkaia",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _negativeCountBizkaia;
-
-	@MarshallField(as="totalCountBizkaia",
-				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _totalCountBizkaia;
+	@Getter @Setter private long _quickTestCountBizkaia;
+	
 	////////// --- Gipuzkoa
-	@MarshallField(as="positiveCountGipuzkoa",
+	@MarshallField(as="pcrTestCountGipuzkoa",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _positiveCountGipuzkoa;
+	@Getter @Setter private long _pcrTestCountGipuzkoa;
 	
-	@MarshallField(as="negativeCountGipuzkoa",
+	@MarshallField(as="quickTestCountGipuzkoa",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _negativeCountGipuzkoa;
-
-	@MarshallField(as="totalCountGipuzkoa",
-				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _totalCountGipuzkoa;
-	////////// --- Araba
-	@MarshallField(as="positiveCountAraba",
-				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _positiveCountAraba;
+	@Getter @Setter private long _quickTestCountGipuzkoa;
 	
-	@MarshallField(as="negativeCountAraba",
-				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _negativeCountAraba;
+	
 
-	@MarshallField(as="totalCountAraba",
-				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _totalCountAraba;
 }

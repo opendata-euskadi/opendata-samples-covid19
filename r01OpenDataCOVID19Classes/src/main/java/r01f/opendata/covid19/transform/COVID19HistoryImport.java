@@ -1,6 +1,8 @@
 package r01f.opendata.covid19.transform;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,6 +25,7 @@ import r01f.locale.Language;
 import r01f.locale.LanguageTexts;
 import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
 import r01f.locale.LanguageTextsMapBacked;
+import r01f.opendata.covid19.model.analysis.COVID19AnalysisMeta;
 import r01f.opendata.covid19.model.byagedeath.COVID19ByAgeDeathsMeta;
 import r01f.opendata.covid19.model.byhealthzone.COVID19ByHealthZoneMeta;
 import r01f.opendata.covid19.model.byhospital.COVID19ByHospitalMeta;
@@ -32,6 +35,7 @@ import r01f.opendata.covid19.model.index.COVID19HistoryDate;
 import r01f.opendata.covid19.model.index.COVID19Index;
 import r01f.opendata.covid19.model.index.COVID19IndexItem;
 import r01f.opendata.covid19.model.tests.COVID19TestsMeta;
+import r01f.types.Path;
 import r01f.types.datetime.DayOfMonth;
 import r01f.types.datetime.MonthOfYear;
 import r01f.types.datetime.Year;
@@ -125,15 +129,14 @@ public class COVID19HistoryImport {
 	public static COVID19Index doImport() throws IOException {
 		return COVID19HistoryImport.doImportFrom(Url.from("https://opendata.euskadi.eus/contenidos/ds_informes_estudios/covid_19_2020/opendata/aurrekoak-anteriores.txt"));
 	}
-	public static COVID19Index doImportFrom(final Url historyUrl) throws IOException {
-		// Load the file
-		log.info("Reading history file from: {}",historyUrl);
-		InputStream is = HttpClient.forUrl(historyUrl)
-								   .GET()
-								   .loadAsStream()
-								   .directNoAuthConnected();
+	
+	public static COVID19Index doImportFrom(final Path filePath) throws IOException {
+		InputStream is = new FileInputStream(new File(filePath.asAbsoluteString()));		
+		return COVID19HistoryImport.doImportFrom(is);
+	}
+	public static COVID19Index doImportFrom(final InputStream is) throws IOException {
 		// Process it
-		log.info("Processing history file at: {}",historyUrl);
+		
 		Collection<COVID19HistorySourceRecord> records = Lists.newArrayList();
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
@@ -142,7 +145,7 @@ public class COVID19HistoryImport {
 			line = line.trim();
 			
 			if (_isDateLine(line)) {
-				Date date = Dates.fromFormatedString(line,"yyyy/MM/dd");
+				Date date = Dates.fromFormatedString(line + " 23:00","yyyy/MM/dd HH:mm"); // marshaller fix -2 hours. eg: 24/04/2020 21:00
 				Collection<Url> urls = Lists.newArrayList();
 				
 				// keep reading until a new date arrives
@@ -179,6 +182,19 @@ public class COVID19HistoryImport {
 								  				 .collect(Collectors.toList())
 								  		: null);
 	}
+	public static COVID19Index doImportFrom(final Url historyUrl) throws IOException {
+		// Load the file
+		log.info("Reading history file from: {}",historyUrl);
+		InputStream is = HttpClient.forUrl(historyUrl)
+								   .GET()
+								   .loadAsStream()
+								   .directNoAuthConnected();
+		
+		log.info("Processing history file at: {}",historyUrl);
+		
+		return doImportFrom(is);
+		
+	}
 	private final static Pattern DATE_PATTERN = Pattern.compile(Year.REGEX + 
 															    "/" + 
 															    MonthOfYear.REGEX +
@@ -188,6 +204,8 @@ public class COVID19HistoryImport {
 		Matcher dateMatcher = DATE_PATTERN.matcher(line);
 		return dateMatcher.find();
 	}
+	
+	
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
@@ -281,16 +299,23 @@ public class COVID19HistoryImport {
 														       	   new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/udalerriak-municipios-by_date.xml")),
 														       			   				COVID19DataFormat.XML,COVID19ByMunicipalityMeta.NAME_AGGREGATED));
 		
-		COVID19IndexItem testsJson = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/analisiak-analisis.json")),
-														  COVID19DataFormat.JSON,COVID19TestsMeta.NAME);
-		COVID19IndexItem testsXml = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/analisiak-analisis.xml")),
-														 COVID19DataFormat.XML,COVID19TestsMeta.NAME);
+		COVID19IndexItem analysisJson = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/analisiak-analisis.json")),
+														  COVID19DataFormat.JSON,COVID19AnalysisMeta.NAME);
+		COVID19IndexItem analysisXml = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/analisiak-analisis.xml")),
+														 COVID19DataFormat.XML,COVID19AnalysisMeta.NAME);
+		
+		COVID19IndexItem testsJson = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/testak-tests.json")),
+				  COVID19DataFormat.JSON,COVID19TestsMeta.NAME);
+		COVID19IndexItem testsXml = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/testak-tests.xml")),
+				 COVID19DataFormat.XML,COVID19TestsMeta.NAME);
 		
 		Collection<COVID19IndexItem> outList = Lists.newArrayList();
 		outList.addAll(json);
 		outList.addAll(jsonAggr);
 		outList.addAll(xml);
 		outList.addAll(xmlAggr);
+		outList.add(analysisJson);
+		outList.add(analysisXml);
 		outList.add(testsJson);
 		outList.add(testsXml);
 		return outList;
