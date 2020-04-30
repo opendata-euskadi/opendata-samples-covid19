@@ -39,6 +39,11 @@
 			<version>${r01f.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>r01.r01f.base</groupId>
+			<artifactId>r01fXMLClasses</artifactId>
+			<version>${r01f.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>r01.r01f.objectstreamer</groupId>
 			<artifactId>r01fObjectStreamerClasses</artifactId>
 			<version>${r01f.version}</version>
