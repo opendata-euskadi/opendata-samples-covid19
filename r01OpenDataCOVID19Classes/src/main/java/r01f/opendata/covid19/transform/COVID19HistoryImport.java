@@ -34,6 +34,8 @@ import r01f.opendata.covid19.model.index.COVID19DataFormat;
 import r01f.opendata.covid19.model.index.COVID19HistoryDate;
 import r01f.opendata.covid19.model.index.COVID19Index;
 import r01f.opendata.covid19.model.index.COVID19IndexItem;
+import r01f.opendata.covid19.model.r0.COVID19R0Meta;
+import r01f.opendata.covid19.model.recovered.COVID19RecoveredMeta;
 import r01f.opendata.covid19.model.tests.COVID19TestsMeta;
 import r01f.types.Path;
 import r01f.types.datetime.DayOfMonth;
@@ -300,14 +302,24 @@ public class COVID19HistoryImport {
 														       			   				COVID19DataFormat.XML,COVID19ByMunicipalityMeta.NAME_AGGREGATED));
 		
 		COVID19IndexItem analysisJson = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/analisiak-analisis.json")),
-														  COVID19DataFormat.JSON,COVID19AnalysisMeta.NAME);
+														     COVID19DataFormat.JSON,COVID19AnalysisMeta.NAME);
 		COVID19IndexItem analysisXml = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/analisiak-analisis.xml")),
-														 COVID19DataFormat.XML,COVID19AnalysisMeta.NAME);
+														    COVID19DataFormat.XML,COVID19AnalysisMeta.NAME);
 		
 		COVID19IndexItem testsJson = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/testak-tests.json")),
-				  COVID19DataFormat.JSON,COVID19TestsMeta.NAME);
+				  										  COVID19DataFormat.JSON,COVID19TestsMeta.NAME);
 		COVID19IndexItem testsXml = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/testak-tests.xml")),
-				 COVID19DataFormat.XML,COVID19TestsMeta.NAME);
+				 										 COVID19DataFormat.XML,COVID19TestsMeta.NAME);
+		
+		COVID19IndexItem recoveredJson = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/sendatutakoak-recuperados.json")),
+				  										  COVID19DataFormat.JSON,COVID19RecoveredMeta.NAME);
+		COVID19IndexItem recoveredXml = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/sendatutakoak-recuperados.xml")),
+				 										 COVID19DataFormat.XML,COVID19RecoveredMeta.NAME);
+		
+		COVID19IndexItem r0Json = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/json/r0.json")),
+				  									   COVID19DataFormat.JSON,COVID19R0Meta.NAME);
+		COVID19IndexItem r0Xml = new COVID19IndexItem(baseUrl.joinWith(UrlPath.from("/xml/r0.xml")),
+				 									  COVID19DataFormat.XML,COVID19R0Meta.NAME);
 		
 		Collection<COVID19IndexItem> outList = Lists.newArrayList();
 		outList.addAll(json);
@@ -318,6 +330,10 @@ public class COVID19HistoryImport {
 		outList.add(analysisXml);
 		outList.add(testsJson);
 		outList.add(testsXml);
+		outList.add(recoveredJson);
+		outList.add(recoveredXml);
+		outList.add(r0Json);
+		outList.add(r0Xml);
 		return outList;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
