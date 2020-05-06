@@ -14,12 +14,19 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.joda.time.LocalDate;
+import org.xml.sax.SAXException;
 
 import com.google.common.io.ByteStreams;
 
@@ -43,6 +50,8 @@ import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipality;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityAtDate;
 import r01f.opendata.covid19.model.bymunicipality.COVID19ByMunicipalityByMunicipalityByDate;
 import r01f.opendata.covid19.model.index.COVID19Index;
+import r01f.opendata.covid19.model.r0.COVID19R0;
+import r01f.opendata.covid19.model.recovered.COVID19Recovered;
 import r01f.opendata.covid19.model.tests.COVID19Tests;
 import r01f.opendata.covid19.transform.csv.COVID19FileConvert;
 import r01f.types.Path;
@@ -129,17 +138,25 @@ public class COVID19Import {
 		Path outCSVsPath = opendataPath.joinedWith(Dates.format(today.getTime(), "MMyy"))
 								  	   .joinedWith(Dates.format(today.getTime(), "dd")); // covid_19_2020/opendata/{MMyy}/{dd}
 
-//		Files.createDirectories(Paths.get(outCSVsPath.asAbsoluteString()));
-//		
-//		Map<Integer, String> sheetNames = new HashMap<>();
-//		sheetNames.put(0, "analisiak-analisis");
-//		sheetNames.put(1, "ospitaleratuak-hospitalizados");
-//		sheetNames.put(2, "udalerriak-municipios");
-//		sheetNames.put(3, "osasun_eremuak-zonas_salud");
-//		sheetNames.put(4, "hildakoak-fallecidos");
-//		sheetNames.put(5, "testak-tests");
-//		
-//		COVID19FileConvert.toCSV(excelFilePath, outCSVsPath, sheetNames);
+		Files.createDirectories(Paths.get(outCSVsPath.asAbsoluteString()));
+		
+		Map<Integer, String> sheetNames = new HashMap<>();
+		sheetNames.put(0, "analisiak-analisis");
+		sheetNames.put(1, "ospitaleratuak-hospitalizados");
+		sheetNames.put(2, "udalerriak-municipios");
+		sheetNames.put(3, "osasun_eremuak-zonas_salud");
+		sheetNames.put(4, "hildakoak-fallecidos");
+		sheetNames.put(5, "testak-tests");
+		sheetNames.put(6, "sendatutakoak-recuperados");
+		sheetNames.put(7, "r0");
+		
+		try {
+			COVID19FileConvert.toCSV(excelFilePath, outCSVsPath, sheetNames);
+		} catch (XPathExpressionException | IOException | SAXException | XMLStreamException | OpenXML4JException e) {			
+			log.error("=================================================================");
+			log.error("COVID19FileConvert.toCSV: " + e.getMessage());
+			log.error("=================================================================");
+		}
 		
 		//CSVs in ZIP		
 		Path zipFilePath = opendataPath.joinedWith("covid19.zip");
@@ -231,7 +248,7 @@ public class COVID19Import {
 					 aggregatedPath,"hildakoak-fallecidos",
 					 byAgeDeaths,byAgeDeathsByDate);
 		
-		// Tests
+		// Analysis
 		log.info("=================================================================");
 		log.info("ANALYSIS:");
 		log.info("=================================================================");
@@ -251,8 +268,28 @@ public class COVID19Import {
 		_writeToFile(marshaller,
 					 aggregatedPath,"testak-tests",
 					 tests,null);
+		// Recovered
+		log.info("=================================================================");
+		log.info("RECOVERRED:");
+		log.info("=================================================================");
+		COVID19Recovered recovered = _importRecovered(new Date(),		// Dates.fromFormatedString("2020/03/24","yyyy/MM/dd"),
+										  	  		  logPath,
+										  	  		  opendataPath);
+		_writeToFile(marshaller,
+					 aggregatedPath,"sendatutakoak-recuperados",
+					 recovered,null);
 		
-		
+		// R0
+		log.info("=================================================================");
+		log.info("R0:");
+		log.info("=================================================================");
+		COVID19R0 r0 = _importR0(new Date(),		// Dates.fromFormatedString("2020/03/24","yyyy/MM/dd"),
+										  	  		  logPath,
+										  	  		  opendataPath);
+		_writeToFile(marshaller,
+					 aggregatedPath,"r0",
+					 r0,null);
+				
 		// [3] - Copy Files
 		log.info("=================================================================");
 		log.info("COPY FILES:");
@@ -501,6 +538,84 @@ public class COVID19Import {
 			_appendToError(logPath,
 						   COVID19TestsImport.geTestsUrlAt(date),
 						   Throwables.getStackTraceAsString(ioEx));
+		}
+		return out;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//RECOVERED
+/////////////////////////////////////////////////////////////////////////////////////////
+	private static COVID19Recovered _importRecovered(final Date date,
+											 		 final Path logPath,
+											 		 final Path localPath) {
+		COVID19Recovered out = null;
+		try {
+			// if the [test] file for the current date is NOT present, try 3 days before
+			LocalDate testDate = new LocalDate(date);
+			int tryCount = 3;
+			do {
+				boolean existsForDate = COVID19RecoveredImport.existsFileAt(testDate.toDate(), localPath);
+				if (existsForDate)
+					break;
+
+				testDate = testDate.minusDays(1);
+				tryCount--;
+				if (tryCount == 0)
+					log.warn("Could NOT find the [recovered] file at {}, trying {}", testDate.plusDays(1), testDate);
+			} while (tryCount > 0);
+
+			// at this point, the file might be found... or not
+			if (tryCount <= 0) {
+				// no suitable file
+				log.error("Could NOT find any [recovered] file for the last days");
+				_appendToError(logPath, COVID19RecoveredImport.getUrlAt(date),
+						"Could NOT find any [recovered] file for the last days");
+			} else {
+				// suitable file found
+				out = COVID19RecoveredImport.importAt(testDate.toDate(), localPath);
+				out.setLastUpdateDate(new Date());
+			}
+		} catch (IOException ioEx) {
+			log.error("Error importing [recovered] file at={}: {}", date, ioEx.getMessage());
+			_appendToError(logPath, COVID19RecoveredImport.getUrlAt(date), Throwables.getStackTraceAsString(ioEx));
+		}
+		return out;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//R0
+/////////////////////////////////////////////////////////////////////////////////////////
+	private static COVID19R0 _importR0(final Date date,
+											  final Path logPath,
+											  final Path localPath) {
+		COVID19R0 out = null;
+		try {
+			// if the [test] file for the current date is NOT present, try 3 days before
+			LocalDate testDate = new LocalDate(date);
+			int tryCount = 3;
+			do {
+				boolean existsForDate = COVID19R0Import.existsFileAt(testDate.toDate(), localPath);
+				if (existsForDate)
+					break;
+
+				testDate = testDate.minusDays(1);
+				tryCount--;
+				if (tryCount == 0)
+					log.warn("Could NOT find the [r0] file at {}, trying {}", testDate.plusDays(1), testDate);
+			} while (tryCount > 0);
+
+			// at this point, the file might be found... or not
+			if (tryCount <= 0) {
+				// no suitable file
+				log.error("Could NOT find any [r0] file for the last days");
+				_appendToError(logPath, COVID19R0Import.getUrlAt(date),
+						"Could NOT find any [r0] file for the last days");
+			} else {
+				// suitable file found
+				out = COVID19R0Import.importAt(testDate.toDate(), localPath);
+				out.setLastUpdateDate(new Date());
+			}
+		} catch (IOException ioEx) {
+			log.error("Error importing [r0] file at={}: {}", date, ioEx.getMessage());
+			_appendToError(logPath, COVID19R0Import.getUrlAt(date), Throwables.getStackTraceAsString(ioEx));
 		}
 		return out;
 	}
