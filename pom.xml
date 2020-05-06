@@ -401,12 +401,18 @@
 <!-- ARTIFACT DISTRIBUTION                                                  -->
 <!-- ====================================================================== -->
 	<distributionManagement>
-		<repository>
+		<!-- <repository>
 			<id>maven-public-releases</id>
 			<name>maven-public-releases</name>
 			<layout>default</layout>
 			<url>https://bin1.alm02.itbatera.euskadi.eus/repository/maven-public-releases/</url>
-		</repository>
+		</repository> -->
+		<repository>
+			<id>local</id>
+			<name>local</name>
+			<layout>default</layout>
+			<url>http://repository.ejiedes.net:3690/content/groups/local/r01/</url>
+		</repository>		
 		<snapshotRepository>
 			<id>maven-snapshots</id>
 			<name>maven-snapshots</name>
