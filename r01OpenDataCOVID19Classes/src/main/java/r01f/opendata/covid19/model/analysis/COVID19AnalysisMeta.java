@@ -4,10 +4,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import r01f.locale.Language;
 import r01f.locale.LanguageTexts;
-import r01f.locale.LanguageTextsMapBacked;
 import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
-import r01f.opendata.covid19.model.COVID19MetaData;
+import r01f.locale.LanguageTextsMapBacked;
 import r01f.opendata.covid19.model.COVID19IDs.COVID19MetaDataID;
+import r01f.opendata.covid19.model.COVID19MetaData;
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public abstract class COVID19AnalysisMeta {
@@ -27,11 +27,11 @@ public abstract class COVID19AnalysisMeta {
 																				 		   "Data");
 	// EUSKADI
 	public final static COVID19MetaData POSITIVE_COUNT_EUSKADI = new COVID19MetaData(COVID19MetaDataID.forId("positiveCountEuskadi"),    
-																				   "CAE: Positivo",                               
-																				   "EAE: Positiboa");                         
+																				     "CAE: Positivo",                               
+																				     "EAE: Positiboa");                         
 	public final static COVID19MetaData NEGATIVE_COUNT_EUSKADI = new COVID19MetaData(COVID19MetaDataID.forId("negativeCountEuskadi"),    
-																				    "CAE: No positivo",                                          
-																				   	"EAE: Ez positiboa");                                    
+																				     "CAE: No positivo",                                          
+																				   	 "EAE: Ez positiboa");                                    
 	// ARABA
 	public final static COVID19MetaData POSITIVE_COUNT_ARABA = new COVID19MetaData(COVID19MetaDataID.forId("positiveCountAraba"),    
 																				   "Araba: Positivo",                               
