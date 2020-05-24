@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import euskadi.opendata.covid19.model.COVID19HealthZone;
+import euskadi.opendata.covid19.model.COVID19IDs.COVID19HealthZoneID;
 import euskadi.opendata.covid19.model.COVID19ModelObject;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +15,6 @@ import r01f.objectstreamer.annotations.MarshallField.DateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
-import r01f.types.geo.GeoOIDs.GeoRegionID;
-import r01f.types.geo.GeoRegion;
 import r01f.util.types.collections.CollectionUtils;
 import r01f.util.types.collections.Lists;
 
@@ -38,18 +38,18 @@ public class COVID19ByHealthZoneAtDate
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public Collection<GeoRegion> getGeoRegions() {
+	public Collection<COVID19HealthZone> getHealthZones() {
 		return CollectionUtils.hasData(_items) 
 					? _items.stream()
-							.map(item -> item.getGeoRegion())
+							.map(item -> item.getHealthZone())
 							.collect(Collectors.toList())
 					: Lists.newArrayList();
 	}
-	public COVID19ByHealthZoneItem getItemFor(final GeoRegionID geoRegionId) {
+	public COVID19ByHealthZoneItem getItemFor(final COVID19HealthZoneID healthZoneId) {
 		return CollectionUtils.hasData(_items) 
 					? _items.stream()
-							.filter(item -> item.getGeoRegion().getId()
-															   .is(geoRegionId))
+							.filter(item -> item.getHealthZone().getId()
+															    .is(healthZoneId))
 							.findFirst().orElse(null)
 					: null;
 	}

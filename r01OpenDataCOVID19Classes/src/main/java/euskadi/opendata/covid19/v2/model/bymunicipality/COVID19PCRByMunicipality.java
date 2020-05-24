@@ -71,8 +71,8 @@ public class COVID19PCRByMunicipality
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19PCRByMunicipalityByMunicipalityByDate pivotByDate() {
-		COVID19PCRByMunicipalityByMunicipalityByDate out = new COVID19PCRByMunicipalityByMunicipalityByDate();
+	public COVID19PCRByMunicipalityByDate pivotByDate() {
+		COVID19PCRByMunicipalityByDate out = new COVID19PCRByMunicipalityByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());

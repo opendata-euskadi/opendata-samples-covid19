@@ -25,8 +25,11 @@ public abstract class COVID19PPCRMeta {
 	public final static COVID19MetaData DATE = new COVID19MetaData(COVID19MetaDataID.forId("date"),      
 																				 		   "Fecha",                              
 																				 		   "Data");
-	// EUSKADI
-	public final static COVID19MetaData POSITIVE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("positiveTotalCount"),    
+	public final static COVID19MetaData POSITIVE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("positiveCount"),    
 																			 "CAE: Positivo",                               
-																			 "EAE: Positiboa");                         
+																			 "EAE: Positiboa");
+	
+	public final static COVID19MetaData AGGREGATED_INCIDENCE = new COVID19MetaData(COVID19MetaDataID.forId("aggregatedIncidence"),    
+																			 	   "Incidencia acumulada",                               
+																			 	   "Intzidentzia metatua"); 
 }

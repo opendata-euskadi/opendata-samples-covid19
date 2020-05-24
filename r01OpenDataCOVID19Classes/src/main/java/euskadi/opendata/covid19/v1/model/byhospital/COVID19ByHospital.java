@@ -79,8 +79,8 @@ public class COVID19ByHospital
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByHospitalByHospitalByDate pivotByDate() {
-		COVID19ByHospitalByHospitalByDate out = new COVID19ByHospitalByHospitalByDate();
+	public COVID19ByHospitalByDate pivotByDate() {
+		COVID19ByHospitalByDate out = new COVID19ByHospitalByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
@@ -113,9 +113,9 @@ public class COVID19ByHospital
 				}
 			}
 			// create separate collections for dates & values (more suitable for xy representations)
-			floorPeopleCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			icuPeopleCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			totalPeopleCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			floorPeopleCountByDate.splitItemsByDate();
+			icuPeopleCountByDate.splitItemsByDate();
+			totalPeopleCountByDate.splitItemsByDate();
 			
 			// add
 			out.addFloorPeopleCountByHospital(floorPeopleCountByDate);

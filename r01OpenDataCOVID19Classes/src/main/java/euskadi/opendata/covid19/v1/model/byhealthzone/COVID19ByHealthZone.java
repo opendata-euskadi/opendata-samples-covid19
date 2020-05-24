@@ -6,6 +6,7 @@ import java.util.Date;
 import com.google.common.collect.Iterables;
 
 import euskadi.opendata.covid19.model.COVID19DimensionValuesByDate;
+import euskadi.opendata.covid19.model.COVID19HealthZone;
 import euskadi.opendata.covid19.model.COVID19MetaDataCollection;
 import euskadi.opendata.covid19.model.COVID19ModelObject;
 import lombok.Getter;
@@ -17,7 +18,6 @@ import r01f.objectstreamer.annotations.MarshallField.DateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
-import r01f.types.geo.GeoRegion;
 import r01f.util.types.collections.CollectionUtils;
 import r01f.util.types.collections.Lists;
 
@@ -54,39 +54,39 @@ public class COVID19ByHealthZone
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public Collection<GeoRegion> getGeoRegions() {
+	public Collection<COVID19HealthZone> getHealthZones() {
 		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return Lists.newArrayList();
 		
-		Collection<GeoRegion> outRegions = Lists.newArrayList();
+		Collection<COVID19HealthZone> outZones = Lists.newArrayList();
 		for (COVID19ByHealthZoneAtDate item : _byDateItems) {
-			Collection<GeoRegion> itemRegions = item.getGeoRegions();
-			if (CollectionUtils.isNullOrEmpty(itemRegions)) continue;
+			Collection<COVID19HealthZone> itemZones = item.getHealthZones();
+			if (CollectionUtils.isNullOrEmpty(itemZones)) continue;
 			
-			for (GeoRegion region : itemRegions) {
-				if (!Iterables.tryFind(outRegions,reg -> reg.getId().is(region.getId()))
+			for (COVID19HealthZone zone : itemZones) {
+				if (!Iterables.tryFind(outZones,z -> z.getId().is(zone.getId()))
 							  .isPresent()) {
-					outRegions.add(region);
+					outZones.add(zone);
 				}
 			}
 		}
-		return outRegions;
+		return outZones;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByHealthZoneByGeoRegionByDate pivotByDate() {
-		COVID19ByHealthZoneByGeoRegionByDate out = new COVID19ByHealthZoneByGeoRegionByDate();
+	public COVID19ByHealthZoneByDate pivotByDate() {
+		COVID19ByHealthZoneByDate out = new COVID19ByHealthZoneByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
 		
-		Collection<GeoRegion> geoRegions = this.getGeoRegions();
-		for (GeoRegion geoRegion : geoRegions) {
-			COVID19DimensionValuesByDate<GeoRegion,Long> populationByGeoRegion = new COVID19DimensionValuesByDate<>(geoRegion);
-			COVID19DimensionValuesByDate<GeoRegion,Long> positiveCountByGeoRegion = new COVID19DimensionValuesByDate<>(geoRegion);
-			COVID19DimensionValuesByDate<GeoRegion,Float> positiveRateByGeoRegion = new COVID19DimensionValuesByDate<>(geoRegion);
+		Collection<COVID19HealthZone> zones = this.getHealthZones();
+		for (COVID19HealthZone zone : zones) {
+			COVID19DimensionValuesByDate<COVID19HealthZone,Long> populationByGeoRegion = new COVID19DimensionValuesByDate<>(zone);
+			COVID19DimensionValuesByDate<COVID19HealthZone,Long> positiveCountByGeoRegion = new COVID19DimensionValuesByDate<>(zone);
+			COVID19DimensionValuesByDate<COVID19HealthZone,Float> positiveRateByGeoRegion = new COVID19DimensionValuesByDate<>(zone);
 			for (COVID19ByHealthZoneAtDate itemAtDate : _byDateItems) {
-				COVID19ByHealthZoneItem dimItem = itemAtDate.getItemFor(geoRegion.getId());
+				COVID19ByHealthZoneItem dimItem = itemAtDate.getItemFor(zone.getId());
 				if (dimItem != null) {
 					populationByGeoRegion.addValueAt(itemAtDate.getDate(),
 													 dimItem.getPopulation());
@@ -97,14 +97,14 @@ public class COVID19ByHealthZone
 				}
 			}
 			// create separate collections for dates & values (more suitable for xy representations)
-			populationByGeoRegion.splitItemsByDateIntoDatesAndValuesCollections();
-			positiveCountByGeoRegion.splitItemsByDateIntoDatesAndValuesCollections();
-			positiveRateByGeoRegion.splitItemsByDateIntoDatesAndValuesCollections();
+			populationByGeoRegion.splitItemsByDate();
+			positiveCountByGeoRegion.splitItemsByDate();
+			positiveRateByGeoRegion.splitItemsByDate();
 			
 			// add
-			out.addPopulationByGeoRegion(populationByGeoRegion);
-			out.addPositiveCountByGeoRegion(positiveCountByGeoRegion);
-			out.addPositiveRateByGeoRegion(positiveRateByGeoRegion);
+			out.addPopulationByHealthZone(populationByGeoRegion);
+			out.addPositiveCountByHealthZone(positiveCountByGeoRegion);
+			out.addPositiveRateByHealthZone(positiveRateByGeoRegion);
 		}
 		return out;
 	}

@@ -1,9 +1,11 @@
 package euskadi.opendata.covid19.v2.model.byage;
 
+import java.util.Collection;
 import java.util.Date;
 
+import org.apache.commons.compress.utils.Lists;
+
 import euskadi.opendata.covid19.model.COVID19DimensionValuesByDate;
-import euskadi.opendata.covid19.model.COVID19Dimensions;
 import euskadi.opendata.covid19.model.COVID19MetaDataCollection;
 import euskadi.opendata.covid19.model.COVID19ModelObject;
 import euskadi.opendata.covid19.v1.model.byagedeath.COVID19ByAgeDeathsMeta;
@@ -18,9 +20,9 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 
-@MarshallType(as="covid19ByAgeDataByAgeRangeByDate")
+@MarshallType(as="covid19ByAgeDataByDate")
 @Accessors(prefix="_")
-public class COVID19ByAgeDataByAgeRangeByDate 
+public class COVID19ByAgeDataByDate 
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = -7347234593784762259L;
@@ -31,6 +33,7 @@ public class COVID19ByAgeDataByAgeRangeByDate
 			   	   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _lastUpdateDate;
 	
+	////////// MetaData
 	@MarshallField(as="name")
 	@Getter @Setter private LanguageTexts _name = COVID19ByHealthZoneMeta.NAME;
 	
@@ -38,32 +41,39 @@ public class COVID19ByAgeDataByAgeRangeByDate
 	@Getter @Setter private COVID19MetaDataCollection _notes = new COVID19MetaDataCollection(COVID19ByAgeDataMeta.NOTE1,
 																							 COVID19ByAgeDataMeta.NOTE2);
 	
-	@MarshallField(as="positiveCountByAgeRange")
-	@Getter @Setter private COVID19Dimensions<String,Long> _positiveCountByAgeRange;
+	@MarshallField(as="metaData",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(COVID19ByAgeDeathsMeta.POSITIVE_MEN_COUNT,
+																								COVID19ByAgeDeathsMeta.DEATH_MEN_COUNT,
+																								COVID19ByAgeDeathsMeta.MEN_LETHALITY_RATE);
 	
-	@MarshallField(as="deathCountByAgeRange")
-	@Getter @Setter private COVID19Dimensions<String,Long> _deathCountByAgeRange;
+	////////// Data
+	@MarshallField(as="positiveCountByAgeRange",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+	@Getter @Setter private Collection<COVID19DimensionValuesByDate<String,Long>> _positiveCountByAgeRange;
 	
-	@MarshallField(as="lethalityCountByAgeRange")
-	@Getter @Setter private COVID19Dimensions<String,Float> _lethalityRateByAgeRange;
+	@MarshallField(as="deathCountByAgeRange",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+	@Getter @Setter private Collection<COVID19DimensionValuesByDate<String,Long>> _deathCountByAgeRange;
+	
+	@MarshallField(as="lethalityCountByAgeRange",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+	@Getter @Setter private Collection<COVID19DimensionValuesByDate<String,Float>> _lethalityRateByAgeRange;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public void addPositiveCountByAgeRange(final COVID19DimensionValuesByDate<String,Long> val) {
-		if (_positiveCountByAgeRange == null) _positiveCountByAgeRange = new COVID19Dimensions<>(COVID19ByAgeDeathsMeta.POSITIVE_MEN_COUNT);
-		_positiveCountByAgeRange.getItemsByDimension()
-								   .add(val);
+		if (_positiveCountByAgeRange == null) _positiveCountByAgeRange = Lists.newArrayList();
+		_positiveCountByAgeRange.add(val);
 	}
 	
 	public void addDeathCountByAgeRange(final COVID19DimensionValuesByDate<String,Long> val) {
-		if (_deathCountByAgeRange == null) _deathCountByAgeRange = new COVID19Dimensions<>(COVID19ByAgeDeathsMeta.DEATH_MEN_COUNT);
-		_deathCountByAgeRange.getItemsByDimension()
-								.add(val);
+		if (_deathCountByAgeRange == null) _deathCountByAgeRange = Lists.newArrayList();
+		_deathCountByAgeRange.add(val);
 	}
 	
 	public void addLethalityRateByAgeRange(final COVID19DimensionValuesByDate<String,Float> val) {
-		if (_lethalityRateByAgeRange == null) _lethalityRateByAgeRange = new COVID19Dimensions<>(COVID19ByAgeDeathsMeta.MEN_LETHALITY_RATE);
-		_lethalityRateByAgeRange.getItemsByDimension()
-								.add(val);
+		if (_lethalityRateByAgeRange == null) _lethalityRateByAgeRange = Lists.newArrayList();
+		_lethalityRateByAgeRange.add(val);
 	}
 }

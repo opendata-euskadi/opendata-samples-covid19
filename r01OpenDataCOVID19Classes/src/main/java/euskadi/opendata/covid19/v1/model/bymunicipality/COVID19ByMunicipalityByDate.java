@@ -1,9 +1,12 @@
-package euskadi.opendata.covid19.v2.model.bymunicipality;
+package euskadi.opendata.covid19.v1.model.bymunicipality;
 
+import java.util.Collection;
 import java.util.Date;
 
+import org.apache.commons.compress.utils.Lists;
+
 import euskadi.opendata.covid19.model.COVID19DimensionValuesByDate;
-import euskadi.opendata.covid19.model.COVID19Dimensions;
+import euskadi.opendata.covid19.model.COVID19MetaDataCollection;
 import euskadi.opendata.covid19.model.COVID19ModelObject;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,9 +19,9 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 import r01f.types.geo.GeoMunicipality;
 
-@MarshallType(as="covid19PCRByHospitalByMunicipalityBDate")
+@MarshallType(as="covid19ByMunicipalityByDate")
 @Accessors(prefix="_")
-public class COVID19PCRByMunicipalityByMunicipalityByDate 
+public class COVID19ByMunicipalityByDate 
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = -9200276982695400237L;
@@ -29,20 +32,26 @@ public class COVID19PCRByMunicipalityByMunicipalityByDate
 			   	   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _lastUpdateDate;
 	
+	////////// MetaData
 	@MarshallField(as="name")
-	@Getter @Setter private LanguageTexts _name = COVID19PCRByMunicipalityMeta.NAME;
+	@Getter @Setter private LanguageTexts _name = COVID19ByMunicipalityMeta.NAME;
 	
 	@MarshallField(as="notes")
-	@Getter @Setter private LanguageTexts _notes = COVID19PCRByMunicipalityMeta.NOTE;
+	@Getter @Setter private LanguageTexts _notes = COVID19ByMunicipalityMeta.NOTE;
 	
-	@MarshallField(as="positiveCountByMunicipality")
-	@Getter @Setter private COVID19Dimensions<GeoMunicipality,Long> _positiveCountByMunicipality;
+	@MarshallField(as="metaData",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(COVID19ByMunicipalityMeta.POSITIVE_COUNT);
+	
+	////////// Data
+	@MarshallField(as="positiveCountByMunicipality",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+	@Getter @Setter private Collection<COVID19DimensionValuesByDate<GeoMunicipality,Long>> _positiveCountByMunicipality;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public void addPositiveCountByMunicipality(final COVID19DimensionValuesByDate<GeoMunicipality,Long> val) {
-		if (_positiveCountByMunicipality == null) _positiveCountByMunicipality = new COVID19Dimensions<>(COVID19PCRByMunicipalityMeta.POSITIVE_COUNT);
-		_positiveCountByMunicipality.getItemsByDimension()
-							  .add(val);
+		if (_positiveCountByMunicipality == null) _positiveCountByMunicipality = Lists.newArrayList();
+		_positiveCountByMunicipality.add(val);
 	}
 }

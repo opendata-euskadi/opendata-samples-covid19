@@ -16,7 +16,6 @@ import r01f.objectstreamer.annotations.MarshallType;
 
 /**
  * <pre>
- * 		{@link COVID19Dimensions}
  * 			+- N {@link COVID19DimensionValuesByDate}
  * 					+ N {@link COVID19DimensionValueAtDate}
  * </pre> 

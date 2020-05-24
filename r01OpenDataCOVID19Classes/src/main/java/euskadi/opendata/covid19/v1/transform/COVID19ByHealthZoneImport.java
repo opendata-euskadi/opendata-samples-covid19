@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
+import euskadi.opendata.covid19.model.COVID19HealthZone;
+import euskadi.opendata.covid19.model.COVID19IDs.COVID19HealthZoneID;
 import euskadi.opendata.covid19.v1.model.byhealthzone.COVID19ByHealthZoneAtDate;
 import euskadi.opendata.covid19.v1.model.byhealthzone.COVID19ByHealthZoneItem;
 import lombok.extern.slf4j.Slf4j;
@@ -90,10 +92,12 @@ public class COVID19ByHealthZoneImport {
 				String positiveRate = m.group(5).replace(',','.');
 				
 				GeoRegion geoRegion = GeoRegion.create(GeoRegionID.forId(zoneCode))
-											.withNameInLang(Language.SPANISH,zoneName)
-											.withNameInLang(Language.BASQUE,zoneName);
-				COVID19ByHealthZoneItem item = new COVID19ByHealthZoneItem();				
-				item.setGeoRegion(geoRegion);
+											   .withNameInLang(Language.SPANISH,zoneName)
+											   .withNameInLang(Language.BASQUE,zoneName);
+				COVID19HealthZone healthZone = new COVID19HealthZone(COVID19HealthZoneID.forId(zoneCode),geoRegion);
+				
+				COVID19ByHealthZoneItem item = new COVID19ByHealthZoneItem();					
+				item.setHealthZone(healthZone);
 				item.setPopulation(Long.parseLong(pop));
 				item.setPositiveCount(Long.parseLong(positives));
 				item.setPositiveRate(Float.parseFloat(positiveRate));

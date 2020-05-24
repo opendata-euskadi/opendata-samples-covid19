@@ -33,16 +33,16 @@ import com.google.common.io.ByteStreams;
 import euskadi.opendata.covid19.v1.model.analysis.COVID19Analysis;
 import euskadi.opendata.covid19.v1.model.byagedeath.COVID19ByAgeDeaths;
 import euskadi.opendata.covid19.v1.model.byagedeath.COVID19ByAgeDeathsAtDate;
-import euskadi.opendata.covid19.v1.model.byagedeath.COVID19ByAgeDeathsByAgeRangeByDate;
+import euskadi.opendata.covid19.v1.model.byagedeath.COVID19ByAgeDeathsByDate;
 import euskadi.opendata.covid19.v1.model.byhealthzone.COVID19ByHealthZone;
 import euskadi.opendata.covid19.v1.model.byhealthzone.COVID19ByHealthZoneAtDate;
-import euskadi.opendata.covid19.v1.model.byhealthzone.COVID19ByHealthZoneByGeoRegionByDate;
+import euskadi.opendata.covid19.v1.model.byhealthzone.COVID19ByHealthZoneByDate;
 import euskadi.opendata.covid19.v1.model.byhospital.COVID19ByHospital;
 import euskadi.opendata.covid19.v1.model.byhospital.COVID19ByHospitalAtDate;
-import euskadi.opendata.covid19.v1.model.byhospital.COVID19ByHospitalByHospitalByDate;
+import euskadi.opendata.covid19.v1.model.byhospital.COVID19ByHospitalByDate;
 import euskadi.opendata.covid19.v1.model.bymunicipality.COVID19ByMunicipality;
 import euskadi.opendata.covid19.v1.model.bymunicipality.COVID19ByMunicipalityAtDate;
-import euskadi.opendata.covid19.v1.model.bymunicipality.COVID19ByMunicipalityByMunicipalityByDate;
+import euskadi.opendata.covid19.v1.model.bymunicipality.COVID19ByMunicipalityByDate;
 import euskadi.opendata.covid19.v1.model.index.COVID19Index;
 import euskadi.opendata.covid19.v1.model.r0.COVID19R0;
 import euskadi.opendata.covid19.v1.model.recovered.COVID19Recovered;
@@ -206,7 +206,7 @@ public class COVID19V1Import {
 															   logPath,
 															   opendataPath);
 		
-		COVID19ByHealthZoneByGeoRegionByDate byHealthZoneByDate = byHealthZone.pivotByDate();
+		COVID19ByHealthZoneByDate byHealthZoneByDate = byHealthZone.pivotByDate();
 		Path aggregatedPath = opendataPath.joinedWith("aggregated");
 		_writeToFile(marshaller,
 					 aggregatedPath,"osasun_eremuak-zonas_salud",
@@ -219,7 +219,7 @@ public class COVID19V1Import {
 		COVID19ByMunicipality byMunicipality = _importByMunicipality(index,
 																	 logPath,
 																	 opendataPath);
-		COVID19ByMunicipalityByMunicipalityByDate byMunicipalityByDate = byMunicipality.pivotByDate();
+		COVID19ByMunicipalityByDate byMunicipalityByDate = byMunicipality.pivotByDate();
 		_writeToFile(marshaller,
 					 aggregatedPath,"udalerriak-municipios",
 					 byMunicipality,byMunicipalityByDate);
@@ -231,7 +231,7 @@ public class COVID19V1Import {
 		COVID19ByHospital byHospital = _importByHospital(index,
 														 logPath,
 														 opendataPath);
-		COVID19ByHospitalByHospitalByDate byHospitalByDate = byHospital.pivotByDate();
+		COVID19ByHospitalByDate byHospitalByDate = byHospital.pivotByDate();
 		_writeToFile(marshaller,
 					 aggregatedPath,"ospitaleratuak-hospitalizados",
 					 byHospital,byHospitalByDate);
@@ -243,7 +243,7 @@ public class COVID19V1Import {
 		COVID19ByAgeDeaths byAgeDeaths = _importByAgeDeaths(index,
 														    logPath,
 														    opendataPath);
-		COVID19ByAgeDeathsByAgeRangeByDate byAgeDeathsByDate = byAgeDeaths.pivotByDate();
+		COVID19ByAgeDeathsByDate byAgeDeathsByDate = byAgeDeaths.pivotByDate();
 		_writeToFile(marshaller,
 					 aggregatedPath,"hildakoak-fallecidos",
 					 byAgeDeaths,byAgeDeathsByDate);

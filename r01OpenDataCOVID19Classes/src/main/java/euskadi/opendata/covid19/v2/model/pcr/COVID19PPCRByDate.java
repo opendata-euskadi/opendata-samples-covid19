@@ -25,7 +25,11 @@ public class COVID19PPCRByDate
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _date;
 	
-	@MarshallField(as="count",
+	@MarshallField(as="positiveCount",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _count;
+	@Getter @Setter private long _positiveCount;
+	
+	@MarshallField(as="aggregatedIncidence",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private float _aggregatedIncidence;
 }

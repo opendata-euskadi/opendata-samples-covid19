@@ -1,12 +1,12 @@
 package euskadi.opendata.covid19.v1.model.byhealthzone;
 
+import euskadi.opendata.covid19.model.COVID19HealthZone;
 import euskadi.opendata.covid19.model.COVID19ModelObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import r01f.objectstreamer.annotations.MarshallField;
 import r01f.objectstreamer.annotations.MarshallType;
-import r01f.types.geo.GeoRegion;
 
 @MarshallType(as="covid19ByHealthZoneItem")
 @Accessors(prefix="_")
@@ -17,8 +17,8 @@ public class COVID19ByHealthZoneItem
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	@MarshallField(as="geoRegion")
-	@Getter @Setter private GeoRegion _geoRegion;
+	@MarshallField(as="healthZone")
+	@Getter @Setter private COVID19HealthZone _healthZone;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	

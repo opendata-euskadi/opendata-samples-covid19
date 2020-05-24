@@ -83,8 +83,8 @@ public class COVID19ByAgeDeaths
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByAgeDeathsByAgeRangeByDate pivotByDate() {
-		COVID19ByAgeDeathsByAgeRangeByDate out = new COVID19ByAgeDeathsByAgeRangeByDate();
+	public COVID19ByAgeDeathsByDate pivotByDate() {
+		COVID19ByAgeDeathsByDate out = new COVID19ByAgeDeathsByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
@@ -131,17 +131,17 @@ public class COVID19ByAgeDeaths
 				}
 			}
 			// create separate collections for dates & values (more suitable for xy representations)
-			positiveMenCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			positiveWomenCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			positiveTotalCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			positiveMenCountByDate.splitItemsByDate();
+			positiveWomenCountByDate.splitItemsByDate();
+			positiveTotalCountByDate.splitItemsByDate();
 			
-			deathMenCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			deathWomeCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			deathTotalCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			deathMenCountByDate.splitItemsByDate();
+			deathWomeCountByDate.splitItemsByDate();
+			deathTotalCountByDate.splitItemsByDate();
 			
-			menLethalityRateByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			womenLethalityRateByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			totalLethalityRateByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			menLethalityRateByDate.splitItemsByDate();
+			womenLethalityRateByDate.splitItemsByDate();
+			totalLethalityRateByDate.splitItemsByDate();
 			
 			// add
 			out.addPositiveMenCountByAgeRange(positiveMenCountByDate);

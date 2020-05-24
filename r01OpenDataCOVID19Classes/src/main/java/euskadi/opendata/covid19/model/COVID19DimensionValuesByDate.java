@@ -17,7 +17,6 @@ import r01f.util.types.collections.Lists;
 
 /**
  * <pre>
- * 		{@link COVID19Dimensions}
  * 			+- N {@link COVID19DimensionValuesByDate}
  * 					+ N {@link COVID19DimensionValueAtDate}
  * </pre> 
@@ -76,7 +75,7 @@ public class COVID19DimensionValuesByDate<D,V>
 	 * Creates two different collections of Dates and Values
 	 * (more suitable for XY representations)
 	 */
-	public void splitItemsByDateIntoDatesAndValuesCollections() {
+	public void splitItemsByDate() {
 		if (CollectionUtils.isNullOrEmpty(_itemsByDate)) return;
 		
 		_dates = COVID19DimensionValuesByDate.getDatesOf(_itemsByDate);

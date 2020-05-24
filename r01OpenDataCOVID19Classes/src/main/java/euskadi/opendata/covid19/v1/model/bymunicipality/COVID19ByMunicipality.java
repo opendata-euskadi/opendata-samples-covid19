@@ -71,8 +71,8 @@ public class COVID19ByMunicipality
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByMunicipalityByMunicipalityByDate pivotByDate() {
-		COVID19ByMunicipalityByMunicipalityByDate out = new COVID19ByMunicipalityByMunicipalityByDate();
+	public COVID19ByMunicipalityByDate pivotByDate() {
+		COVID19ByMunicipalityByDate out = new COVID19ByMunicipalityByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
@@ -88,7 +88,7 @@ public class COVID19ByMunicipality
 				}
 			}
 			// create separate collections for dates & values (more suitable for xy representations)
-			positiveCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			positiveCountByDate.splitItemsByDate();
 			
 			// add
 			out.addPositiveCountByMunicipality(positiveCountByDate);

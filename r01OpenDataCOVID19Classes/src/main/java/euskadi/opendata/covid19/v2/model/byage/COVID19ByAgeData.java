@@ -80,8 +80,8 @@ public class COVID19ByAgeData
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByAgeDataByAgeRangeByDate pivotByDate() {
-		COVID19ByAgeDataByAgeRangeByDate out = new COVID19ByAgeDataByAgeRangeByDate();
+	public COVID19ByAgeDataByDate pivotByDate() {
+		COVID19ByAgeDataByDate out = new COVID19ByAgeDataByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
 		out.setName(this.getName());
 		out.setNotes(this.getNotes());
@@ -110,9 +110,9 @@ public class COVID19ByAgeData
 				}
 			}
 			// create separate collections for dates & values (more suitable for xy representations)
-			positiveCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			deathCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
-			lethalityRateByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			positiveCountByDate.splitItemsByDate();
+			deathCountByDate.splitItemsByDate();
+			lethalityRateByDate.splitItemsByDate();
 			
 			// add
 			out.addPositiveCountByAgeRange(positiveCountByDate);
