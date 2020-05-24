@@ -92,9 +92,11 @@ public class COVID19AnalysisImport {
 									   .loadAsStream()
 									   .directNoAuthConnected();
 		} catch (IOException e) {
-			is = new FileInputStream(new File( Strings.customized(localPath.joinedWith("{}{}/{}/" + COVID19AnalysisImport.FILENAME + "-{}.csv").asAbsoluteString(),
- 					  MonthOfYear.of(theDate).asStringPaddedWithZero(),Year.of(theDate).asStringInCentury(),DayOfMonth.of(theDate).asStringPaddedWithZero(),
- 					  Dates.format(theDate,"ddMMyy"))));
+			is = new FileInputStream(new File(Strings.customized(localPath.joinedWith("{}{}/{}/{}-{}.csv").asAbsoluteString(),
+ 					  						 					 MonthOfYear.of(theDate).asStringPaddedWithZero(),Year.of(theDate).asStringInCentury(),
+ 					  						 					 DayOfMonth.of(theDate).asStringPaddedWithZero(),
+ 					  						 					 COVID19AnalysisImport.FILENAME,
+ 					  						 					 Dates.format(theDate,"ddMMyy"))));
 		}
 		
 		// [2] - process the file

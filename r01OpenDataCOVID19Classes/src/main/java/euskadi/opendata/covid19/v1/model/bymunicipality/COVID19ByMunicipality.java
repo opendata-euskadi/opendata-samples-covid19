@@ -87,6 +87,10 @@ public class COVID19ByMunicipality
 												   dimItem.getPositiveCount());
 				}
 			}
+			// create separate collections for dates & values (more suitable for xy representations)
+			positiveCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			
+			// add
 			out.addPositiveCountByMunicipality(positiveCountByDate);
 		}
 		return out;

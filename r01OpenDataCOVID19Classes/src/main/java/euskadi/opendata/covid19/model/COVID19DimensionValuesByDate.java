@@ -2,6 +2,7 @@ package euskadi.opendata.covid19.model;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import r01f.objectstreamer.annotations.MarshallField.DateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
+import r01f.util.types.collections.CollectionUtils;
 import r01f.util.types.collections.Lists;
 
 /**
@@ -67,7 +69,33 @@ public class COVID19DimensionValuesByDate<D,V>
 /////////////////////////////////////////////////////////////////////////////////////////
 	public COVID19DimensionValuesByDate<D,V> addValueAt(final Date date,final V value) {
 		if (_itemsByDate == null) _itemsByDate = Lists.newArrayList();
-		_itemsByDate.add(new COVID19DimensionValueAtDate<V>(date,value));
+		_itemsByDate.add(new COVID19DimensionValueAtDate<>(date,value));
 		return this;
+	}
+	/**
+	 * Creates two different collections of Dates and Values
+	 * (more suitable for XY representations)
+	 */
+	public void splitItemsByDateIntoDatesAndValuesCollections() {
+		if (CollectionUtils.isNullOrEmpty(_itemsByDate)) return;
+		
+		_dates = COVID19DimensionValuesByDate.getDatesOf(_itemsByDate);
+		_values = COVID19DimensionValuesByDate.getValuesOf(_itemsByDate);
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////	
+	public static <V> Collection<Date> getDatesOf(final Collection<COVID19DimensionValueAtDate<V>> itemsByDate) {
+		if (CollectionUtils.isNullOrEmpty(itemsByDate)) return null;
+		return itemsByDate.stream()
+						  .map(COVID19DimensionValueAtDate::getDate)
+						  .collect(Collectors.toList());
+						
+	}
+	public static <V> Collection<V> getValuesOf(final Collection<COVID19DimensionValueAtDate<V>> itemsByDate) {
+		if (CollectionUtils.isNullOrEmpty(itemsByDate)) return null;
+		return itemsByDate.stream()
+						  .map(COVID19DimensionValueAtDate::getValue)
+						  .collect(Collectors.toList());
 	}
 }

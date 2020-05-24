@@ -109,10 +109,14 @@ public class COVID19ByAgeData
 												   dimItem.getLethalityRate());
 				}
 			}
+			// create separate collections for dates & values (more suitable for xy representations)
+			positiveCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			deathCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			lethalityRateByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			
+			// add
 			out.addPositiveCountByAgeRange(positiveCountByDate);
-			
 			out.addDeathCountByAgeRange(deathCountByDate);
-			
 			out.addLethalityRateByAgeRange(lethalityRateByDate);
 			
 		}

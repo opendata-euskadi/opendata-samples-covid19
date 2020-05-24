@@ -61,7 +61,7 @@ import r01f.util.types.Strings;
 import r01f.util.types.collections.CollectionUtils;
 
 @Slf4j
-public class COVID19Import {
+public class COVID19V1Import {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	CONSTANTS
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +99,7 @@ public class COVID19Import {
 			StringPersistenceUtils.save(new Date().toString(),
 										tokenFile);
 			// import
-			COVID19Import.doImportAllTo(rootPath);
+			COVID19V1Import.doImportAllTo(rootPath);
 			
 			log.info("\n\n\n\n\n\n");
 			log.info("=================================================================");
@@ -423,6 +423,7 @@ public class COVID19Import {
 														 final Path localPath) {
 		COVID19ByAgeDeaths out = new COVID19ByAgeDeaths();
 		out.setLastUpdateDate(new Date());
+		// a collection of date-values, date-values, date-values...
 		out.setByDateItems(history.getByDateItems()
 								  .stream()
 								  .map(item -> _importByAgeDeathAt(item.getDate(),

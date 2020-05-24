@@ -130,6 +130,20 @@ public class COVID19ByAgeDeaths
 														dimItem.getTotalLethalityRate());
 				}
 			}
+			// create separate collections for dates & values (more suitable for xy representations)
+			positiveMenCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			positiveWomenCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			positiveTotalCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			
+			deathMenCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			deathWomeCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			deathTotalCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			
+			menLethalityRateByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			womenLethalityRateByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			totalLethalityRateByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			
+			// add
 			out.addPositiveMenCountByAgeRange(positiveMenCountByDate);
 			out.addPositiveWomenCountByAgeRange(positiveWomenCountByDate);
 			out.addPositiveTotalCountByAgeRange(positiveTotalCountByDate);
@@ -141,7 +155,6 @@ public class COVID19ByAgeDeaths
 			out.addMenLethalityRateByAgeRange(menLethalityRateByDate);
 			out.addWomenLethalityRateByAgeRange(womenLethalityRateByDate);
 			out.addTotalLethalityRateByAgeRange(totalLethalityRateByDate);
-			
 		}
 		return out;
 	}

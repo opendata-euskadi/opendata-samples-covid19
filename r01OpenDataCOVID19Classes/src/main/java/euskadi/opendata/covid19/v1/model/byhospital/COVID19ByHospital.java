@@ -112,6 +112,12 @@ public class COVID19ByHospital
 													dimItem.getReleasedPeopleCount());
 				}
 			}
+			// create separate collections for dates & values (more suitable for xy representations)
+			floorPeopleCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			icuPeopleCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			totalPeopleCountByDate.splitItemsByDateIntoDatesAndValuesCollections();
+			
+			// add
 			out.addFloorPeopleCountByHospital(floorPeopleCountByDate);
 			out.addIcuPeopleCountByHospital(icuPeopleCountByDate);
 			out.addTotalPeopleCountByHospital(totalPeopleCountByDate);

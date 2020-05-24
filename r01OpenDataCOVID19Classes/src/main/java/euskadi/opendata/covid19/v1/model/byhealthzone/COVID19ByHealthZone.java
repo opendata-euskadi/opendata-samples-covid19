@@ -96,6 +96,12 @@ public class COVID19ByHealthZone
 												  	   dimItem.getPositiveRate());
 				}
 			}
+			// create separate collections for dates & values (more suitable for xy representations)
+			populationByGeoRegion.splitItemsByDateIntoDatesAndValuesCollections();
+			positiveCountByGeoRegion.splitItemsByDateIntoDatesAndValuesCollections();
+			positiveRateByGeoRegion.splitItemsByDateIntoDatesAndValuesCollections();
+			
+			// add
 			out.addPopulationByGeoRegion(populationByGeoRegion);
 			out.addPositiveCountByGeoRegion(positiveCountByGeoRegion);
 			out.addPositiveRateByGeoRegion(positiveRateByGeoRegion);
