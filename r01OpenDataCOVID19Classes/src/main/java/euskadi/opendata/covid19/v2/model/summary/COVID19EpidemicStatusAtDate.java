@@ -1,0 +1,99 @@
+package euskadi.opendata.covid19.v2.model.summary;
+
+import java.util.Date;
+
+import euskadi.opendata.covid19.model.COVID19ModelObject;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import r01f.objectstreamer.annotations.MarshallField;
+import r01f.objectstreamer.annotations.MarshallField.DateFormat;
+import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
+import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
+import r01f.objectstreamer.annotations.MarshallType;
+
+@MarshallType(as="covid19ByAgeDataItem")
+@Accessors(prefix="_")
+public class COVID19EpidemicStatusAtDate
+  implements COVID19ModelObject {
+
+	private static final long serialVersionUID = 3447297472250093105L;
+/////////////////////////////////////////////////////////////////////////////////////////
+//	FIELDS
+/////////////////////////////////////////////////////////////////////////////////////////
+	@MarshallField(as="date",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private Date _date;
+	
+	@MarshallField(as="pcrCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _PCRCount;
+	
+	@MarshallField(as="serologyTestCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _serologyTestCount;
+	
+	@MarshallField(as="uniquePersonCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _uniquePersonCount;
+	
+	@MarshallField(as="pcrUniquePersonCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _PCRUniquePersonCount;
+	
+	@MarshallField(as="pcrUniquePersonCountByMillionPeople",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _PCRUniquePersonCountByMillionPeople;
+	
+	@MarshallField(as="pcrPositiveCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _PCRPositiveCount;
+	
+	@MarshallField(as="serologyPositiveCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _serologyPositiveCount;
+	
+	@MarshallField(as="totalPositiveCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _totalPositiveCount;
+	
+	@MarshallField(as="pcrPositiveCountAraba",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _PCRPositiveCountAraba;
+	
+	@MarshallField(as="pcrPositiveCountBizkaia",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _PCRPositiveCountBizkaia;
+	
+	@MarshallField(as="pcrPositiveCountGipuzkoa",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _PCRPositiveCountGipuzkoa;
+	
+	@MarshallField(as="pcrPositiveCountOther",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _PCRPositiveCountOther;
+	
+	@MarshallField(as="recoveredCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _recoveredCount;
+	
+	@MarshallField(as="notRecoveredCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _notRecoveredCount;
+	
+	@MarshallField(as="deceasedCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _deceasedCount;
+	
+	@MarshallField(as="newHospitalAdmissionsWithPCRCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _newHospitalAdmissionsWithPCRCount;
+	
+	@MarshallField(as="icuPeopleCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _ICUPeopleCount;
+	
+	@MarshallField(as="r0",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private float _r0;
+}
