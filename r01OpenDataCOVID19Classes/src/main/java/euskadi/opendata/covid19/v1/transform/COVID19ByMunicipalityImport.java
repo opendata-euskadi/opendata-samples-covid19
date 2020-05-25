@@ -60,9 +60,9 @@ public class COVID19ByMunicipalityImport {
 		InputStream is = null;
 		try {
 			is = HttpClient.forUrl(url)
-									   .GET()
-									   .loadAsStream()
-									   .directNoAuthConnected();
+						   .GET()
+						   .loadAsStream()
+						   .directNoAuthConnected();
 		} catch (IOException e) {
 			//Search in local
 			is = new FileInputStream(new File( Strings.customized(localPath.joinedWith("{}{}/{}/udalerriak-municipios-{}.csv").asAbsoluteString(),

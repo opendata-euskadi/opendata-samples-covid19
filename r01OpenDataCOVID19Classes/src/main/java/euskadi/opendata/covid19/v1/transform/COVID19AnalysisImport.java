@@ -54,7 +54,7 @@ public class COVID19AnalysisImport {
 		return url;
 	}
 	public static boolean existsFileAt(final Date date,
-										   final Path localPath)  {
+									   final Path localPath)  {
 		Url url = COVID19AnalysisImport.getUrlAt(date);
 		
 		log.info("Reading [tests] file from: {}",url);
@@ -75,22 +75,22 @@ public class COVID19AnalysisImport {
 		}
 	}
 	public static COVID19Analysis importAt(final Date date,
-											 final Path localPath) throws IOException {
+										   final Path localPath) throws IOException {
 		return COVID19AnalysisImport.importAt(COVID19AnalysisImport.getUrlAt(date),
 												date,
 												localPath);
 	}
 	public static COVID19Analysis importAt(final Url url,
-											 final Date theDate,
-											 final Path localPath) throws IOException {
+										   final Date theDate,
+										   final Path localPath) throws IOException {
 		// [1] - read the file
 		log.info("Reading [tests] file from: {}",url);
 		InputStream is;
 		try {
 			is = HttpClient.forUrl(url)
-									   .GET()
-									   .loadAsStream()
-									   .directNoAuthConnected();
+						   .GET()
+						   .loadAsStream()
+						   .directNoAuthConnected();
 		} catch (IOException e) {
 			is = new FileInputStream(new File(Strings.customized(localPath.joinedWith("{}{}/{}/{}-{}.csv").asAbsoluteString(),
  					  						 					 MonthOfYear.of(theDate).asStringPaddedWithZero(),Year.of(theDate).asStringInCentury(),

@@ -64,9 +64,9 @@ public class COVID19ByHealthZoneImport {
 		InputStream is = null;
 		try {
 			is = HttpClient.forUrl(url)
-									   .GET()
-									   .loadAsStream()
-									   .directNoAuthConnected();
+						   .GET()
+						   .loadAsStream()
+						   .directNoAuthConnected();
 		} catch (IOException e) {
 			//Search in local
 			is = new FileInputStream(new File( Strings.customized(localPath.joinedWith("{}{}/{}/osasun_eremuak-zonas_salud-{}.csv").asAbsoluteString(),

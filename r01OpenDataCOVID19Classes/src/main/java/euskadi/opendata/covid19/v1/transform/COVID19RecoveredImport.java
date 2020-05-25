@@ -56,16 +56,16 @@ public class COVID19RecoveredImport {
 		log.info("Reading [recovered] file from: {}",url);
 		try {
 			int response = HttpClient.forUrl(url)
-									   .HEAD()
-									   .getResponse()
-									   .directNoAuthConnected()
-									   .getCodeNumber();
+									 .HEAD()
+									 .getResponse()
+									 .directNoAuthConnected()
+									 .getCodeNumber();
 			return response == 200;
 		} catch (IOException ioEx) {
 			//Search in local
 			File file = new File( Strings.customized(localPath.joinedWith("{}{}/{}/" + COVID19RecoveredImport.FILENAME + "-{}.csv").asAbsoluteString(),
-											   					  MonthOfYear.of(date).asStringPaddedWithZero(),Year.of(date).asStringInCentury(),DayOfMonth.of(date).asStringPaddedWithZero(),
-											   					  Dates.format(date,"ddMMyy")));
+								   					 MonthOfYear.of(date).asStringPaddedWithZero(),Year.of(date).asStringInCentury(),DayOfMonth.of(date).asStringPaddedWithZero(),
+								   					Dates.format(date,"ddMMyy")));
 			
 			return file.exists();
 		}

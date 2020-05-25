@@ -33,9 +33,9 @@ public class COVID19ByAgeDeathsImport {
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	private static final Pattern LINE_MATCHER0 = Pattern.compile("([^;]+);" +	// [1] age range
-																"([0-9]+);" + 	// [2] positive total
-																"([0-9]+);" + 	// [3] total death
-																"([0-9]+,?[0-9]*)%"); 	// [10] lethality
+																 "([0-9]+);" + 	// [2] positive total
+																 "([0-9]+);" + 	// [3] total death
+																 "([0-9]+,?[0-9]*)%"); 	// [10] lethality
 	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+);" +	// [1] age range
 																"([0-9]+);" + 	// [2] positive men
 																"([0-9]+);" + 	// [3] positive women
@@ -69,9 +69,9 @@ public class COVID19ByAgeDeathsImport {
 		InputStream is;
 		try {
 			is = HttpClient.forUrl(url)
-									   .GET()
-									   .loadAsStream()
-									   .directNoAuthConnected();
+						   .GET()
+						   .loadAsStream()
+						   .directNoAuthConnected();
 		} catch (IOException e) {
 			//Search in local
 			is = new FileInputStream(new File( Strings.customized(localPath.joinedWith("{}{}/{}/hildakoak-fallecidos-{}.csv").asAbsoluteString(),

@@ -306,11 +306,8 @@ public class COVID19V1Import {
 		Files.copy(Paths.get(txtFilePath.asAbsoluteString()), Paths.get(opendataPath.joinedWith("aurrekoak-anteriores.txt").asAbsoluteString()), StandardCopyOption.REPLACE_EXISTING);
 		Files.copy(Paths.get(excelFilePath.asAbsoluteString()), Paths.get(xlsFileTargetPath.asAbsoluteString()), StandardCopyOption.REPLACE_EXISTING);
 
-					
-		
 	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 //	BY HEALTH ZONE
 /////////////////////////////////////////////////////////////////////////////////////////
 	private static COVID19ByHealthZone _importByHealthZone(final COVID19Index history,
