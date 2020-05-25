@@ -25,9 +25,9 @@ public class COVID19EpidemicStatusAtDate
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _date;
 	
-	@MarshallField(as="pcrCount",
+	@MarshallField(as="pcrTestCount",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _PCRCount;
+	@Getter @Setter private long _PCRTestCount;
 	
 	@MarshallField(as="serologyTestCount",
 				   whenXml=@MarshallFieldAsXml(attr=true))

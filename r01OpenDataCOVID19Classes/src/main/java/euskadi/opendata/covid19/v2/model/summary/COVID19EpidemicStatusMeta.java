@@ -25,9 +25,9 @@ public abstract class COVID19EpidemicStatusMeta {
 	public final static COVID19MetaData DATE = new COVID19MetaData(COVID19MetaDataID.forId("date"),      
 																				 		   "Fecha",                              
 																				 		   "Data");
-	public final static COVID19MetaData PCR_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("pcrCount"),    
-																	 	"PCR totales",                               
-																	 	"PCR guztira");
+	public final static COVID19MetaData PCR_TEST_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("pcrCount"),    
+																	 		 "PCR totales",                               
+																	 		 "PCR guztira");
 	public final static COVID19MetaData SEROLOGY_TEST_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("serologyTestCount"),    
 																	 		   	  "Test rápidos (serologicos) totales",                               
 																	 		   	  "Test azkarrak (serologikoak) guztira");

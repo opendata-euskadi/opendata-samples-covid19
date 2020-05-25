@@ -43,153 +43,153 @@ public class COVID19EpidemicStatus
 	
 	////////// individual data by date
 	@MarshallField(as="pcrCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRCountByDate;
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrCountAtDate"))
+	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRTestCountByDate;
 	
 	@MarshallField(as="serologyTestCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="serologyTestCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _serologyTestCountByDate;
 	
 	@MarshallField(as="uniquePersonCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="uniquePersonCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _uniquePersonCountByDate;
 	
 	@MarshallField(as="pcrUniquePersonCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrUniquePersonCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRUniquePersonCountByDate;
 	
 	@MarshallField(as="pcrUniquePersonCountByMillionPeopleByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrUniquePersonCountByMillionPeopleAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRUniquePersonCountByMillionPeopleByDate;
 	
 	@MarshallField(as="pcrPositiveCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRositiveCountByDate;
 	
 	@MarshallField(as="serologyPositiveCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="serologyPositiveCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _serologyPositiveCountByDate;
 	
 	@MarshallField(as="totalPositiveCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="totalPositiveCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _totalPositiveCountByDate;
 	
 	@MarshallField(as="pcrPositiveCountArabaByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountArabaAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRPositiveCountArabaByDate;
 	
 	@MarshallField(as="pcrPositiveCountBizkaiaByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountBizkaiaAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRPositiveCountBizkaiaByDate;
 	
 	@MarshallField(as="pcrPositiveCountGipuzkoaByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountGipuzkoaAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRPositiveCountGipuzkoaByDate;
 	
 	@MarshallField(as="pcrPositiveCountOtherByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountOtherAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _PCRPositiveCountOtherByDate;
 	
 	@MarshallField(as="recoveredCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="recoveredCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _recoveredCountByDate;
 	
 	@MarshallField(as="notRecoveredCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="notRecoveredCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _notRecoveredCountByDate;
 	
 	@MarshallField(as="deceasedCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="deceasedCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _deceasedCountByDate;
 	
 	@MarshallField(as="newHospitalAdmissionsWithPCRCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="newHospitalAdmissionsWithPCRCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _newHospitalAdmissionsWithPCRCountByDate;
 	
 	@MarshallField(as="icuPeopleCountByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="icuPeopleCountAtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _icuPeopleCountByDate;
 	
 	@MarshallField(as="r0ByDate",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="r0AtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Float>> _r0ByDate;
 	
 	
 	////////// Data splitted in a more suitable format for xy representations
-	@MarshallField(as="dates",
+	@MarshallField(as="dates",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
 				   whenXml=@MarshallFieldAsXml(collectionElementName="date"))
 	@Getter @Setter private Collection<Date> _dates;
 	
-	@MarshallField(as="pcrCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
-	@Getter @Setter private Collection<Long> _PCRCount;
+	@MarshallField(as="pcrTestCount",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrTestCountItem"))
+	@Getter @Setter private Collection<Long> _PCRTestCount;
 	
 	@MarshallField(as="serologyTestCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="serologyTestCountItem"))
 	@Getter @Setter private Collection<Long> _serologyTestCount;
 	
 	@MarshallField(as="uniquePersonCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="uniquePersonCountItem"))
 	@Getter @Setter private Collection<Long> _uniquePersonCount;
 	
 	@MarshallField(as="pcrUniquePersonCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrUniquePersonCountItem"))
 	@Getter @Setter private Collection<Long> _PCRUniquePersonCount;
 	
 	@MarshallField(as="pcrUniquePersonCountByMillionPeople",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrUniquePersonCountByMillionPeopleItem"))
 	@Getter @Setter private Collection<Long> _PCRUniquePersonCountByMillionPeople;
 	
 	@MarshallField(as="pcrPositiveCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountItem"))
 	@Getter @Setter private Collection<Long> _PCRositiveCount;
 	
 	@MarshallField(as="serologyPositiveCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="serologyPositiveCountItem"))
 	@Getter @Setter private Collection<Long> _serologyPositiveCount;
 	
 	@MarshallField(as="totalPositiveCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="totalPositiveCountItem"))
 	@Getter @Setter private Collection<Long> _totalPositiveCount;
 	
 	@MarshallField(as="pcrPositiveCountAraba",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountArabaItem"))
 	@Getter @Setter private Collection<Long> _PCRPositiveCountAraba;
 	
 	@MarshallField(as="pcrPositiveCountBizkaia",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountBizkaiaItem"))
 	@Getter @Setter private Collection<Long> _PCRPositiveCountBizkaia;
 	
 	@MarshallField(as="pcrPositiveCountGipuzkoa",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountGipuzkoaItem"))
 	@Getter @Setter private Collection<Long> _PCRPositiveCountGipuzkoa;
 	
 	@MarshallField(as="pcrPositiveCountOther",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="pcrPositiveCountOtherItem"))
 	@Getter @Setter private Collection<Long> _PCRPositiveCountOther;
 	
 	@MarshallField(as="recoveredCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="recoveredCountItem"))
 	@Getter @Setter private Collection<Long> _recoveredCount;
 	
 	@MarshallField(as="notRecoveredCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="notRecoveredCountItem"))
 	@Getter @Setter private Collection<Long> _notRecoveredCount;
 	
 	@MarshallField(as="deceasedCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="deceasedCountItem"))
 	@Getter @Setter private Collection<Long> _deceasedCount;
 	
 	@MarshallField(as="newHospitalAdmissionsWithPCRCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="newHospitalAdmissionsWithPCRCountItem"))
 	@Getter @Setter private Collection<Long> _newHospitalAdmissionsWithPCRCount;
 	
 	@MarshallField(as="icuPeopleCount",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="icuPeopleCountItem"))
 	@Getter @Setter private Collection<Long> _icuPeopleCount;
 	
 	@MarshallField(as="r0",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="count"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="r0Item"))
 	@Getter @Setter private Collection<Float> _r0;
 	
 	////////// Meta-data
@@ -202,7 +202,7 @@ public class COVID19EpidemicStatus
 	@MarshallField(as="metaData",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
 	@Getter @Setter private COVID19MetaDataCollection _metaData = new COVID19MetaDataCollection(COVID19EpidemicStatusMeta.DATE,
-																								COVID19EpidemicStatusMeta.PCR_COUNT,
+																								COVID19EpidemicStatusMeta.PCR_TEST_COUNT,
 																								COVID19EpidemicStatusMeta.SEROLOGY_TEST_COUNT,
 																								COVID19EpidemicStatusMeta.UNIQUE_PERSON_COUNT,
 																								COVID19EpidemicStatusMeta.PCR_UNIQUE_PERSON_COUNT,
@@ -225,30 +225,10 @@ public class COVID19EpidemicStatus
 /////////////////////////////////////////////////////////////////////////////////////////
 	public void splitItemsByDate() {
 		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return;
-		
-		// by date
-		_PCRCountByDate = COVID19EpidemicStatus.getPCRCountByDateOf(_byDateItems);
-		_serologyTestCountByDate = COVID19EpidemicStatus.getSerologyTestCountByDateOf(_byDateItems);
-		_uniquePersonCountByDate = COVID19EpidemicStatus.getUniquePersonCountByDateOf(_byDateItems);
-		_PCRUniquePersonCountByDate = COVID19EpidemicStatus.getPCRUniquePersonCountByDateOf(_byDateItems);
-		_PCRUniquePersonCountByMillionPeopleByDate = COVID19EpidemicStatus.getPCRUniquePersonCountByDateOf(_byDateItems);
-		_PCRositiveCountByDate = COVID19EpidemicStatus.getPCRPositiveCountByDateOf(_byDateItems);
-		_serologyPositiveCountByDate = COVID19EpidemicStatus.getSerologyPositiveCountByDateOf(_byDateItems);
-		_totalPositiveCountByDate = COVID19EpidemicStatus.getTotalPositiveCountByDateOf(_byDateItems);
-		_PCRPositiveCountArabaByDate = COVID19EpidemicStatus.getPCRPositiveCountArabaByDateOf(_byDateItems);
-		_PCRPositiveCountBizkaiaByDate = COVID19EpidemicStatus.getPCRPositiveCountBizkaiaByDateOf(_byDateItems);
-		_PCRPositiveCountGipuzkoaByDate = COVID19EpidemicStatus.getPCRPositiveCountGipuzkoaByDateOf(_byDateItems);
-		_PCRPositiveCountOtherByDate = COVID19EpidemicStatus.getPCRPositiveCountOtherByDateOf(_byDateItems);
-		_recoveredCountByDate = COVID19EpidemicStatus.getRecoveredCountByDateOf(_byDateItems);
-		_notRecoveredCountByDate = COVID19EpidemicStatus.getNotRecoveredCountByDateOf(_byDateItems);
-		_deceasedCountByDate = COVID19EpidemicStatus.getDeceasedCountByDateOf(_byDateItems);
-		_newHospitalAdmissionsWithPCRCountByDate = COVID19EpidemicStatus.getNewHospitalAdmissionsWithPCRCountByDateOf(_byDateItems);
-		_icuPeopleCountByDate = COVID19EpidemicStatus.getICUPeopleCountByDateOf(_byDateItems);
-		_r0ByDate = COVID19EpidemicStatus.getR0ByDateOf(_byDateItems);
-		
+
 		// split
 		_dates = COVID19EpidemicStatus.getDatesOf(_byDateItems);
-		_PCRCount = COVID19EpidemicStatus.getPCRCountOf(_byDateItems);
+		_PCRTestCount = COVID19EpidemicStatus.getPCRTestCountOf(_byDateItems);
 		_serologyTestCount = COVID19EpidemicStatus.getSerologyTestCountOf(_byDateItems);
 		_uniquePersonCount = COVID19EpidemicStatus.getUniquePersonCountOf(_byDateItems);
 		_PCRUniquePersonCount = COVID19EpidemicStatus.getPCRUniquePersonCountOf(_byDateItems);
@@ -267,6 +247,29 @@ public class COVID19EpidemicStatus
 		_icuPeopleCount = COVID19EpidemicStatus.getICUPeopleCountOf(_byDateItems);
 		_r0 = COVID19EpidemicStatus.getR0Of(_byDateItems);
 	}
+	public void pivotData() {
+		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return;
+		
+		// by date
+		_PCRTestCountByDate = COVID19EpidemicStatus.getPCRTestCountByDateOf(_byDateItems);
+		_serologyTestCountByDate = COVID19EpidemicStatus.getSerologyTestCountByDateOf(_byDateItems);
+		_uniquePersonCountByDate = COVID19EpidemicStatus.getUniquePersonCountByDateOf(_byDateItems);
+		_PCRUniquePersonCountByDate = COVID19EpidemicStatus.getPCRUniquePersonCountByDateOf(_byDateItems);
+		_PCRUniquePersonCountByMillionPeopleByDate = COVID19EpidemicStatus.getPCRUniquePersonCountByDateOf(_byDateItems);
+		_PCRositiveCountByDate = COVID19EpidemicStatus.getPCRPositiveCountByDateOf(_byDateItems);
+		_serologyPositiveCountByDate = COVID19EpidemicStatus.getSerologyPositiveCountByDateOf(_byDateItems);
+		_totalPositiveCountByDate = COVID19EpidemicStatus.getTotalPositiveCountByDateOf(_byDateItems);
+		_PCRPositiveCountArabaByDate = COVID19EpidemicStatus.getPCRPositiveCountArabaByDateOf(_byDateItems);
+		_PCRPositiveCountBizkaiaByDate = COVID19EpidemicStatus.getPCRPositiveCountBizkaiaByDateOf(_byDateItems);
+		_PCRPositiveCountGipuzkoaByDate = COVID19EpidemicStatus.getPCRPositiveCountGipuzkoaByDateOf(_byDateItems);
+		_PCRPositiveCountOtherByDate = COVID19EpidemicStatus.getPCRPositiveCountOtherByDateOf(_byDateItems);
+		_recoveredCountByDate = COVID19EpidemicStatus.getRecoveredCountByDateOf(_byDateItems);
+		_notRecoveredCountByDate = COVID19EpidemicStatus.getNotRecoveredCountByDateOf(_byDateItems);
+		_deceasedCountByDate = COVID19EpidemicStatus.getDeceasedCountByDateOf(_byDateItems);
+		_newHospitalAdmissionsWithPCRCountByDate = COVID19EpidemicStatus.getNewHospitalAdmissionsWithPCRCountByDateOf(_byDateItems);
+		_icuPeopleCountByDate = COVID19EpidemicStatus.getICUPeopleCountByDateOf(_byDateItems);
+		_r0ByDate = COVID19EpidemicStatus.getR0ByDateOf(_byDateItems);
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -276,10 +279,10 @@ public class COVID19EpidemicStatus
 						  .map(COVID19EpidemicStatusAtDate::getDate)
 						  .collect(Collectors.toList());
 	}
-	public static Collection<Long> getPCRCountOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+	public static Collection<Long> getPCRTestCountOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
 		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
 		return byDateItems.stream()
-						  .map(COVID19EpidemicStatusAtDate::getPCRCount)
+						  .map(COVID19EpidemicStatusAtDate::getPCRTestCount)
 						  .collect(Collectors.toList());
 	}
 	public static Collection<Long> getSerologyTestCountOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
@@ -387,10 +390,10 @@ public class COVID19EpidemicStatus
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static Collection<COVID19DimensionValueAtDate<Long>> getPCRCountByDateOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+	public static Collection<COVID19DimensionValueAtDate<Long>> getPCRTestCountByDateOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
 		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
 		return byDateItems.stream()
-						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getPCRCount()))
+						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getPCRTestCount()))
 						  .collect(Collectors.toList());
 	}
 	public static Collection<COVID19DimensionValueAtDate<Long>> getSerologyTestCountByDateOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
