@@ -1,9 +1,7 @@
 package euskadi.opendata.covid19.model;
 
 import euskadi.opendata.covid19.model.COVID19IDs.COVID19HealthZoneID;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import r01f.objectstreamer.annotations.MarshallField;
@@ -13,7 +11,6 @@ import r01f.types.geo.GeoRegion;
 
 @MarshallType(as="healthZone")
 @Accessors(prefix="_")
-@NoArgsConstructor @AllArgsConstructor
 public class COVID19HealthZone 
   implements COVID19ModelObject {
 
@@ -27,4 +24,17 @@ public class COVID19HealthZone
 	
 	@MarshallField(as="geoRegion")
 	@Getter @Setter private GeoRegion _geoRegion;
+/////////////////////////////////////////////////////////////////////////////////////////
+//	CONSTRUCTOR
+/////////////////////////////////////////////////////////////////////////////////////////
+	public COVID19HealthZone() {
+		// default no-args constructor
+	}
+	public COVID19HealthZone(final COVID19HealthZoneID id) {
+		_id = id;
+	}
+	public COVID19HealthZone(final COVID19HealthZoneID id,final GeoRegion region) {
+		_id = id;
+		_geoRegion = region;
+	}
 }

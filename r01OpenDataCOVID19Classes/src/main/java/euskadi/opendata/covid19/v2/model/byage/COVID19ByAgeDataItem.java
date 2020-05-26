@@ -39,9 +39,9 @@ public class COVID19ByAgeDataItem
 	@Getter @Setter private float _percentage;
 
 ////////// Death
-	@MarshallField(as="deathCount",
+	@MarshallField(as="deceasedCount",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _deathCount;
+	@Getter @Setter private long _deceasedCount;
 	
 	@MarshallField(as="lethalityRate",
 				   whenXml=@MarshallFieldAsXml(attr=true))

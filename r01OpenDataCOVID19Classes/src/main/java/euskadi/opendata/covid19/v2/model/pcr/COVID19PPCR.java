@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import euskadi.opendata.covid19.model.COVID19DimensionValueAtDate;
 import euskadi.opendata.covid19.model.COVID19MetaDataCollection;
 import euskadi.opendata.covid19.model.COVID19ModelObject;
 import lombok.Getter;
@@ -39,7 +40,16 @@ public class COVID19PPCR
 	////////// data by date: date-data, date-data, date-data...
 	@MarshallField(as="byDate",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="byDateItem"))
-	@Getter @Setter private Collection<COVID19PPCRByDate> _byDateItems;
+	@Getter @Setter private Collection<COVID19PPCRAtDate> _byDateItems;
+	
+	////////// individual data by date
+	@MarshallField(as="positiveCountByDate",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="positiveCountAtDate"))
+	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _positiveCountByDate;
+	
+	@MarshallField(as="aggregatedIncidenceByDate",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="aggregatedIncidenceAtDate"))
+	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Float>> _aggregatedIncidenceByDate;
 	
 	////////// Data splitted in a more suitable format for xy representations
 	@MarshallField(as="dates",
@@ -75,25 +85,46 @@ public class COVID19PPCR
 		_positiveCounts = COVID19PPCR.getPositiveCountsOf(_byDateItems);
 		_aggregatedIncidences = COVID19PPCR.getAggregatedIncidencesOf(_byDateItems);
 	}
+	public void pivotData() {
+		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return;
+		
+		_positiveCountByDate = COVID19PPCR.getPositiveCountByDateOf(_byDateItems);
+		_aggregatedIncidenceByDate = COVID19PPCR.getAggregatedIncidenceByDateOf(_byDateItems);
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static Collection<Date> getDatesOf(final Collection<COVID19PPCRByDate> byDateItems) {
+	public static Collection<Date> getDatesOf(final Collection<COVID19PPCRAtDate> byDateItems) {
 		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
 		return byDateItems.stream()
-						  .map(COVID19PPCRByDate::getDate)
+						  .map(COVID19PPCRAtDate::getDate)
 						  .collect(Collectors.toList());
 	}
-	public static Collection<Long> getPositiveCountsOf(final Collection<COVID19PPCRByDate> byDateItems) {
+	public static Collection<Long> getPositiveCountsOf(final Collection<COVID19PPCRAtDate> byDateItems) {
 		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
 		return byDateItems.stream()
-						  .map(COVID19PPCRByDate::getPositiveCount)
+						  .map(COVID19PPCRAtDate::getPositiveCount)
 						  .collect(Collectors.toList());
 	}
-	public static Collection<Float> getAggregatedIncidencesOf(final Collection<COVID19PPCRByDate> byDateItems) {
+	public static Collection<Float> getAggregatedIncidencesOf(final Collection<COVID19PPCRAtDate> byDateItems) {
 		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
 		return byDateItems.stream()
-						  .map(COVID19PPCRByDate::getAggregatedIncidence)
+						  .map(COVID19PPCRAtDate::getAggregatedIncidence)
+						  .collect(Collectors.toList());
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	public static Collection<COVID19DimensionValueAtDate<Long>> getPositiveCountByDateOf(final Collection<COVID19PPCRAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getPositiveCount()))
+						  .collect(Collectors.toList());
+	}
+	public static Collection<COVID19DimensionValueAtDate<Float>> getAggregatedIncidenceByDateOf(final Collection<COVID19PPCRAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getAggregatedIncidence()))
 						  .collect(Collectors.toList());
 	}
 }

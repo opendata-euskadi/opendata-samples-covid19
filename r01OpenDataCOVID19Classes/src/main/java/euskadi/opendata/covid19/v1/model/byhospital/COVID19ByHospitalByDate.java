@@ -49,23 +49,23 @@ public class COVID19ByHospitalByDate
 	
 	////////// Data
 	@MarshallField(as="floorPeopleCountByHospital",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="floorPeopleCountByHospitalItem"))
 	@Getter @Setter private Collection<COVID19DimensionValuesByDate<COVID19HospitalID,Long>> _floorPeopleCountByHospital;
 	
 	@MarshallField(as="icuPeopleCountByHospital",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="icuPeopleCountByHospitalItem"))
 	@Getter @Setter private Collection<COVID19DimensionValuesByDate<COVID19HospitalID,Long>> _icuPeopleCountByHospital;
 	
 	@MarshallField(as="totalPeopleCountByHospital",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="totalPeopleCountByHospitalItem"))
 	@Getter @Setter private Collection<COVID19DimensionValuesByDate<COVID19HospitalID,Long>> _totalPeopleCountByHospital;
 	
 	@MarshallField(as="icuReleaseCountByHospital",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="icuReleaseCountByHospitalItem"))
 	@Getter @Setter private Collection<COVID19DimensionValuesByDate<COVID19HospitalID,Long>> _icuReleaseCountByHospital;
 	
 	@MarshallField(as="releasePeopleCountByHospital",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
+				   whenXml=@MarshallFieldAsXml(collectionElementName="releasePeopleCountByHospitalItem"))
 	@Getter @Setter private Collection<COVID19DimensionValuesByDate<COVID19HospitalID,Long>> _releasePeopleCountByHospital;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	

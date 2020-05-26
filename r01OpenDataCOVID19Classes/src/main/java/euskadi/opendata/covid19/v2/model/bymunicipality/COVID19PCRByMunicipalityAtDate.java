@@ -34,7 +34,7 @@ public class COVID19PCRByMunicipalityAtDate
 	
 	@MarshallField(as="items",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private Collection<COVID19PCRByMunicipalityItem> _items;
+	@Getter @Setter private Collection<COVID19MunicipalityPCRData> _items;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -45,12 +45,16 @@ public class COVID19PCRByMunicipalityAtDate
 							.collect(Collectors.toList())
 					: Lists.newArrayList();
 	}
-	public COVID19PCRByMunicipalityItem getItemFor(final GeoMunicipalityID geoMunicipality) {
+	public COVID19MunicipalityPCRData getItemFor(final GeoMunicipalityID geoMunicipality) {
 		return CollectionUtils.hasData(_items) 
 					? _items.stream()
 							.filter(item -> item.getGeoMunicipality()
 												.getId().is(geoMunicipality))
 							.findFirst().orElse(null)
 					: null;
+	}
+	public void addItem(final COVID19MunicipalityPCRData data) {
+		if (_items == null) _items = Lists.newArrayList();
+		_items.add(data);
 	}
 }

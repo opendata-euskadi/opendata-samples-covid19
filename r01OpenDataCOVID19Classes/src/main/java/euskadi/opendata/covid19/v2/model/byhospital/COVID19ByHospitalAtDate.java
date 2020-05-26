@@ -31,27 +31,42 @@ public class COVID19ByHospitalAtDate
 			   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _date;
 	
-	@MarshallField(as="total")
-	@Getter @Setter private COVID19ByHospitalTotal _total;
+	@MarshallField(as="totals")
+	@Getter @Setter private COVID19ByHospitalTotals _totals = new COVID19ByHospitalTotals();
 	
-	@MarshallField(as="items",
-				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private Collection<COVID19ByHospitalItem> _items;
+	////////// Data
+	@MarshallField(as="byHospital",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="atHospital"))
+	@Getter @Setter private Collection<COVID19HospitalData> _byHospital;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public Collection<COVID19HospitalID> getHospitals() {
-		return CollectionUtils.hasData(_items)
-					? _items.stream()
+		return CollectionUtils.hasData(_byHospital)
+					? _byHospital.stream()
 							.map(item -> item.getHospital())
 							.collect(Collectors.toList())
 					: Lists.newArrayList();
 	}
-	public COVID19ByHospitalItem getItemFor(final COVID19HospitalID hospital) {
-		return CollectionUtils.hasData(_items) 
-					? _items.stream()
+	public COVID19HospitalData getItemFor(final COVID19HospitalID hospital) {
+		return CollectionUtils.hasData(_byHospital) 
+					? _byHospital.stream()
 							.filter(item -> item.getHospital().is(hospital))
 							.findFirst().orElse(null)
 					: null;
+	}
+	public void mixByHospital(final Collection<COVID19HospitalData> byHospital) {
+		if (_byHospital == null) {
+			_byHospital = byHospital;
+		} else {
+			for (COVID19HospitalData hospitalData : byHospital) {
+				COVID19HospitalData existingHospitalData = this.getItemFor(hospitalData.getHospital());
+				if (existingHospitalData != null) {
+					existingHospitalData.mixWith(hospitalData);
+				} else {
+					_byHospital.add(hospitalData);
+				}
+			}
+		}
 	}
 }

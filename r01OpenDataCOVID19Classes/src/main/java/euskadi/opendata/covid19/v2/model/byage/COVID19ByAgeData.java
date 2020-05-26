@@ -103,7 +103,7 @@ public class COVID19ByAgeData
 												   dimItem.getPositiveCount());
 					// deaths
 					deathCountByDate.addValueAt(itemAtDate.getDate(),
-												dimItem.getDeathCount());
+												dimItem.getDeceasedCount());
 					// lethality
 					lethalityRateByDate.addValueAt(itemAtDate.getDate(),
 												   dimItem.getLethalityRate());

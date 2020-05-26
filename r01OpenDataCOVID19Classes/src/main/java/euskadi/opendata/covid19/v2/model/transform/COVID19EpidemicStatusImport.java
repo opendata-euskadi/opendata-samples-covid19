@@ -18,56 +18,55 @@ import com.google.common.collect.Lists;
 
 import euskadi.opendata.covid19.v2.model.summary.COVID19EpidemicStatus;
 import euskadi.opendata.covid19.v2.model.summary.COVID19EpidemicStatusAtDate;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import r01f.objectstreamer.Marshaller;
-import r01f.objectstreamer.MarshallerBuilder;
-import r01f.types.JavaPackage;
+import r01f.types.Path;
 import r01f.util.types.Dates;
 import r01f.util.types.Strings;
 
 @Slf4j
-public class COVID19SummaryImport {
-	
-	private static final String FILENAME = "summary";
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
+public abstract class COVID19EpidemicStatusImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+)," +	// [1] Fecha
+	private static final Pattern LINE_MATCHER = Pattern.compile("([^,]+)," +	// [1] Fecha
 
-																"([0-9]+)," + 	// [2] PCR totales 
-																"([0-9]*)," + 	// [3] Test rápidos totales
-																"([0-9]*)," + 	// [4] Personas únicas totales															
-																"([0-9]*)," + 	// [5] Personas únicas con PCR
-																"([0-9]*)," + 	// [6] Personas con PCR por millón de habitantes
-																"([0-9]*)," + 	// [7] Casos positivos PCR
-																"([0-9]*)," + 	// [8] Casos positivos detectados por serología
-																"([0-9]*)," + 	// [9] Casos positivos totales
-																"([0-9]*)," + 	// [10] Casos positivos PCR Álava
-																"([0-9]*)," + 	// [11] Casos positivos PCR Bizkaia
-																"([0-9]*)," + 	// [12] Casos positivos PCR Gipuzkoa
-																"([0-9]*)," + 	// [13] Otros casos positivos PCR
-																"([0-9]*)," + 	// [14] Recuperados o altas Hospitalarias
-																"([0-9]*)," + 	// [15] No recuperados
-																"([0-9]*)," + 	// [16] Fallecidos
-																"([0-9]*)," + 	// [17] Nuevos ingresos planta con PCR positivo
-																"([0-9]*)," + 	// [18] Hospitalizados en CI
-																"\\\"([0-9,]*)\\\"" 		// [19] R0 en Euskadi
+																"([^,]*)," + 	// [2]  PCR totales 
+																"([^,]*)," + 	// [3]  Test rápidos totales
+																"([^,]*)," + 	// [4]  Personas únicas totales															
+																"([^,]*)," + 	// [5]  Personas únicas con PCR
+																"([^,]*)," + 	// [6]  Personas con PCR por millón de habitantes
+																"([^,]*)," + 	// [7]  Casos positivos PCR
+																"([^,]*)," + 	// [8]  Casos positivos detectados por serología
+																"([^,]*)," + 	// [9]  Casos positivos totales
+																"([^,]*)," + 	// [10] Casos positivos PCR Álava
+																"([^,]*)," + 	// [11] Casos positivos PCR Bizkaia
+																"([^,]*)," + 	// [12] Casos positivos PCR Gipuzkoa
+																"([^,]*)," + 	// [13] Otros casos positivos PCR
+																"([^,]*)," + 	// [14] Recuperados o altas Hospitalarias
+																"([^,]*)," + 	// [15] No recuperados
+																"([^,]*)," + 	// [16] Fallecidos
+																"([^,]*)," + 	// [17] Nuevos ingresos planta con PCR positivo
+																"([^,]*)," + 	// [18] Hospitalizados en CI
+																"([^,]*)" 		// [19] R0 en Euskadi
 																);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static void main(final String[] args) {
-		File f = new File("c:/develop/temp_dev/covid19/c1.csv");
-		File xmlOutputFile = new File("c:/develop/temp_dev/covid19/covid19-epidemic-status.xml");
-		File jsonOutputFile = new File("c:/develop/temp_dev/covid19/covid19-epidemic-status.json");
+	public static void doImport(final Marshaller marshaller,
+								final Path sourceFolderPath,final Path generatedFolderPath) {
+		File f = new File(sourceFolderPath.joinedWith("c1-epidemic-status.csv").asAbsoluteString());
+		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-epidemic-status.xml").asAbsoluteString());
+		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-epidemic-status.json").asAbsoluteString());
 		try (InputStream is = new FileInputStream(f);
 			 OutputStream xmlos = new FileOutputStream(xmlOutputFile);
 			 OutputStream jsonos = new FileOutputStream(jsonOutputFile)) {
 			
-			COVID19EpidemicStatus status  = COVID19SummaryImport.importSummary(is);
+			COVID19EpidemicStatus status  = COVID19EpidemicStatusImport.doImport(is);
 			
-			Marshaller marshaller = MarshallerBuilder.findTypesToMarshallAtJavaPackages(JavaPackage.of("euskadi.opendata.covid19.model"))
-													 .build();
 			marshaller.forWriting()
 				      .toXml(status,xmlos);
 			marshaller.forWriting()
@@ -79,17 +78,16 @@ public class COVID19SummaryImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static COVID19EpidemicStatus importSummary(final InputStream is) throws IOException {
-		// [1] - read the file
-		log.info("Reading [summaries]...");
-		
+	public static COVID19EpidemicStatus doImport(final InputStream is) throws IOException {
 		Collection<COVID19EpidemicStatusAtDate> items = Lists.newArrayList();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		br.readLine();	// title
 		br.readLine();	// header
 		String line = br.readLine();
 		while (line != null) {
-			line = line.trim();
+			line = line.trim()
+					   .replaceAll("\\\"((?:[0-9]+),(?:[0-9]+))\\\"","\\1.\\2")
+					   .replace("\"","").replaceAll("%","");	// remove all " & %
 			
 			Matcher m = LINE_MATCHER.matcher(line);
 			if (m.find()) {
@@ -139,11 +137,11 @@ public class COVID19SummaryImport {
 				item.setDeceasedCount(Strings.isNOTNullOrEmpty(deceasedCount) ? Long.parseLong(deceasedCount) : 0);
 				item.setNewHospitalAdmissionsWithPCRCount(Strings.isNOTNullOrEmpty(newAdmissionsWithPCRCount) ? Long.parseLong(newAdmissionsWithPCRCount) : 0);
 				item.setICUPeopleCount(Strings.isNOTNullOrEmpty(icuPeopleCount) ? Long.parseLong(icuPeopleCount) : 0);
-				item.setR0(Strings.isNOTNullOrEmpty(r0) ? Float.parseFloat(r0.replace(",",".")) : 0);
+				item.setR0(Strings.isNOTNullOrEmpty(r0) ? Float.parseFloat(r0) : 0);
 				
 				items.add(item);
 			} else {
-				log.debug("NOT matching line: {}",line);
+				log.debug("{} NOT matching line: {}",LINE_MATCHER,line);
 			}
 			// next line
 			line = br.readLine();

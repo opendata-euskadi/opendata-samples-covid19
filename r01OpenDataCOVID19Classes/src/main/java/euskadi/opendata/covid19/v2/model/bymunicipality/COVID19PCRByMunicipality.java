@@ -1,5 +1,7 @@
 package euskadi.opendata.covid19.v2.model.bymunicipality;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 
@@ -34,10 +36,16 @@ public class COVID19PCRByMunicipality
 			   	   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _lastUpdateDate;
 	
+	////////// Data
 	@MarshallField(as="byDate",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="byDateItem"))
-	@Getter @Setter private Collection<COVID19PCRByMunicipalityAtDate> _byDateItems;
+	@Getter @Setter private Collection<COVID19PCRByMunicipalityAtDate> _byDateByMunicipality;
 	
+	////////// Pivot data
+	@MarshallField(as="byMunicipality")
+	@Getter @Setter private COVID19PCRByMunicipalityByDate _byMunicipalityByDate;
+	
+	////////// MetaData
 	@MarshallField(as="name")
 	@Getter @Setter private LanguageTexts _name = COVID19PCRByMunicipalityMeta.NAME;
 	
@@ -52,10 +60,10 @@ public class COVID19PCRByMunicipality
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public Collection<GeoMunicipality> getGeoMunicipalities() {
-		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return Lists.newArrayList();
+		if (CollectionUtils.isNullOrEmpty(_byDateByMunicipality)) return Lists.newArrayList();
 		
 		Collection<GeoMunicipality> outMunicipalities = Lists.newArrayList();
-		for (COVID19PCRByMunicipalityAtDate item : _byDateItems) {
+		for (COVID19PCRByMunicipalityAtDate item : _byDateByMunicipality) {
 			Collection<GeoMunicipality> itemMunicipalities = item.getGeoMunicipalities();
 			if (CollectionUtils.isNullOrEmpty(itemMunicipalities)) continue;
 			
@@ -68,20 +76,38 @@ public class COVID19PCRByMunicipality
 		}
 		return outMunicipalities;
 	}
+	public COVID19PCRByMunicipalityAtDate findOrCreate(final Date date) {
+		if (_byDateByMunicipality == null) _byDateByMunicipality = Lists.newArrayList();
+		
+		LocalDate lDate = date.toInstant()
+							  .atZone(ZoneId.systemDefault())
+							  .toLocalDate();
+		
+		// find the [hospital] collection for the given date
+		COVID19PCRByMunicipalityAtDate byMunicipalityAt = _byDateByMunicipality.stream()
+																.filter(h -> h.getDate().toInstant()
+																					    .atZone(ZoneId.systemDefault())
+																					    .toLocalDate()
+																					    .isEqual(lDate))
+																.findFirst().orElse(null);
+		if (byMunicipalityAt == null) {
+			byMunicipalityAt = new COVID19PCRByMunicipalityAtDate();
+			byMunicipalityAt.setDate(date);
+			_byDateByMunicipality.add(byMunicipalityAt);
+		}
+		return byMunicipalityAt;
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19PCRByMunicipalityByDate pivotByDate() {
+	public void pivotByDate() {
 		COVID19PCRByMunicipalityByDate out = new COVID19PCRByMunicipalityByDate();
-		out.setLastUpdateDate(this.getLastUpdateDate());
-		out.setName(this.getName());
-		out.setNotes(this.getNotes());
 		
 		Collection<GeoMunicipality> geoMunicipalities = this.getGeoMunicipalities();
 		for (GeoMunicipality geoMunicipality : geoMunicipalities) {
 			COVID19DimensionValuesByDate<GeoMunicipality,Long> positiveCountByDate = new COVID19DimensionValuesByDate<>(geoMunicipality);
-			for (COVID19PCRByMunicipalityAtDate itemAtDate : _byDateItems) {
-				COVID19PCRByMunicipalityItem dimItem = itemAtDate.getItemFor(geoMunicipality.getId());
+			for (COVID19PCRByMunicipalityAtDate itemAtDate : _byDateByMunicipality) {
+				COVID19MunicipalityPCRData dimItem = itemAtDate.getItemFor(geoMunicipality.getId());
 				if (dimItem != null) {
 					positiveCountByDate.addValueAt(itemAtDate.getDate(),
 												   dimItem.getPositiveCount());
@@ -89,6 +115,7 @@ public class COVID19PCRByMunicipality
 			}
 			out.addPositiveCountByMunicipality(positiveCountByDate);
 		}
-		return out;
+		out.splitItemsByDate();
+		_byMunicipalityByDate = out;
 	}
 }

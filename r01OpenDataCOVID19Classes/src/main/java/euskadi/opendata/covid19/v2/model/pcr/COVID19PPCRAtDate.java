@@ -12,9 +12,9 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 
-@MarshallType(as="covid19PCRItem")
+@MarshallType(as="covid19PCRAtDate")
 @Accessors(prefix="_")
-public class COVID19PPCRByDate
+public class COVID19PPCRAtDate
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = -2708379221215445603L;

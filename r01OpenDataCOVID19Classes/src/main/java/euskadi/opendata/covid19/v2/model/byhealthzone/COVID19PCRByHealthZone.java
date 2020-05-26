@@ -1,5 +1,7 @@
 package euskadi.opendata.covid19.v2.model.byhealthzone;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 
@@ -36,10 +38,15 @@ public class COVID19PCRByHealthZone
 			   	   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _lastUpdateDate;
 	
+	////////// Data
 	@MarshallField(as="byDate",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="byDateItem"))
-	@Getter @Setter private Collection<COVID19PCRByHealthZoneAtDate> _byDateItems;
+	@Getter @Setter private Collection<COVID19PCRByHealthZoneAtDate> _byDateByHealthZone;
 	
+	@MarshallField(as="byHealthZone")
+	@Getter @Setter private COVID19PCRByHealthZoneByDate _byHealthZoneByDate;
+	
+	////////// Metadata
 	@MarshallField(as="name")
 	@Getter @Setter private LanguageTexts _name = COVID19PCRByHealthZoneMeta.NAME;
 	
@@ -54,10 +61,10 @@ public class COVID19PCRByHealthZone
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public Collection<COVID19HealthZone> getHealthZones() {
-		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return Lists.newArrayList();
+		if (CollectionUtils.isNullOrEmpty(_byDateByHealthZone)) return Lists.newArrayList();
 		
 		Collection<COVID19HealthZone> outHealthZones = Lists.newArrayList();
-		for (COVID19PCRByHealthZoneAtDate item : _byDateItems) {
+		for (COVID19PCRByHealthZoneAtDate item : _byDateByHealthZone) {
 			Collection<COVID19HealthZone> itemHealthZones = item.getHealthZones();
 			if (CollectionUtils.isNullOrEmpty(itemHealthZones)) continue;
 			
@@ -70,22 +77,41 @@ public class COVID19PCRByHealthZone
 		}
 		return outHealthZones;
 	}
+	public COVID19PCRByHealthZoneAtDate findOrCreate(final Date date) {
+		if (_byDateByHealthZone == null) _byDateByHealthZone = Lists.newArrayList();
+		
+		LocalDate lDate = date.toInstant()
+							  .atZone(ZoneId.systemDefault())
+							  .toLocalDate();
+		
+		// find the [hospital] collection for the given date
+		COVID19PCRByHealthZoneAtDate byHealthZoneAt = _byDateByHealthZone.stream()
+																.filter(h -> h.getDate().toInstant()
+																					    .atZone(ZoneId.systemDefault())
+																					    .toLocalDate()
+																					    .isEqual(lDate))
+																.findFirst().orElse(null);
+		if (byHealthZoneAt == null) {
+			byHealthZoneAt = new COVID19PCRByHealthZoneAtDate();
+			byHealthZoneAt.setDate(date);
+			_byDateByHealthZone.add(byHealthZoneAt);
+		}
+		return byHealthZoneAt;
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19PCRByHealthZoneByDate pivotByDate() {
+	public void pivotByDate() {
 		COVID19PCRByHealthZoneByDate out = new COVID19PCRByHealthZoneByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
-		out.setName(this.getName());
-		out.setNotes(this.getNotes());
 		
 		Collection<COVID19HealthZone> healthZones = this.getHealthZones();
 		for (COVID19HealthZone healthZone : healthZones) {
 			// people
 			COVID19DimensionValuesByDate<COVID19HealthZone,Long> newPositiveCountCountByDate = new COVID19DimensionValuesByDate<>(healthZone);
 			
-			for (COVID19PCRByHealthZoneAtDate itemAtDate : _byDateItems) {
-				COVID19PCRByHealthZoneItem dimItem = itemAtDate.getItemFor(healthZone.getId());
+			for (COVID19PCRByHealthZoneAtDate itemAtDate : _byDateByHealthZone) {
+				COVID19HealthZonePCRData dimItem = itemAtDate.getItemFor(healthZone.getId());
 				if (dimItem != null) {
 					// positives
 					newPositiveCountCountByDate.addValueAt(itemAtDate.getDate(),
@@ -94,6 +120,7 @@ public class COVID19PCRByHealthZone
 			}
 			out.addPositiveCountByHealthZone(newPositiveCountCountByDate);
 		}
-		return out;
+		out.splitItemsByDate();
+		_byHealthZoneByDate = out;
 	}
 }

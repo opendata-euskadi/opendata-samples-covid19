@@ -34,7 +34,7 @@ public class COVID19PCRByHealthZoneAtDate
 	
 	@MarshallField(as="items",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private Collection<COVID19PCRByHealthZoneItem> _items;
+	@Getter @Setter private Collection<COVID19HealthZonePCRData> _items;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -45,11 +45,15 @@ public class COVID19PCRByHealthZoneAtDate
 							.collect(Collectors.toList())
 					: Lists.newArrayList();
 	}
-	public COVID19PCRByHealthZoneItem getItemFor(final COVID19HealthZoneID healthZone) {
+	public COVID19HealthZonePCRData getItemFor(final COVID19HealthZoneID healthZone) {
 		return CollectionUtils.hasData(_items) 
 					? _items.stream()
 							.filter(item -> item.getHealthZone().getId().is(healthZone))
 							.findFirst().orElse(null)
 					: null;
+	}
+	public void addItem(final COVID19HealthZonePCRData data) {
+		if (_items == null) _items = Lists.newArrayList();
+		_items.add(data);
 	}
 }

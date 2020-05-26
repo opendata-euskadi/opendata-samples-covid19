@@ -54,6 +54,7 @@ import r01f.io.util.StringPersistenceUtils;
 import r01f.locale.Language;
 import r01f.objectstreamer.Marshaller;
 import r01f.objectstreamer.MarshallerBuilder;
+import r01f.types.JavaPackage;
 import r01f.types.Path;
 import r01f.types.url.Url;
 import r01f.util.types.Dates;
@@ -114,7 +115,8 @@ public class COVID19V1Import {
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImportAllTo(final Path rootPath) throws IOException {
-		Marshaller marshaller = MarshallerBuilder.build();
+		Marshaller marshaller = MarshallerBuilder.findTypesToMarshallAtJavaPackages(JavaPackage.of("euskadi.opendata.covid19.model"))
+												 .build();
 		
 		// output dir
 		Path outPath = rootPath.joinedWith("data-to-publish").joinedWith("covid_19_2020");

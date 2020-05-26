@@ -1,5 +1,7 @@
 package euskadi.opendata.covid19.v2.model.byhospital;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 
@@ -36,9 +38,14 @@ public class COVID19ByHospital
 			   	   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _lastUpdateDate;
 	
+	////////// Data
 	@MarshallField(as="byDate",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="byDateItem"))
-	@Getter @Setter private Collection<COVID19ByHospitalAtDate> _byDateItems;
+	@Getter @Setter private Collection<COVID19ByHospitalAtDate> _byDateByHospital;
+	
+	////////// Pivot data
+	@MarshallField(as="byHospitalByDate")
+	@Getter @Setter COVID19ByHospitalByDate _byHospitalByDate;
 	
 	////////// Metadata
 	@MarshallField(as="name")
@@ -64,10 +71,10 @@ public class COVID19ByHospital
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public Collection<COVID19HospitalID> getHospitals() {
-		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return Lists.newArrayList();
+		if (CollectionUtils.isNullOrEmpty(_byDateByHospital)) return Lists.newArrayList();
 		
 		Collection<COVID19HospitalID> outHospitals = Lists.newArrayList();
-		for (COVID19ByHospitalAtDate item : _byDateItems) {
+		for (COVID19ByHospitalAtDate item : _byDateByHospital) {
 			Collection<COVID19HospitalID> itemHospitals = item.getHospitals();
 			if (CollectionUtils.isNullOrEmpty(itemHospitals)) continue;
 			
@@ -80,32 +87,49 @@ public class COVID19ByHospital
 		}
 		return outHospitals;
 	}
+	public COVID19ByHospitalAtDate findOrCreate(final Date date) {
+		if (_byDateByHospital == null) _byDateByHospital = Lists.newArrayList();
+		
+		LocalDate lDate = date.toInstant()
+							  .atZone(ZoneId.systemDefault())
+							  .toLocalDate();
+		
+		// find the [hospital] collection for the given date
+		COVID19ByHospitalAtDate byHospitalAt = _byDateByHospital.stream()
+																.filter(h -> h.getDate().toInstant()
+																					    .atZone(ZoneId.systemDefault())
+																					    .toLocalDate()
+																					    .isEqual(lDate))
+																.findFirst().orElse(null);
+		if (byHospitalAt == null) {
+			byHospitalAt = new COVID19ByHospitalAtDate();
+			byHospitalAt.setDate(date);
+			_byDateByHospital.add(byHospitalAt);
+		}
+		return byHospitalAt;
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public COVID19ByHospitalByDate pivotByDate() {
+	public void pivotByDate() {
 		COVID19ByHospitalByDate out = new COVID19ByHospitalByDate();
 		out.setLastUpdateDate(this.getLastUpdateDate());
-		out.setName(this.getName());
-		out.setNotes(this.getNotes());
 		
 		Collection<COVID19HospitalID> hospitals = this.getHospitals();
 		for (COVID19HospitalID hospital : hospitals) {
-			COVID19DimensionValuesByDate<COVID19HospitalID,Long> newAdmissionCountByDate = new COVID19DimensionValuesByDate<>(hospital);
 			COVID19DimensionValuesByDate<COVID19HospitalID,Long> floorPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
 			COVID19DimensionValuesByDate<COVID19HospitalID,Long> floorNewPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
 			COVID19DimensionValuesByDate<COVID19HospitalID,Long> floorReleasedPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
 			COVID19DimensionValuesByDate<COVID19HospitalID,Long> icuPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
 			COVID19DimensionValuesByDate<COVID19HospitalID,Long> icuNewPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
-			COVID19DimensionValuesByDate<COVID19HospitalID,Long> icuNewPeopleCount2ByDate = new COVID19DimensionValuesByDate<>(hospital);
 			COVID19DimensionValuesByDate<COVID19HospitalID,Long> icuReleasedPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
 			COVID19DimensionValuesByDate<COVID19HospitalID,Long> deceasedPeopleCountByDate = new COVID19DimensionValuesByDate<>(hospital);
+			COVID19DimensionValuesByDate<COVID19HospitalID,Long> floorNewPeopleCount2ByDate = new COVID19DimensionValuesByDate<>(hospital);
+			COVID19DimensionValuesByDate<COVID19HospitalID,Long> icuNewPeopleCount2ByDate = new COVID19DimensionValuesByDate<>(hospital);
 			
-			for (COVID19ByHospitalAtDate itemAtDate : _byDateItems) {
-				COVID19ByHospitalItem dimItem = itemAtDate.getItemFor(hospital);
+			for (COVID19ByHospitalAtDate itemAtDate : _byDateByHospital) {
+				COVID19HospitalData dimItem = itemAtDate.getItemFor(hospital);
 				if (dimItem != null) {
-					newAdmissionCountByDate.addValueAt(itemAtDate.getDate(),
-													   dimItem.getNewAdmissionCount());
 					floorPeopleCountByDate.addValueAt(itemAtDate.getDate(),
 													  dimItem.getFloorPeopleCount());
 					floorNewPeopleCountByDate.addValueAt(itemAtDate.getDate(),
@@ -116,36 +140,39 @@ public class COVID19ByHospital
 													dimItem.getICUPeopleCount());
 					icuNewPeopleCountByDate.addValueAt(itemAtDate.getDate(),
 													   dimItem.getICUNewPeopleCount());
-					icuNewPeopleCount2ByDate.addValueAt(itemAtDate.getDate(),
-														dimItem.getFloorNewPeopleCount2());
 					icuReleasedPeopleCountByDate.addValueAt(itemAtDate.getDate(),
 															dimItem.getICUReleasedPeopleCount());
 					deceasedPeopleCountByDate.addValueAt(itemAtDate.getDate(),
 														 dimItem.getDeceasedPeopleCount());
+					floorNewPeopleCount2ByDate.addValueAt(itemAtDate.getDate(),
+													   	  dimItem.getFloorNewPeopleCount2());
+					icuNewPeopleCount2ByDate.addValueAt(itemAtDate.getDate(),
+														dimItem.getFloorNewPeopleCount2());
 				}
 			}
 			// create separate collections for dates & values (more suitable for xy representations)
-			newAdmissionCountByDate.splitItemsByDate();
 			floorPeopleCountByDate.splitItemsByDate();          
 			floorNewPeopleCountByDate.splitItemsByDate();
 			floorReleasedPeopleCountByDate.splitItemsByDate();
 			icuPeopleCountByDate.splitItemsByDate();
 			icuNewPeopleCountByDate.splitItemsByDate();
-			icuNewPeopleCount2ByDate.splitItemsByDate();
 			icuReleasedPeopleCountByDate.splitItemsByDate();
 			deceasedPeopleCountByDate.splitItemsByDate();
+			floorNewPeopleCount2ByDate.splitItemsByDate();
+			icuNewPeopleCount2ByDate.splitItemsByDate();
 			
 			// add
-			out.addNewAdmissionCountAtHospital(newAdmissionCountByDate);
 			out.addFloorPeopleCountAtHospital(floorPeopleCountByDate);
 			out.addFloorNewPeopleCountAtHospital(floorNewPeopleCountByDate);
 			out.addFloorReleasedPeopleCountAtHospital(floorReleasedPeopleCountByDate);
 			out.addICUPeopleCountAtHospital(icuPeopleCountByDate);
 			out.addICUNewPeopleCountAtHospital(icuNewPeopleCountByDate);
-			out.addICUNewPeopleCount2AtHospital(icuNewPeopleCount2ByDate);
 			out.addICUReleasedPeopleCountAtHospital(icuReleasedPeopleCountByDate);
 			out.addDeceasedPeopleCountAtHospital(deceasedPeopleCountByDate);
+			out.addFloorNewPeopleCount2AtHospital(floorNewPeopleCount2ByDate);
+			out.addICUNewPeopleCount2AtHospital(icuNewPeopleCount2ByDate);
 		}
-		return out;
+		// set the value
+		_byHospitalByDate = out;
 	}
 }
