@@ -41,6 +41,7 @@ public class COVID19PCRByMunicipalityAtDate
 	public Collection<GeoMunicipality> getGeoMunicipalities() {
 		return CollectionUtils.hasData(_items)
 					? _items.stream()
+							.filter(item -> item.getGeoMunicipality() != null)
 							.map(item -> item.getGeoMunicipality())
 							.collect(Collectors.toList())
 					: Lists.newArrayList();
@@ -48,6 +49,7 @@ public class COVID19PCRByMunicipalityAtDate
 	public COVID19MunicipalityPCRData getItemFor(final GeoMunicipalityID geoMunicipality) {
 		return CollectionUtils.hasData(_items) 
 					? _items.stream()
+							.filter(item -> item.getGeoMunicipality() != null)
 							.filter(item -> item.getGeoMunicipality()
 												.getId().is(geoMunicipality))
 							.findFirst().orElse(null)

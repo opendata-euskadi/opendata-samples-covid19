@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.time.Year;
 import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -75,7 +76,7 @@ public abstract class COVID19PCRTestsImport {
 			
 			Matcher m = LINE_MATCHER.matcher(line);
 			if (m.find()) {
-				String date = m.group(1) + " 23:00"; // marshaller fix -2 hours. eg: 24/04/2020 21:00
+				String date = m.group(1).replace("abr","apr") + Year.now().getValue() + " 23:00"; // marshaller fix -2 hours. eg: 24/04/2020 21:00
 				
 				String positiveCount = m.group(2);
 				String aggregatedIncidence = m.group(3);
@@ -83,7 +84,7 @@ public abstract class COVID19PCRTestsImport {
 				// Transfer
 				COVID19PPCRAtDate item = new COVID19PPCRAtDate();
 				
-				Date itemDate = Dates.fromFormatedString(date,"dd-MMM. HH:mm"); 	// 1-mar.
+				Date itemDate = Dates.fromFormatedString(date,"dd-MMM.yyyy HH:mm"); 	// 1-mar.
 				
 				item.setDate(itemDate);				
 				

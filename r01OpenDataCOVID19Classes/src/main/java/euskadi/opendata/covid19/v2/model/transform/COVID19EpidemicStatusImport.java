@@ -115,7 +115,7 @@ public abstract class COVID19EpidemicStatusImport {
 				// Transfer
 				COVID19EpidemicStatusAtDate item = new COVID19EpidemicStatusAtDate();
 				
-				Date itemDate = Dates.fromFormatedString(date,"dd/MM/yyyy HH:mm");
+				Date itemDate = Dates.fromFormatedString(date,"MM/dd/yyyy HH:mm");
 				
 				item.setDate(itemDate);				
 				

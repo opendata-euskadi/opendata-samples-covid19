@@ -49,6 +49,14 @@
 			<version>${r01f.version}</version>
 		</dependency>
 		<!-- ///////////////////////////////////////// -->
+		<!-- NORA                                      -->
+		<!-- ///////////////////////////////////////// -->
+		<dependency>
+			<groupId>r01.r01f.ejie</groupId>
+			<artifactId>r01fNORAClasses</artifactId>
+			<version>${r01f.version}</version>
+		</dependency>
+		<!-- ///////////////////////////////////////// -->
 		<!-- FileStore                                -->
 		<!-- ///////////////////////////////////////// -->
 		<dependency>
