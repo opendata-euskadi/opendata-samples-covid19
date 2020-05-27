@@ -13,10 +13,13 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.compress.utils.Lists;
 
 import com.google.common.collect.Maps;
 
@@ -46,6 +49,18 @@ public abstract class COVID19ByHealthZoneImport {
 	public static void doImport(final Marshaller marshaller,
 								final Path sourceFolderPath,final Path generatedFolderPath,
 								final Date date) {
+		// [0] - Get the [health zones] (the id is only present at the [total positives] file; the [new positives] file only contains the [health zone] name)
+		Collection<COVID19HealthZone> healthZones = null;
+		File f0 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+								   .joinedWith("epidemiologic")
+								   .joinedWith("07.csv").asAbsoluteString());
+		try (InputStream is0 = new FileInputStream(f0)) {
+			healthZones = _healthZones(is0);
+		} catch (Throwable th) {
+			th.printStackTrace();
+		}
+		
+		
 		File f1 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
 										   .joinedWith("epidemiologic")
 										   .joinedWith("05.csv").asAbsoluteString());
@@ -61,9 +76,12 @@ public abstract class COVID19ByHealthZoneImport {
 			
 			COVID19PCRByHealthZone byHealthZone = new COVID19PCRByHealthZone();
 			
+			
+			
 			// new positives
 			byHealthZone.setLastUpdateDate(new Date());
 			COVID19ByHealthZoneImport.doImportNewPositives(is1,
+														   healthZones,
 												 		   byHealthZone);
 			byHealthZone.pivotNewPositivesByDate();
 			
@@ -85,6 +103,7 @@ public abstract class COVID19ByHealthZoneImport {
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImportNewPositives(final InputStream is,
+											final Collection<COVID19HealthZone> healthZones,
 							    			final COVID19PCRByHealthZone byHealthZone) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		br.readLine();	// title
@@ -106,24 +125,30 @@ public abstract class COVID19ByHealthZoneImport {
 			Matcher m = lineMatcher.matcher(line);
 			if (m.find()) {
 				String healthZoneName = m.group(1);
-				
-				// by date
-				for (int i=2; i <= m.groupCount(); i++) {
-					Date date = dateIndex.get(i);
+				if (!Strings.isContainedWrapper(healthZoneName)
+						    .containsAny("ARABA","BIZKAIA","GIPUZKOA","OTROS")) {
+					COVID19HealthZone healthZone = healthZones.stream()
+														.filter(hz -> hz.getName().equalsIgnoreCase(healthZoneName))
+														.findFirst().orElse(null);
+					if (healthZone == null) { 
+						log.error("Could NOT find [health zone] with name={}",healthZoneName);
+						healthZone = new COVID19HealthZone(null,healthZoneName);
+					}
 					
-					COVID19HealthZoneNewPositivesData data = new COVID19HealthZoneNewPositivesData();
-					
-					COVID19HealthZone healthZone = new COVID19HealthZone();
-					healthZone.setName(healthZoneName);
-					
-					data.setHealthZone(healthZone);
-					
-					String pcrCount = m.group(i);
-					data.setNewPositiveCount(Strings.isNOTNullOrEmpty(pcrCount) ? Long.parseLong(pcrCount) : 0);
-					
-					// Transfer
-					COVID19NewPositivesByHealthZoneAtDate atDate = byHealthZone.findOrCreateNewPositivesByHealthZoneAt(date);
-					atDate.addItem(data);
+					// by date
+					for (int i=2; i <= m.groupCount(); i++) {
+						Date date = dateIndex.get(i);
+						
+						COVID19HealthZoneNewPositivesData data = new COVID19HealthZoneNewPositivesData();
+						data.setHealthZone(healthZone);
+						
+						String pcrCount = m.group(i);
+						data.setNewPositiveCount(Strings.isNOTNullOrEmpty(pcrCount) ? Long.parseLong(pcrCount) : 0);
+						
+						// Transfer
+						COVID19NewPositivesByHealthZoneAtDate atDate = byHealthZone.findOrCreateNewPositivesByHealthZoneAt(date);
+						atDate.addItem(data);
+					}
 				}
 			} else {
 				log.debug("{} NOT matching line: {}",lineMatcher,line);
@@ -189,6 +214,45 @@ public abstract class COVID19ByHealthZoneImport {
 		// release
 		br.close();
 		is.close();
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	private static Collection<COVID19HealthZone> _healthZones(final InputStream is) throws IOException {
+		Collection<COVID19HealthZone> outHealthZones = Lists.newArrayList();
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
+
+		String lastUpdateLine = br.readLine();	// last update
+		String header = br.readLine();			// header
+		Pattern lineMatcher = Pattern.compile("([^;]+);" +		// [1] health zone code
+							  				  "([^;]+);" +		// [2] health zone
+							  				  "([^;]+);" +  	// [3] positives
+							  				  "([^;]+);?");		// [4] positives by 100.000 people rate
+		String line = br.readLine();
+		while (line != null) {
+			line = line.trim()
+					   .replaceAll("\\\"?((?:[0-9]+),(?:[0-9]+))\\\"?","\\1.\\2")
+					   .replace("\"","").replaceAll("%","");	// remove all " & %
+
+			Matcher m = lineMatcher.matcher(line);
+			if (m.find()) {
+				String healthZoneCode = m.group(1).trim();
+				String healthZoneName = m.group(2).trim();
+
+				COVID19HealthZone healthZone = new COVID19HealthZone(COVID19HealthZoneID.forId(healthZoneCode),
+																	 healthZoneName);
+				outHealthZones.add(healthZone);
+			} else {
+				log.debug("{} NOT matching line: {}",lineMatcher,line);
+			}
+			// next line
+			line = br.readLine();
+		}
+		// release
+		br.close();
+		is.close();
+		return outHealthZones;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	

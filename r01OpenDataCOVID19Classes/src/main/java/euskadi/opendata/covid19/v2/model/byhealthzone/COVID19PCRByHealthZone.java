@@ -167,7 +167,8 @@ public class COVID19PCRByHealthZone
 			if (CollectionUtils.isNullOrEmpty(itemHealthZones)) continue;
 			
 			for (COVID19HealthZone healthZone : itemHealthZones) {
-				if (!Iterables.tryFind(outHealthZones,reg -> reg.getName().equalsIgnoreCase(healthZone.getName()))	// WTF! use the name!
+				if (!Iterables.tryFind(outHealthZones,
+									   hz -> hz.getName().equalsIgnoreCase(healthZone.getName()))	// WTF! use the name!
 							  .isPresent()) {
 					outHealthZones.add(healthZone);
 				}
