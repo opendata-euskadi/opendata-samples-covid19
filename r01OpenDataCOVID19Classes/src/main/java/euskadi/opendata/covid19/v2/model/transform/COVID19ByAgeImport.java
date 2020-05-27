@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import r01f.objectstreamer.Marshaller;
 import r01f.types.Path;
+import r01f.util.types.Dates;
 import r01f.util.types.Strings;
 
 @Slf4j
@@ -31,21 +32,24 @@ public abstract class COVID19ByAgeImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static final Pattern LINE_MATCHER = Pattern.compile("([^,]+)," +	// [1] age range
+	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+);" +	// [1] age range
 
-																"([^,]*)," + 	// [2] positive count
-																"([^,]*)," + 	// [3] population
-																"([^,]*)," + 	// [4] rate
-																"([^,]*)," +	// [5] %
-																"([^,]*)," +	// [6] deceased
-																"([^,]*)"		// [7] lethality
+																"([^;]*);" + 	// [2] positive count
+																"([^;]*);" + 	// [3] population
+																"([^;]*);" + 	// [4] rate
+																"([^;]*);" +	// [5] %
+																"([^;]*);" +	// [6] deceased
+																"([^;]*)"		// [7] lethality
 																);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImport(final Marshaller marshaller,
-								final Path sourceFolderPath,final Path generatedFolderPath) {
-		File f = new File(sourceFolderPath.joinedWith("c4-byAge.csv").asAbsoluteString());
+								final Path sourceFolderPath,final Path generatedFolderPath,
+								final Date date) {
+		File f = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+										  .joinedWith("epidemiologic")
+										  .joinedWith("03.csv").asAbsoluteString());
 		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-byage.xml").asAbsoluteString());
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-byage.json").asAbsoluteString());
 		try (InputStream is = new FileInputStream(f);
@@ -75,7 +79,7 @@ public abstract class COVID19ByAgeImport {
 		while (line != null) {
 			if (!line.contains("(*)") && !line.contains("GUZTIRA / TOTAL")) {
 				line = line.trim()
-						   .replaceAll("\\\"((?:[0-9]+),(?:[0-9]+))\\\"","\\1.\\2")
+						   .replaceAll("\\\"?((?:[0-9]+),(?:[0-9]+))\\\"?","\\1.\\2")
 						   .replace("\"","").replaceAll("%","");	// remove all " & %
 				
 				Matcher m = LINE_MATCHER.matcher(line);

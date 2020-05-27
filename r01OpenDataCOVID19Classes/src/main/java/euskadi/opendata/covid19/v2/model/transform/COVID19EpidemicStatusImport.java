@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
-import euskadi.opendata.covid19.v2.model.summary.COVID19EpidemicStatus;
-import euskadi.opendata.covid19.v2.model.summary.COVID19EpidemicStatusAtDate;
+import euskadi.opendata.covid19.v2.model.epidemicstatus.COVID19EpidemicStatus;
+import euskadi.opendata.covid19.v2.model.epidemicstatus.COVID19EpidemicStatusAtDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,33 +32,36 @@ public abstract class COVID19EpidemicStatusImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static final Pattern LINE_MATCHER = Pattern.compile("([^,]+)," +	// [1] Fecha
+	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+);" +	// [1] Fecha
 
-																"([^,]*)," + 	// [2]  PCR totales 
-																"([^,]*)," + 	// [3]  Test rápidos totales
-																"([^,]*)," + 	// [4]  Personas únicas totales															
-																"([^,]*)," + 	// [5]  Personas únicas con PCR
-																"([^,]*)," + 	// [6]  Personas con PCR por millón de habitantes
-																"([^,]*)," + 	// [7]  Casos positivos PCR
-																"([^,]*)," + 	// [8]  Casos positivos detectados por serología
-																"([^,]*)," + 	// [9]  Casos positivos totales
-																"([^,]*)," + 	// [10] Casos positivos PCR Álava
-																"([^,]*)," + 	// [11] Casos positivos PCR Bizkaia
-																"([^,]*)," + 	// [12] Casos positivos PCR Gipuzkoa
-																"([^,]*)," + 	// [13] Otros casos positivos PCR
-																"([^,]*)," + 	// [14] Recuperados o altas Hospitalarias
-																"([^,]*)," + 	// [15] No recuperados
-																"([^,]*)," + 	// [16] Fallecidos
-																"([^,]*)," + 	// [17] Nuevos ingresos planta con PCR positivo
-																"([^,]*)," + 	// [18] Hospitalizados en CI
-																"([^,]*)" 		// [19] R0 en Euskadi
+																"([^;]*);" + 	// [2]  PCR totales 
+																"([^;]*);" + 	// [3]  Test rápidos totales
+																"([^;]*);" + 	// [4]  Personas únicas totales															
+																"([^;]*);" + 	// [5]  Personas únicas con PCR
+																"([^;]*);" + 	// [6]  Personas con PCR por millón de habitantes
+																"([^;]*);" + 	// [7]  Casos positivos PCR
+																"([^;]*);" + 	// [8]  Casos positivos detectados por serología
+																"([^;]*);" + 	// [9]  Casos positivos totales
+																"([^;]*);" + 	// [10] Casos positivos PCR Álava
+																"([^;]*);" + 	// [11] Casos positivos PCR Bizkaia
+																"([^;]*);" + 	// [12] Casos positivos PCR Gipuzkoa
+																"([^;]*);" + 	// [13] Otros casos positivos PCR
+																"([^;]*);" + 	// [14] Recuperados o altas Hospitalarias
+																"([^;]*);" + 	// [15] No recuperados
+																"([^;]*);" + 	// [16] Fallecidos
+																"([^;]*);" + 	// [17] Nuevos ingresos planta con PCR positivo
+																"([^;]*);" + 	// [18] Hospitalizados en CI
+																"([^;]*)" 		// [19] R0 en Euskadi
 																);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImport(final Marshaller marshaller,
-								final Path sourceFolderPath,final Path generatedFolderPath) {
-		File f = new File(sourceFolderPath.joinedWith("c1-epidemic-status.csv").asAbsoluteString());
+								final Path sourceFolderPath,final Path generatedFolderPath,
+								final Date date) {
+		File f = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+										  .joinedWith("epidemiologic")
+										  .joinedWith("01.csv").asAbsoluteString());
 		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-epidemic-status.xml").asAbsoluteString());
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-epidemic-status.json").asAbsoluteString());
 		try (InputStream is = new FileInputStream(f);
@@ -86,7 +89,7 @@ public abstract class COVID19EpidemicStatusImport {
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim()
-					   .replaceAll("\\\"((?:[0-9]+),(?:[0-9]+))\\\"","\\1.\\2")
+					   .replaceAll("\\\"?((?:[0-9]+),(?:[0-9]+))\\\"?","\\1.\\2")
 					   .replace("\"","").replaceAll("%","");	// remove all " & %
 			
 			Matcher m = LINE_MATCHER.matcher(line);

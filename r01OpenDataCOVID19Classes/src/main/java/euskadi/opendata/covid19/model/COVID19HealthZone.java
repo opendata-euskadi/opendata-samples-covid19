@@ -19,8 +19,11 @@ public class COVID19HealthZone
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	@MarshallField(as="healthZoneId",
-				   whenXml=@MarshallFieldAsXml(asParentElementValue=true))
+				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private COVID19HealthZoneID _id;
+	
+	@MarshallField(as="name")
+	@Getter @Setter private String _name;
 	
 	@MarshallField(as="geoRegion")
 	@Getter @Setter private GeoRegion _geoRegion;
@@ -33,8 +36,13 @@ public class COVID19HealthZone
 	public COVID19HealthZone(final COVID19HealthZoneID id) {
 		_id = id;
 	}
-	public COVID19HealthZone(final COVID19HealthZoneID id,final GeoRegion region) {
+	public COVID19HealthZone(final COVID19HealthZoneID id,final String name) {
 		_id = id;
+		_name = name;
+	}
+	public COVID19HealthZone(final COVID19HealthZoneID id,final String name,final GeoRegion region) {
+		_id = id;
+		_name = name;
 		_geoRegion = region;
 	}
 }

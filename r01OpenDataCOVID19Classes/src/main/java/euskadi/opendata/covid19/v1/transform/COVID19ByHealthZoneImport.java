@@ -94,7 +94,9 @@ public class COVID19ByHealthZoneImport {
 				GeoRegion geoRegion = GeoRegion.create(GeoRegionID.forId(zoneCode))
 											   .withNameInLang(Language.SPANISH,zoneName)
 											   .withNameInLang(Language.BASQUE,zoneName);
-				COVID19HealthZone healthZone = new COVID19HealthZone(COVID19HealthZoneID.forId(zoneCode),geoRegion);
+				COVID19HealthZone healthZone = new COVID19HealthZone(COVID19HealthZoneID.forId(zoneCode),
+																	 null,
+																	 geoRegion);
 				
 				COVID19ByHealthZoneItem item = new COVID19ByHealthZoneItem();					
 				item.setHealthZone(healthZone);

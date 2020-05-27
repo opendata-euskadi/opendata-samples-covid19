@@ -33,17 +33,20 @@ public abstract class COVID19PCRTestsImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	private static final Pattern LINE_MATCHER = Pattern.compile("([^,]+)," +	// [1] Fecha
+	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+);" +	// [1] Fecha
 
-																"([^,]*)," + 	// [2]  Casos 
-																"([^,]*)"		// [3] Incidencia acum.
+																"([^;]*);" + 	// [2]  Casos 
+																"([^;]*)"		// [3] Incidencia acum.
 																);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImport(final Marshaller marshaller,
-								final Path sourceFolderPath,final Path generatedFolderPath) {
-		File f = new File(sourceFolderPath.joinedWith("c2-pcr.csv").asAbsoluteString());
+								final Path sourceFolderPath,final Path generatedFolderPath,
+								final Date date) {
+		File f = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+										  .joinedWith("epidemiologic")
+										  .joinedWith("02.csv").asAbsoluteString());
 		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-pcr.xml").asAbsoluteString());
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-pcr.json").asAbsoluteString());
 		try (InputStream is = new FileInputStream(f);
@@ -71,7 +74,7 @@ public abstract class COVID19PCRTestsImport {
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim()
-					   .replaceAll("\\\"((?:[0-9]+),(?:[0-9]+))\\\"","\\1.\\2")
+					   .replaceAll("\\\"?((?:[0-9]+),(?:[0-9]+))\\\"?","\\1.\\2")
 					   .replace("\"","").replaceAll("%","");	// remove all " & %
 			
 			Matcher m = LINE_MATCHER.matcher(line);

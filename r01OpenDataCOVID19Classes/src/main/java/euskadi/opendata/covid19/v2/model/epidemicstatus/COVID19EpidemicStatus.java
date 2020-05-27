@@ -1,4 +1,4 @@
-package euskadi.opendata.covid19.v2.model.summary;
+package euskadi.opendata.covid19.v2.model.epidemicstatus;
 
 import java.util.Collection;
 import java.util.Date;

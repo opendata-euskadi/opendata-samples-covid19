@@ -1,13 +1,13 @@
 package euskadi.opendata.covid19.v2.model.bymunicipality;
 
-import euskadi.opendata.covid19.model.COVID19MetaData;
 import euskadi.opendata.covid19.model.COVID19IDs.COVID19MetaDataID;
+import euskadi.opendata.covid19.model.COVID19MetaData;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import r01f.locale.Language;
 import r01f.locale.LanguageTexts;
-import r01f.locale.LanguageTextsMapBacked;
 import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
+import r01f.locale.LanguageTextsMapBacked;
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public abstract class COVID19PCRByMunicipalityMeta {
@@ -32,7 +32,16 @@ public abstract class COVID19PCRByMunicipalityMeta {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public final static COVID19MetaData POSITIVE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("positiveCount"),
-																									 "Número de positivos",
-																									 "Positiboak");                         
+	public final static COVID19MetaData NEW_POSITIVE_BY_DATE_BY_MUNICIPALITY_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("newPositivesByDateByMunicipality"),
+																									 	 		 				 "Número de nuevos positivos por fecha y por municipio",
+																									 	 		 				 "Positibo berrien kopurua dataren eta udalerriaren arabera");
+	public final static COVID19MetaData NEW_POSITIVE_BY_MUNICIPALITY_BY_DATE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("newPositivesByMunicipalityByDate"),
+																									 	 		 				 "Número de nuevos positivos por municipio y por fecha",
+																									 	 		 				 "Positibo berrien kopurua udalerriaren eta dataren arabera");
+	public final static COVID19MetaData TOTAL_POSITIVE_BY_DATE_BY_MUNICIPALITY_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("totalPositivesByDateByMunicipality"),
+																									 	 		 				   "Total de positivos por fecha y por municipio",
+																									 	 		 				   "Positiboak, guztira, dataren eta udalerriaren arabera");
+	public final static COVID19MetaData TOTAL_POSITIVE_BY_MUNICIPALITY_BY_DATE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("totalPositivesByMunicipalityByDate"),
+																									 	 		 				   "Total de positivos por municipio y por fecha",
+																									 	 		 				   "Positiboen guztizkoa, udalerriaren eta dataren arabera");
 }

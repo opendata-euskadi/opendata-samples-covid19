@@ -9,9 +9,9 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 import r01f.types.geo.GeoMunicipality;
 
-@MarshallType(as="covid19PCRByMunicipalityData")
+@MarshallType(as="covid19NewPositivesByMunicipalityData")
 @Accessors(prefix="_")
-public class COVID19MunicipalityPCRData
+public class COVID19MunicipalityNewPositivesData
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = 3447297472250093105L;

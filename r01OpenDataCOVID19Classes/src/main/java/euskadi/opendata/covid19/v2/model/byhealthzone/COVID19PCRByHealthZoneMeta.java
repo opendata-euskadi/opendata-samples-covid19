@@ -30,10 +30,16 @@ public abstract class COVID19PCRByHealthZoneMeta {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////	
-	public final static COVID19MetaData POSITIVE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("newPositiveCount"),
-																									 "Nuevos Positivos",
-																									 "Positivo Berriak");
-	public final static COVID19MetaData AGGREGATED_POSITIVE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("aggregatedPositiveCount"),
-																									 			"Positivos Acumulados",
-																									 			"Positibo Metatuak");
+	public final static COVID19MetaData NEW_POSITIVE_BY_DATE_BY_MUNICIPALITY_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("newPositivesByDateByHealthZone"),
+																									 	 		 				 "Número de nuevos positivos por fecha y por zona de salud",
+																									 	 		 				 "Positibo berrien kopurua, dataren eta osasun-eremuaren arabera");
+	public final static COVID19MetaData NEW_POSITIVE_BY_MUNICIPALITY_BY_DATE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("newPositivesByHealthZoneByDate"),
+																									 	 		 				 "Número de nuevos positivos por zona de salud y por fecha",
+																									 	 		 				 "Positibo berrien kopurua, osasun-eremuaren eta dataren arabera");
+	public final static COVID19MetaData TOTAL_POSITIVE_BY_DATE_BY_MUNICIPALITY_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("totalPositivesByDateByHealthZone"),
+																									 	 		 				   "Total de positivos por fecha y por zona de salud",
+																									 	 		 				   "Positiboak, guztira, dataren eta osasun-eremuaren arabera");
+	public final static COVID19MetaData TOTAL_POSITIVE_BY_MUNICIPALITY_BY_DATE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("totalPositivesByHealthZoneByDate"),
+																									 	 		 				   "Total de positivos por zona de salud y por fecha",
+																									 	 		 				   "Positiboak guztira, osasun-eremuaren eta dataren arabera");
 }

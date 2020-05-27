@@ -52,7 +52,7 @@ public class COVID19PPCR
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Float>> _aggregatedIncidenceByDate;
 	
 	////////// Data splitted in a more suitable format for xy representations
-	@MarshallField(as="dates",
+	@MarshallField(as="dates",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
 				   whenXml=@MarshallFieldAsXml(collectionElementName="date"))
 	@Getter @Setter private Collection<Date> _dates;
 	

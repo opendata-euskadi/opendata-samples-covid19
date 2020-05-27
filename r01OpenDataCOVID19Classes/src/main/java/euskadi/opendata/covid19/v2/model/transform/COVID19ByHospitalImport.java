@@ -37,7 +37,8 @@ public abstract class COVID19ByHospitalImport {
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImport(final Marshaller marshaller,
-								final Path sourceFolderPath,final Path generatedFolderPath) {
+								final Path sourceFolderPath,final Path generatedFolderPath,
+								final Date date) {
 		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-byhospital.xml").asAbsoluteString());
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-byhospital.json").asAbsoluteString());
 		try (OutputStream xmlos = new FileOutputStream(xmlOutputFile);
@@ -47,63 +48,81 @@ public abstract class COVID19ByHospitalImport {
 			byHospital.setLastUpdateDate(new Date());
 			
 			// import every file
-			File f1 = new File(sourceFolderPath.joinedWith("asistenciales-01.csv").asAbsoluteString());
+			File f1 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("01.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f1)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
 												 (totals,valueStr) -> totals.setFloorPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0),
 												 (hospital,valueStr) -> hospital.setFloorPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0));
 			}
-			File f2 = new File(sourceFolderPath.joinedWith("asistenciales-02.csv").asAbsoluteString());
+			File f2 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("02.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f2)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
 												 (totals,valueStr) -> totals.setFloorNewPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0),
 												 (hospital,valueStr) -> hospital.setFloorNewPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0));
 			}
-			File f3 = new File(sourceFolderPath.joinedWith("asistenciales-03.csv").asAbsoluteString());
+			File f3 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("03.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f3)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
 												 (totals,valueStr) -> totals.setFloorReleasedPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0),
 												 (hospital,valueStr) -> hospital.setFloorReleasedPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0));
 			}
-			File f4 = new File(sourceFolderPath.joinedWith("asistenciales-04.csv").asAbsoluteString());
+			File f4 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("04.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f4)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
 												 (totals,valueStr) -> totals.setICUPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0),
 												 (hospital,valueStr) -> hospital.setICUPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0));
 			}
-			File f5 = new File(sourceFolderPath.joinedWith("asistenciales-05.csv").asAbsoluteString());
+			File f5 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("05.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f5)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
 												 (totals,valueStr) -> totals.setICUNewPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0),
 												 (hospital,valueStr) -> hospital.setICUNewPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0));
 			}
-			File f6 = new File(sourceFolderPath.joinedWith("asistenciales-06.csv").asAbsoluteString());
+			File f6 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("06.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f6)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
 												 (totals,valueStr) -> totals.setICUReleasedPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0),
 												 (hospital,valueStr) -> hospital.setICUReleasedPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0));
 			}
-			File f7 = new File(sourceFolderPath.joinedWith("asistenciales-07.csv").asAbsoluteString());
+			File f7 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("07.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f7)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
 												 (totals,valueStr) -> totals.setDeceasedPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0),
 												 (hospital,valueStr) -> hospital.setDeceasedPeopleCount(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0));
 			}
-			File f8 = new File(sourceFolderPath.joinedWith("asistenciales-08.csv").asAbsoluteString());
+			File f8 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("08.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f8)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
 												 (totals,valueStr) -> totals.setFloorNewPeopleCount2(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0),
 												 (hospital,valueStr) -> hospital.setFloorNewPeopleCount2(Strings.isNOTNullOrEmpty(valueStr) ? Long.parseLong(valueStr) : 0));
 			}
-			File f9 = new File(sourceFolderPath.joinedWith("asistenciales-09.csv").asAbsoluteString());
+			File f9 = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
+											   .joinedWith("healthcare")
+											   .joinedWith("09.csv").asAbsoluteString());
 			try (InputStream is = new FileInputStream(f9)) {
 				COVID19ByHospitalImport.doImport(is,
 												 byHospital,
@@ -136,7 +155,7 @@ public abstract class COVID19ByHospitalImport {
 		
 		String header = br.readLine();
 		
-		String[] headers = header.split(",");
+		String[] headers = header.split(";");
 		String[] hospitals = Arrays.copyOfRange(headers,
 												2,headers.length);	// the first col is the [date] and the second col is the [total]
 		Pattern lineMatcher = _createLineMatcherPattern(hospitals);
@@ -194,13 +213,13 @@ public abstract class COVID19ByHospitalImport {
 		return outIndex;
 	}
 	private static Pattern _createLineMatcherPattern(final String[] hospitals) {
-		StringBuilder lineMatcherSb = new StringBuilder((hospitals.length + 2) * "([^,]+),".length());
-		lineMatcherSb.append("([^,]+),");	// date
-		lineMatcherSb.append("([^,]+),");	// total
+		StringBuilder lineMatcherSb = new StringBuilder((hospitals.length + 2) * "([^;]+);".length());
+		lineMatcherSb.append("([^;]+);");	// date
+		lineMatcherSb.append("([^;]+);");	// total
 		// hospitals
 		for (int i=0; i < hospitals.length; i++) {
-			lineMatcherSb.append("([^,]*)");
-			if (i < (hospitals.length - 1)) lineMatcherSb.append(",");
+			lineMatcherSb.append("([^;]*)");
+			if (i < (hospitals.length - 1)) lineMatcherSb.append(";");
 		}
 		Pattern lineMatcher = Pattern.compile(lineMatcherSb.toString());
 		return lineMatcher;
