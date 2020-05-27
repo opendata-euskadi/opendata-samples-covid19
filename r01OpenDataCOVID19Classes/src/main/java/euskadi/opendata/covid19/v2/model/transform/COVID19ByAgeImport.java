@@ -7,7 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
@@ -53,15 +54,18 @@ public abstract class COVID19ByAgeImport {
 		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-byage.xml").asAbsoluteString());
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-byage.json").asAbsoluteString());
 		try (InputStream is = new FileInputStream(f);
-			 OutputStream xmlos = new FileOutputStream(xmlOutputFile);
-			 OutputStream jsonos = new FileOutputStream(jsonOutputFile)) {
+			 Writer xmlW = new OutputStreamWriter(new FileOutputStream(xmlOutputFile),Charset.forName("ISO-8859-1"));
+			 Writer jsonW = new OutputStreamWriter(new FileOutputStream(jsonOutputFile),Charset.forName("ISO-8859-1"))) {
 			
+			// import
 			COVID19ByAgeDataAtDate byAgeAt  = COVID19ByAgeImport.doImportDate(new Date(),
 																		  	  is);
+			// write
+			xmlW.append(COVID19V2Import.XML_HEADER);
 			marshaller.forWriting()
-				      .toXml(byAgeAt,xmlos);
+				      .toXml(byAgeAt,xmlW);
 			marshaller.forWriting()
-				      .toJson(byAgeAt,jsonos);
+				      .toJson(byAgeAt,jsonW);
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}

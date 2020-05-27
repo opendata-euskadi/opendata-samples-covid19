@@ -1,4 +1,4 @@
-package euskadi.opendata.covid19.v1.model.index;
+package euskadi.opendata.covid19.model;
 
 import r01f.types.url.Url;
 

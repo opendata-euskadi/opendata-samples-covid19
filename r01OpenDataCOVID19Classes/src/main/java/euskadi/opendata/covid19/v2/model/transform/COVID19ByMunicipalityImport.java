@@ -7,7 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.Year;
@@ -60,8 +61,8 @@ public abstract class COVID19ByMunicipalityImport {
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-bymunicipality.json").asAbsoluteString());
 		try (InputStream is1 = new FileInputStream(f1);
 			 InputStream is2 = new FileInputStream(f2);
-			 OutputStream xmlos = new FileOutputStream(xmlOutputFile);
-			 OutputStream jsonos = new FileOutputStream(jsonOutputFile)) {
+			 Writer xmlW = new OutputStreamWriter(new FileOutputStream(xmlOutputFile),Charset.forName("ISO-8859-1"));
+			 Writer jsonW = new OutputStreamWriter(new FileOutputStream(jsonOutputFile),Charset.forName("ISO-8859-1"))) {
 
 			COVID19PCRByMunicipality byMunicipality = new COVID19PCRByMunicipality();
 			byMunicipality.setLastUpdateDate(new Date());
@@ -79,10 +80,11 @@ public abstract class COVID19ByMunicipalityImport {
 			byMunicipality.pivotTotalPositivesByDate();
 			
 			// write
+			xmlW.append(COVID19V2Import.XML_HEADER);
 			marshaller.forWriting()
-					  .toXml(byMunicipality,xmlos);
+					  .toXml(byMunicipality,xmlW);
 			marshaller.forWriting()
-					  .toJson(byMunicipality,jsonos);
+					  .toJson(byMunicipality,jsonW);
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}
@@ -93,6 +95,7 @@ public abstract class COVID19ByMunicipalityImport {
 	public static void doImportNewPositives(final InputStream is,
 											final NORAService nora,
 											final COVID19PCRByMunicipality byMunicipality) throws IOException {
+		log.info("NEW positives by [municipality]>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		br.readLine();	// title
 
@@ -151,6 +154,7 @@ public abstract class COVID19ByMunicipalityImport {
 	public static void doImportTotalPositives(final InputStream is,
 											  final NORAService nora,
 											  final COVID19PCRByMunicipality byMunicipality) throws IOException {
+		log.info("TOTAL positives by [municipality]>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 
 		String lastUpdateLine = br.readLine();	// last update
@@ -234,11 +238,11 @@ public abstract class COVID19ByMunicipalityImport {
 		return lineMatcher;
 	}
 	private static Date _lastUpdateDate(final String lastUpdateLine) {
-		Matcher dateMatcher = Pattern.compile("(" + r01f.types.datetime.Year.REGEX_NOCAPTURE + "-" + MonthOfYear.REGEX_NOCAPTURE + "-" + DayOfMonth.REGEX_NOCAPTURE + ")" + ".*")
+		Matcher dateMatcher = Pattern.compile("(" + r01f.types.datetime.Year.REGEX_NOCAPTURE + "/" + MonthOfYear.REGEX_NOCAPTURE + "/" + DayOfMonth.REGEX_NOCAPTURE + ")" + ".*")
 								 	 .matcher(lastUpdateLine);
 		Date lastUpdateDate = null;
 		if (dateMatcher.find()) {
-			lastUpdateDate = Dates.fromFormatedString(dateMatcher.group(1),"yyyy-MM-dd");
+			lastUpdateDate = Dates.fromFormatedString(dateMatcher.group(1),"yyyy/MM/dd");
 		} else {
 			throw new IllegalStateException("The by municipality file DOES NOT contain a last-update date first row!");
 		}

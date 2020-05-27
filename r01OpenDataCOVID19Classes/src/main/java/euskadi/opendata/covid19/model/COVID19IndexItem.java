@@ -1,6 +1,5 @@
-package euskadi.opendata.covid19.v1.model.index;
+package euskadi.opendata.covid19.model;
 
-import euskadi.opendata.covid19.model.COVID19ModelObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

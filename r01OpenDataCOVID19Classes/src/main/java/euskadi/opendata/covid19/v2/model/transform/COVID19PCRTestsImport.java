@@ -7,7 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.time.Year;
 import java.util.Collection;
@@ -50,15 +51,18 @@ public abstract class COVID19PCRTestsImport {
 		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-pcr.xml").asAbsoluteString());
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-pcr.json").asAbsoluteString());
 		try (InputStream is = new FileInputStream(f);
-			 OutputStream xmlos = new FileOutputStream(xmlOutputFile);
-			 OutputStream jsonos = new FileOutputStream(jsonOutputFile)) {
+			 Writer xmlW = new OutputStreamWriter(new FileOutputStream(xmlOutputFile),Charset.forName("ISO-8859-1"));
+			 Writer jsonW = new OutputStreamWriter(new FileOutputStream(jsonOutputFile),Charset.forName("ISO-8859-1"))) {
 			
+			// import
 			COVID19PPCR pcr  = COVID19PCRTestsImport.doImport(is);
 			
+			// write
+			xmlW.append(COVID19V2Import.XML_HEADER);
 			marshaller.forWriting()
-				      .toXml(pcr,xmlos);
+				      .toXml(pcr,xmlW);
 			marshaller.forWriting()
-				      .toJson(pcr,jsonos);
+				      .toJson(pcr,jsonW);
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}

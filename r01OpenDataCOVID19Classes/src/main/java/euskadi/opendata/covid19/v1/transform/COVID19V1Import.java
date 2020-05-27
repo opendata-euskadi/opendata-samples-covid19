@@ -160,7 +160,7 @@ public class COVID19V1Import {
 			log.error("=================================================================");
 		}
 		
-		//CSVs in ZIP		
+		// CSVs in ZIP		
 		Path zipFilePath = opendataPath.joinedWith("covid19.zip");
 		COVID19FileConvert.toZIP(zipFilePath, outCSVsPath);	
 		
@@ -542,7 +542,7 @@ public class COVID19V1Import {
 		return out;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//RECOVERED
+//	RECOVERED
 /////////////////////////////////////////////////////////////////////////////////////////
 	private static COVID19Recovered _importRecovered(final Date date,
 											 		 final Path logPath,
@@ -581,7 +581,7 @@ public class COVID19V1Import {
 		return out;
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
-//R0
+//	R0
 /////////////////////////////////////////////////////////////////////////////////////////
 	private static COVID19R0 _importR0(final Date date,
 											  final Path logPath,
@@ -598,8 +598,7 @@ public class COVID19V1Import {
 
 				testDate = testDate.minusDays(1);
 				tryCount--;
-				if (tryCount == 0)
-					log.warn("Could NOT find the [r0] file at {}, trying {}", testDate.plusDays(1), testDate);
+				if (tryCount == 0) log.warn("Could NOT find the [r0] file at {}, trying {}", testDate.plusDays(1), testDate);
 			} while (tryCount > 0);
 
 			// at this point, the file might be found... or not

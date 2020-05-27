@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import euskadi.opendata.covid19.model.COVID19DataFormat;
+import euskadi.opendata.covid19.model.COVID19IndexItem;
 import euskadi.opendata.covid19.model.COVID19ModelObject;
 import lombok.Getter;
 import lombok.Setter;

@@ -7,7 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
@@ -65,15 +66,18 @@ public abstract class COVID19EpidemicStatusImport {
 		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-epidemic-status.xml").asAbsoluteString());
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-epidemic-status.json").asAbsoluteString());
 		try (InputStream is = new FileInputStream(f);
-			 OutputStream xmlos = new FileOutputStream(xmlOutputFile);
-			 OutputStream jsonos = new FileOutputStream(jsonOutputFile)) {
+			 Writer xmlW = new OutputStreamWriter(new FileOutputStream(xmlOutputFile),Charset.forName("ISO-8859-1"));
+			 Writer jsonW = new OutputStreamWriter(new FileOutputStream(jsonOutputFile),Charset.forName("ISO-8859-1"))) {
 			
+			// import
 			COVID19EpidemicStatus status  = COVID19EpidemicStatusImport.doImport(is);
 			
+			// write
+			xmlW.append(COVID19V2Import.XML_HEADER);
 			marshaller.forWriting()
-				      .toXml(status,xmlos);
+				      .toXml(status,xmlW);
 			marshaller.forWriting()
-				      .toJson(status,jsonos);
+				      .toJson(status,jsonW);
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}
@@ -118,7 +122,7 @@ public abstract class COVID19EpidemicStatusImport {
 				// Transfer
 				COVID19EpidemicStatusAtDate item = new COVID19EpidemicStatusAtDate();
 				
-				Date itemDate = Dates.fromFormatedString(date,"MM/dd/yyyy HH:mm");
+				Date itemDate = Dates.fromFormatedString(date,"yyyy/MM/dd HH:mm");
 				
 				item.setDate(itemDate);				
 				

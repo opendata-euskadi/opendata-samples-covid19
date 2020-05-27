@@ -39,11 +39,11 @@ public class COVID19PCRByMunicipality
 	////////// Data
 	@MarshallField(as="newPositivesByDateByMunicipality",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="newPositivesByDateItem"))
-	@Getter @Setter private Collection<COVID19NewPositivesByMunicipalityAtDate> _newPositiveByDateByMunicipality;
+	@Getter @Setter private Collection<COVID19NewPositivesByMunicipalityAtDate> _newPositivesByDateByMunicipality;
 	
 	@MarshallField(as="totalPositivesByDateByMunicipality",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="totalPositivesByDateItem"))
-	@Getter @Setter private Collection<COVID19TotalPositivesByMunicipalityAtDate> _totalPositiveByDateByMunicipality;
+	@Getter @Setter private Collection<COVID19TotalPositivesByMunicipalityAtDate> _totalPositivesByDateByMunicipality;
 	
 	////////// Pivot data
 	@MarshallField(as="newPositivesByMunicipalityByDate")
@@ -75,8 +75,8 @@ public class COVID19PCRByMunicipality
 	 * @return
 	 */
 	public boolean existsTotalPositivesDataFor(final Date date) {
-		if (_totalPositiveByDateByMunicipality == null) return false;
-		return _totalPositiveByDateByMunicipality.stream()
+		if (_totalPositivesByDateByMunicipality == null) return false;
+		return _totalPositivesByDateByMunicipality.stream()
 												  .anyMatch(atDate -> {
 													  			LocalDate ldate1 = atDate.getDate().toInstant()
 													  											   .atZone(ZoneId.systemDefault())
@@ -91,14 +91,14 @@ public class COVID19PCRByMunicipality
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	public COVID19NewPositivesByMunicipalityAtDate findOrCreateNewPositivesByMunicipalityAt(final Date date) {
-		if (_newPositiveByDateByMunicipality == null) _newPositiveByDateByMunicipality = Lists.newArrayList();
+		if (_newPositivesByDateByMunicipality == null) _newPositivesByDateByMunicipality = Lists.newArrayList();
 		
 		LocalDate lDate = date.toInstant()
 							  .atZone(ZoneId.systemDefault())
 							  .toLocalDate();
 		
 		// find the [municipality] collection for the given date
-		COVID19NewPositivesByMunicipalityAtDate byMunicipalityAt = _newPositiveByDateByMunicipality.stream()
+		COVID19NewPositivesByMunicipalityAtDate byMunicipalityAt = _newPositivesByDateByMunicipality.stream()
 																		.filter(h -> h.getDate().toInstant()
 																							    .atZone(ZoneId.systemDefault())
 																							    .toLocalDate()
@@ -107,19 +107,19 @@ public class COVID19PCRByMunicipality
 		if (byMunicipalityAt == null) {
 			byMunicipalityAt = new COVID19NewPositivesByMunicipalityAtDate();
 			byMunicipalityAt.setDate(date);
-			_newPositiveByDateByMunicipality.add(byMunicipalityAt);
+			_newPositivesByDateByMunicipality.add(byMunicipalityAt);
 		}
 		return byMunicipalityAt;
 	}
 	public COVID19TotalPositivesByMunicipalityAtDate findOrCreateTotalPositivesByMunicipalityAt(final Date date) {
-		if (_totalPositiveByDateByMunicipality == null) _totalPositiveByDateByMunicipality = Lists.newArrayList();
+		if (_totalPositivesByDateByMunicipality == null) _totalPositivesByDateByMunicipality = Lists.newArrayList();
 		
 		LocalDate lDate = date.toInstant()
 							  .atZone(ZoneId.systemDefault())
 							  .toLocalDate();
 		
 		// find the [municipality] collection for the given date
-		COVID19TotalPositivesByMunicipalityAtDate byMunicipalityAt = _totalPositiveByDateByMunicipality.stream()
+		COVID19TotalPositivesByMunicipalityAtDate byMunicipalityAt = _totalPositivesByDateByMunicipality.stream()
 																		.filter(h -> h.getDate().toInstant()
 																							    .atZone(ZoneId.systemDefault())
 																							    .toLocalDate()
@@ -128,7 +128,7 @@ public class COVID19PCRByMunicipality
 		if (byMunicipalityAt == null) {
 			byMunicipalityAt = new COVID19TotalPositivesByMunicipalityAtDate();
 			byMunicipalityAt.setDate(date);
-			_totalPositiveByDateByMunicipality.add(byMunicipalityAt);
+			_totalPositivesByDateByMunicipality.add(byMunicipalityAt);
 		}
 		return byMunicipalityAt;
 	}
@@ -141,7 +141,7 @@ public class COVID19PCRByMunicipality
 		Collection<GeoMunicipality> geoMunicipalities = _getGeoMunicipalitiesAtNewPositivesCollection();
 		for (GeoMunicipality geoMunicipality : geoMunicipalities) {
 			COVID19DimensionValuesByDate<GeoMunicipality,Long> positiveCountByDate = new COVID19DimensionValuesByDate<>(geoMunicipality);
-			for (COVID19NewPositivesByMunicipalityAtDate itemAtDate : _newPositiveByDateByMunicipality) {
+			for (COVID19NewPositivesByMunicipalityAtDate itemAtDate : _newPositivesByDateByMunicipality) {
 				COVID19MunicipalityNewPositivesData dimItem = itemAtDate.getItemFor(geoMunicipality.getId());
 				if (dimItem != null) {
 					positiveCountByDate.addValueAt(itemAtDate.getDate(),
@@ -154,10 +154,10 @@ public class COVID19PCRByMunicipality
 		_newPositivesByMunicipalityByDate = out;
 	}
 	private Collection<GeoMunicipality> _getGeoMunicipalitiesAtNewPositivesCollection() {
-		if (CollectionUtils.isNullOrEmpty(_newPositiveByDateByMunicipality)) return Lists.newArrayList();
+		if (CollectionUtils.isNullOrEmpty(_newPositivesByDateByMunicipality)) return Lists.newArrayList();
 		
 		Collection<GeoMunicipality> outMunicipalities = Lists.newArrayList();
-		for (COVID19NewPositivesByMunicipalityAtDate item : _newPositiveByDateByMunicipality) {
+		for (COVID19NewPositivesByMunicipalityAtDate item : _newPositivesByDateByMunicipality) {
 			Collection<GeoMunicipality> itemMunicipalities = item.getGeoMunicipalities();
 			if (CollectionUtils.isNullOrEmpty(itemMunicipalities)) continue;
 			
@@ -182,7 +182,7 @@ public class COVID19PCRByMunicipality
 			COVID19DimensionValuesByDate<GeoMunicipality,Long> positiveCountByDate = new COVID19DimensionValuesByDate<>(geoMunicipality);
 			COVID19DimensionValuesByDate<GeoMunicipality,Float> positiveBy100ThousandPeopleRateByDate = new COVID19DimensionValuesByDate<>(geoMunicipality);
 			
-			for (COVID19TotalPositivesByMunicipalityAtDate itemAtDate : _totalPositiveByDateByMunicipality) {
+			for (COVID19TotalPositivesByMunicipalityAtDate itemAtDate : _totalPositivesByDateByMunicipality) {
 				COVID19MunicipalityTotalPositivesData dimItem = itemAtDate.getItemFor(geoMunicipality.getId());
 				if (dimItem != null) {
 					populationByDate.addValueAt(itemAtDate.getDate(),
@@ -201,10 +201,10 @@ public class COVID19PCRByMunicipality
 		_totalPositivesByMunicipalityByDate = out;
 	}
 	private Collection<GeoMunicipality> _getGeoMunicipalitiesAtTotalPositivesCollection() {
-		if (CollectionUtils.isNullOrEmpty(_totalPositiveByDateByMunicipality)) return Lists.newArrayList();
+		if (CollectionUtils.isNullOrEmpty(_totalPositivesByDateByMunicipality)) return Lists.newArrayList();
 		
 		Collection<GeoMunicipality> outMunicipalities = Lists.newArrayList();
-		for (COVID19TotalPositivesByMunicipalityAtDate item : _totalPositiveByDateByMunicipality) {
+		for (COVID19TotalPositivesByMunicipalityAtDate item : _totalPositivesByDateByMunicipality) {
 			Collection<GeoMunicipality> itemMunicipalities = item.getGeoMunicipalities();
 			if (CollectionUtils.isNullOrEmpty(itemMunicipalities)) continue;
 			

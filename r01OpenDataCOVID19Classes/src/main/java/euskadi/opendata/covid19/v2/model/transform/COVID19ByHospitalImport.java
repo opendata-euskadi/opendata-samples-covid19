@@ -7,7 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
@@ -41,8 +42,8 @@ public abstract class COVID19ByHospitalImport {
 								final Date date) {
 		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-byhospital.xml").asAbsoluteString());
 		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-byhospital.json").asAbsoluteString());
-		try (OutputStream xmlos = new FileOutputStream(xmlOutputFile);
-			 OutputStream jsonos = new FileOutputStream(jsonOutputFile)) {
+		try (Writer xmlW = new OutputStreamWriter(new FileOutputStream(xmlOutputFile),Charset.forName("ISO-8859-1"));
+			 Writer jsonW = new OutputStreamWriter(new FileOutputStream(jsonOutputFile),Charset.forName("ISO-8859-1"))) {
 			
 			COVID19ByHospital byHospital = new COVID19ByHospital();	// TODO load pre-existing data
 			byHospital.setLastUpdateDate(new Date());
@@ -133,11 +134,12 @@ public abstract class COVID19ByHospitalImport {
 			// pivot
 			byHospital.pivotByDate();
 			
-			// save
+			// write
+			xmlW.append(COVID19V2Import.XML_HEADER);
 			marshaller.forWriting()
-				      .toXml(byHospital,xmlos);
+				      .toXml(byHospital,xmlW);
 			marshaller.forWriting()
-				      .toJson(byHospital,jsonos);
+				      .toJson(byHospital,jsonW);
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}

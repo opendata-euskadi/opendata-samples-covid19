@@ -77,17 +77,17 @@ public class COVID19PCRByHealthZone
 	 * @return
 	 */
 	public boolean existsTotalPositivesDataFor(final Date date) {
-		if (_newPositivesByDateByHealthZone == null) return false;
-		return _newPositivesByDateByHealthZone.stream()
-											  .anyMatch(atDate -> {
-												  			LocalDate ldate1 = atDate.getDate().toInstant()
-												  											   .atZone(ZoneId.systemDefault())
-												  											   .toLocalDate();
-												  			LocalDate ldate2 = date.toInstant()
-												  								   .atZone(ZoneId.systemDefault())
-												  								   .toLocalDate();
-												  			return ldate1.equals(ldate2);
-											  			});
+		if (_totalPositivesByDateByHealthZone == null) return false;
+		return _totalPositivesByDateByHealthZone.stream()
+												  .anyMatch(atDate -> {
+													  			LocalDate ldate1 = atDate.getDate().toInstant()
+													  											   .atZone(ZoneId.systemDefault())
+													  											   .toLocalDate();
+													  			LocalDate ldate2 = date.toInstant()
+													  								   .atZone(ZoneId.systemDefault())
+													  								   .toLocalDate();
+													  			return ldate1.equals(ldate2);
+												  			});
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	

@@ -16,15 +16,15 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 
+import euskadi.opendata.covid19.model.COVID19DataFormat;
+import euskadi.opendata.covid19.model.COVID19IndexItem;
 import euskadi.opendata.covid19.v1.model.analysis.COVID19AnalysisMeta;
 import euskadi.opendata.covid19.v1.model.byagedeath.COVID19ByAgeDeathsMeta;
 import euskadi.opendata.covid19.v1.model.byhealthzone.COVID19ByHealthZoneMeta;
 import euskadi.opendata.covid19.v1.model.byhospital.COVID19ByHospitalMeta;
 import euskadi.opendata.covid19.v1.model.bymunicipality.COVID19ByMunicipalityMeta;
-import euskadi.opendata.covid19.v1.model.index.COVID19DataFormat;
 import euskadi.opendata.covid19.v1.model.index.COVID19HistoryDate;
 import euskadi.opendata.covid19.v1.model.index.COVID19Index;
-import euskadi.opendata.covid19.v1.model.index.COVID19IndexItem;
 import euskadi.opendata.covid19.v1.model.r0.COVID19R0Meta;
 import euskadi.opendata.covid19.v1.model.recovered.COVID19RecoveredMeta;
 import euskadi.opendata.covid19.v1.model.tests.COVID19TestsMeta;
