@@ -83,7 +83,7 @@ public abstract class COVID19ByAgeImport {
 		while (line != null) {
 			if (!line.contains("(*)") && !line.contains("GUZTIRA / TOTAL")) {
 				line = line.trim()
-						   .replaceAll("\\\"?((?:[0-9]+),(?:[0-9]+))\\\"?","\\1.\\2")
+						   .replaceAll("\\\"?([0-9]+),([0-9]+)\\\"?","$1.$2")
 						   .replace("\"","").replaceAll("%","");	// remove all " & %
 				
 				Matcher m = LINE_MATCHER.matcher(line);

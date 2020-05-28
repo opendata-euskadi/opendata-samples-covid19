@@ -166,7 +166,7 @@ public abstract class COVID19ByHospitalImport {
 		while (line != null) {
 			if (!line.contains("(*)") && !line.contains("Suma Total")) {
 				line = line.trim()
-						   .replaceAll("\\\"((?:[0-9]+),(?:[0-9]+))\\\"","\\1.\\2")
+						   .replaceAll("\\\"?([0-9]+),([0-9]+)\\\"?","$1.$2")
 						   .replace("\"","").replaceAll("%","");	// remove all " & %
 				
 				Matcher m = lineMatcher.matcher(line);

@@ -110,7 +110,7 @@ public abstract class COVID19ByMunicipalityImport {
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim()
-					   .replaceAll("\\\"?((?:[0-9]+),(?:[0-9]+))\\\"?","\\1.\\2")
+					   .replaceAll("\\\"?([0-9]+),([0-9]+)\\\"?","$1.$2")
 					   .replace("\"","").replaceAll("%","");	// remove all " & %
 
 			Matcher m = lineMatcher.matcher(line);
@@ -171,7 +171,7 @@ public abstract class COVID19ByMunicipalityImport {
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim()
-					   .replaceAll("\\\"?((?:[0-9]+),(?:[0-9]+))\\\"?","\\1.\\2")
+					   .replaceAll("\\\"?([0-9]+),([0-9]+)\\\"?","$1.$2")
 					   .replace("\"","").replaceAll("%","");	// remove all " & %
 
 			Matcher m = lineMatcher.matcher(line);
