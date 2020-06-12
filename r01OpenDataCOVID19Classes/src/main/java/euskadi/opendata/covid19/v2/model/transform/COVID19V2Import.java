@@ -44,11 +44,6 @@ public abstract class COVID19V2Import {
 //	MAIN
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void main(final String[] args) throws IOException {
-		// Create services
-		Marshaller marshaller = MarshallerBuilder.findTypesToMarshallAtJavaPackages(JavaPackage.of("euskadi.opendata.covid19.model"))
-												 .build();
-		NORAService nora = new NORAService(cfg);
-		
 		// Path param
 		Path basePath = null;
 		if (CollectionUtils.hasData(args)) {
@@ -64,19 +59,22 @@ public abstract class COVID19V2Import {
 			log.warn("Usage: java -jar covid19.jar -basePath={path_to_working_dir} > using {} as default base path",basePath);
 		}
 		
-		// Paths
-		Path sourceFolderPath = basePath.joinedWith("source");
-		Path generatedFolderPath = basePath.joinedWith("generated");
+		
 		
 		// Date
 		Date date = new Date();
 		String dateFormatted = Dates.format(date,"yyyy-MM-dd");
 		
+		/////////////////////////////////////////////////////////////////////////////////////////
+		//	DOWNLOAD FILES
+		/////////////////////////////////////////////////////////////////////////////////////////
+		Path sourceFolderPath = basePath.joinedWith("source");
+		Path generatedFolderPath = basePath.joinedWith("generated");
 		// Ensure dirs
 		Files.createDirectories(Paths.get(sourceFolderPath.joinedWith(dateFormatted).asAbsoluteString()));
 		Files.createDirectories(Paths.get(sourceFolderPath.joinedWith(dateFormatted).joinedWith("epidemiologic").asAbsoluteString()));
 		Files.createDirectories(Paths.get(sourceFolderPath.joinedWith(dateFormatted).joinedWith("healthcare").asAbsoluteString()));
-		Files.createDirectories(Paths.get(generatedFolderPath.asAbsoluteString()));
+		
 		
 		// download files & unzip
 		_downloadFilesTo(sourceFolderPath.joinedWith(dateFormatted));
@@ -88,8 +86,25 @@ public abstract class COVID19V2Import {
 							   .joinedWith("datos-asistenciales.zip"), 
 			   sourceFolderPath.joinedWith(dateFormatted)
 							   .joinedWith("healthcare"));
+		/////////////////////////////////////////////////////////////////////////////////////////
+		//	IMPORT
+		/////////////////////////////////////////////////////////////////////////////////////////
+		COVID19V2Import.doImportAllTo(sourceFolderPath,
+									  generatedFolderPath);
 		
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////
+	public static void doImportAllTo(final Path sourceFolderPath, final Path generatedFolderPath) {
+		// Create services
+		Marshaller marshaller = MarshallerBuilder.findTypesToMarshallAtJavaPackages(JavaPackage.of("euskadi.opendata.covid19.model"))
+												 .build();
+		NORAService nora = new NORAService(cfg);		
 		
+		// Date
+		Date date = new Date();
+
 		////////// Epidemic
 		// 01 > Epidemic Status
 		log.info("=======================================================");
@@ -137,15 +152,14 @@ public abstract class COVID19V2Import {
 		
 		
 		////////// Index
-		log.info("*********************************************************");
-		log.info("WRITE INDEX FILES");
-		log.info("*********************************************************");
-		COVID19DataSetIndexBuilder.composeIndexHTMLFor(date,
-													   generatedFolderPath);
+//				log.info("*********************************************************");
+//				log.info("WRITE INDEX FILES");
+//				log.info("*********************************************************");
+//				COVID19DataSetIndexBuilder.composeIndexHTMLFor(date,
+//															   generatedFolderPath);
 	}
-/////////////////////////////////////////////////////////////////////////////////////////
-//	
-/////////////////////////////////////////////////////////////////////////////////////////
+	
+	
 	private static void _downloadFilesTo(final Path sourceFolderPath) throws IOException {
 		_downloadFile(Url.from("https://opendata.euskadi.eus/contenidos/ds_informes_estudios/covid_19_2020/opendata/situacion-epidemiologica.xlsx"),
 					  sourceFolderPath.joinedWith("situacion-epidemiologica.xlsx"));
