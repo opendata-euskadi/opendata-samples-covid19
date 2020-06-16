@@ -96,4 +96,12 @@ public class COVID19EpidemicStatusAtDate
 	@MarshallField(as="r0",
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private float _r0;
+	
+	@MarshallField(as="goneNegative",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _goneNegative;
+	
+	@MarshallField(as="hospitalReleasedCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _hospitalReleasedCount;
 }

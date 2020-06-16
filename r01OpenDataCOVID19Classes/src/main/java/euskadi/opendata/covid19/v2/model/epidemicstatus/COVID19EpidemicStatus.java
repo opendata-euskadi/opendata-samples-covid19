@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import euskadi.opendata.covid19.model.COVID19DimensionValueAtDate;
 import euskadi.opendata.covid19.model.COVID19MetaDataCollection;
 import euskadi.opendata.covid19.model.COVID19ModelObject;
-import euskadi.opendata.covid19.v2.model.pcr.COVID19PPCRMeta;
+import euskadi.opendata.covid19.v2.model.pcr.COVID19PCRMeta;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -194,10 +194,10 @@ public class COVID19EpidemicStatus
 	
 	////////// Meta-data
 	@MarshallField(as="name")
-	@Getter @Setter private LanguageTexts _name = COVID19PPCRMeta.NAME;
+	@Getter @Setter private LanguageTexts _name = COVID19PCRMeta.NAME;
 	
 	@MarshallField(as="notes")
-	@Getter @Setter private LanguageTexts _notes = COVID19PPCRMeta.NOTE;
+	@Getter @Setter private LanguageTexts _notes = COVID19PCRMeta.NOTE;
 	
 	@MarshallField(as="metaData",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))

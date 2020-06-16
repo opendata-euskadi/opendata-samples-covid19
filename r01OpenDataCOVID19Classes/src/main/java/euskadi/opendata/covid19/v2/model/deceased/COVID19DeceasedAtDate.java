@@ -1,4 +1,4 @@
-package euskadi.opendata.covid19.v2.model.pcr;
+package euskadi.opendata.covid19.v2.model.deceased;
 
 import java.util.Date;
 
@@ -12,9 +12,9 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallDateFormat;
 import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 
-@MarshallType(as="covid19PCRAtDate")
+@MarshallType(as="covid19DeceasedAtDate")
 @Accessors(prefix="_")
-public class COVID19PPCRAtDate
+public class COVID19DeceasedAtDate
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = -2708379221215445603L;
@@ -25,11 +25,7 @@ public class COVID19PPCRAtDate
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private Date _date;
 	
-	@MarshallField(as="positiveCount",
+	@MarshallField(as="deceasedCount",
 				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private long _positiveCount;
-	
-	@MarshallField(as="aggregatedIncidence",
-				   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private float _aggregatedIncidence;
+	@Getter @Setter private long _deceasedCount;
 }

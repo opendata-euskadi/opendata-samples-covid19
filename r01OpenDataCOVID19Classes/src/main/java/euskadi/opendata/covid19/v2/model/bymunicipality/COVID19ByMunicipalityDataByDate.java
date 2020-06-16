@@ -15,9 +15,9 @@ import r01f.objectstreamer.annotations.MarshallType;
 import r01f.types.geo.GeoMunicipality;
 import r01f.util.types.collections.CollectionUtils;
 
-@MarshallType(as="covid19TotalPositivesByMunicipalityByDate")
+@MarshallType(as="covid19ByMunicipalityByDate")
 @Accessors(prefix="_")
-public class COVID19TotalPositivesByMunicipalityByDate 
+public class COVID19ByMunicipalityDataByDate 
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = -9200276982695400237L;
@@ -33,11 +33,17 @@ public class COVID19TotalPositivesByMunicipalityByDate
 				   whenXml=@MarshallFieldAsXml(collectionElementName="positiveCountByMunicipalityItem"))
 	@Getter @Setter private Collection<COVID19DimensionValuesByDate<GeoMunicipality,Long>> _positiveCountByMunicipality;
 	
-	////////// data
 	@MarshallField(as="positiveBy100ThousandPeopleRateByMunicipalityByDate",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="positiveBy100ThousandPeopleRateByMunicipalityItem"))
 	@Getter @Setter private Collection<COVID19DimensionValuesByDate<GeoMunicipality,Float>> _positiveBy100ThousandPeopleRateByMunicipality;
+
+	@MarshallField(as="deceasedCountByMunicipalityByDate",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="deceasedCountByMunicipalityItem"))
+	@Getter @Setter private Collection<COVID19DimensionValuesByDate<GeoMunicipality,Long>> _deceasedCountByMunicipality;
 	
+	@MarshallField(as="mortalityRateByMunicipalityByDate",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="mortalityRateByMunicipalityItem"))
+	@Getter @Setter private Collection<COVID19DimensionValuesByDate<GeoMunicipality,Float>> _mortalityRateByMunicipality;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +59,14 @@ public class COVID19TotalPositivesByMunicipalityByDate
 		if (_positiveBy100ThousandPeopleRateByMunicipality == null) _positiveBy100ThousandPeopleRateByMunicipality = Lists.newArrayList();
 		_positiveBy100ThousandPeopleRateByMunicipality.add(val);
 	}
+	public void addTotalDeceasedCountByMunicipality(final COVID19DimensionValuesByDate<GeoMunicipality,Long> val) {
+		if (_deceasedCountByMunicipality == null) _deceasedCountByMunicipality = Lists.newArrayList();
+		_deceasedCountByMunicipality.add(val);
+	}
+	public void addMortalityRateByMunicipality(final COVID19DimensionValuesByDate<GeoMunicipality,Float> val) {
+		if (_mortalityRateByMunicipality == null) _mortalityRateByMunicipality = Lists.newArrayList();
+		_mortalityRateByMunicipality.add(val);
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -67,5 +81,9 @@ public class COVID19TotalPositivesByMunicipalityByDate
 																							   .forEach(p -> p.splitItemsByDate());
 		if (CollectionUtils.hasData(_positiveBy100ThousandPeopleRateByMunicipality)) _positiveBy100ThousandPeopleRateByMunicipality.stream()
 																							   .forEach(p -> p.splitItemsByDate());
+		if (CollectionUtils.hasData(_deceasedCountByMunicipality)) _deceasedCountByMunicipality.stream()
+																							   .forEach(p -> p.splitItemsByDate());
+		if (CollectionUtils.hasData(_mortalityRateByMunicipality)) _mortalityRateByMunicipality.stream()
+																							    .forEach(p -> p.splitItemsByDate());
 	}
 }

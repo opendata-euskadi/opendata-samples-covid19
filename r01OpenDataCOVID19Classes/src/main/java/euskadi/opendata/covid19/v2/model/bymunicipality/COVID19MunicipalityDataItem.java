@@ -9,9 +9,9 @@ import r01f.objectstreamer.annotations.MarshallField.MarshallFieldAsXml;
 import r01f.objectstreamer.annotations.MarshallType;
 import r01f.types.geo.GeoMunicipality;
 
-@MarshallType(as="covid19TotalPositivesByMunicipalityData")
+@MarshallType(as="covid19MunicipalityDataItem")
 @Accessors(prefix="_")
-public class COVID19MunicipalityTotalPositivesData
+public class COVID19MunicipalityDataItem
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = 3447297472250093105L;
@@ -32,4 +32,12 @@ public class COVID19MunicipalityTotalPositivesData
 	@MarshallField(as="positiveBy100ThousandPeopleRate",
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private float _positiveBy100ThousandPeopleRate;
+	
+	@MarshallField(as="totalDeceasedCount",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _totalDeceasedCount;
+	
+	@MarshallField(as="mortalityRate",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private float _mortalityRate;
 }

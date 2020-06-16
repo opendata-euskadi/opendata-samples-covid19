@@ -18,9 +18,9 @@ import r01f.objectstreamer.annotations.MarshallType;
 import r01f.util.types.collections.CollectionUtils;
 import r01f.util.types.collections.Lists;
 
-@MarshallType(as="covid19TotalPositivesByHealthZoneAtDate")
+@MarshallType(as="covid19ByHealthZoneDataAtDate")
 @Accessors(prefix="_")
-public class COVID19TotalPositivesByHealthZoneAtDate
+public class COVID19ByHealthZoneDataAtDate
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = -7544087438489228860L;
@@ -34,7 +34,7 @@ public class COVID19TotalPositivesByHealthZoneAtDate
 	
 	@MarshallField(as="items",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private Collection<COVID19HealthZoneTotalPositivesData> _items;
+	@Getter @Setter private Collection<COVID19HealthZoneDataItem> _items;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -45,14 +45,14 @@ public class COVID19TotalPositivesByHealthZoneAtDate
 							.collect(Collectors.toList())
 					: Lists.newArrayList();
 	}
-	public COVID19HealthZoneTotalPositivesData getItemAtHealthZoneWithId(final COVID19HealthZoneID healthZoneId) {
+	public COVID19HealthZoneDataItem getItemAtHealthZoneWithId(final COVID19HealthZoneID healthZoneId) {
 		return CollectionUtils.hasData(_items) 
 					? _items.stream()
 							.filter(item -> item.getHealthZone().getId().is(healthZoneId))
 							.findFirst().orElse(null)
 					: null;
 	}
-	public void addItem(final COVID19HealthZoneTotalPositivesData data) {
+	public void addItem(final COVID19HealthZoneDataItem data) {
 		if (_items == null) _items = Lists.newArrayList();
 		_items.add(data);
 	}

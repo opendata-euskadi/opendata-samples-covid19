@@ -26,11 +26,11 @@ import com.google.common.collect.Maps;
 
 import euskadi.opendata.covid19.model.COVID19HealthZone;
 import euskadi.opendata.covid19.model.COVID19IDs.COVID19HealthZoneID;
+import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19ByHealthZoneData;
+import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19ByHealthZoneDataAtDate;
 import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19HealthZoneNewPositivesData;
-import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19HealthZoneTotalPositivesData;
+import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19HealthZoneDataItem;
 import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19NewPositivesByHealthZoneAtDate;
-import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19PCRByHealthZone;
-import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19TotalPositivesByHealthZoneAtDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +75,7 @@ public abstract class COVID19ByHealthZoneImport {
 			 Writer xmlW = new OutputStreamWriter(new FileOutputStream(xmlOutputFile),Charset.forName("ISO-8859-1"));
 			 Writer jsonW = new OutputStreamWriter(new FileOutputStream(jsonOutputFile),Charset.forName("ISO-8859-1"))) {
 			
-			COVID19PCRByHealthZone byHealthZone = new COVID19PCRByHealthZone();
+			COVID19ByHealthZoneData byHealthZone = new COVID19ByHealthZoneData();
 			
 			
 			// new positives
@@ -86,9 +86,9 @@ public abstract class COVID19ByHealthZoneImport {
 			byHealthZone.pivotNewPositivesByDate();
 			
 			// total positives
-			COVID19ByHealthZoneImport.doImportTotalPositives(is2,
+			COVID19ByHealthZoneImport.doImportData(is2,
 												 			 byHealthZone);
-			byHealthZone.pivotTotalPositivesByDate();
+			byHealthZone.pivotDataByDate();
 			
 			// write
 			xmlW.append(COVID19V2Import.XML_HEADER);
@@ -105,7 +105,7 @@ public abstract class COVID19ByHealthZoneImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImportNewPositives(final InputStream is,
 											final Collection<COVID19HealthZone> healthZones,
-							    			final COVID19PCRByHealthZone byHealthZone) throws IOException {
+							    			final COVID19ByHealthZoneData byHealthZone) throws IOException {
 		log.info("NEW positives by [health zone]>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		br.readLine();	// title
@@ -165,22 +165,25 @@ public abstract class COVID19ByHealthZoneImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static void doImportTotalPositives(final InputStream is,
-											  final COVID19PCRByHealthZone byHealthZone) throws IOException {
-		log.info("TOTAL positives by [health zone]>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	public static void doImportData(final InputStream is,
+								    final COVID19ByHealthZoneData byHealthZone) throws IOException {
+		log.info("Data by [health zone]>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 
 		String lastUpdateLine = br.readLine();	// last update
 		Date lastUpdateDate = _lastUpdateDate(lastUpdateLine);
 		
 		// if there already exists a record for the given date, ignore
-		if (byHealthZone.existsTotalPositivesDataFor(lastUpdateDate)) return;
+		if (byHealthZone.existsDataFor(lastUpdateDate)) return;
 		
 		String header = br.readLine();			// header
 		Pattern lineMatcher = Pattern.compile("([^;]+);" +		// [1] health zone code
 							  				  "([^;]+);" +		// [2] health zone
 							  				  "([^;]+);" +  	// [3] positives
-							  				  "([^;]+);?");		// [4] positives by 100.000 people rate
+							  				  "([^;]+);" + 		// [4] TIS count
+							  				  "([^;]+);" +		// [5] positives by 100.000 people rate
+							  				  "([^;]+);" + 		// [6] deceased
+							  				  "([^;]+);?");		// [7] mortality	
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim()
@@ -196,17 +199,23 @@ public abstract class COVID19ByHealthZoneImport {
 																	 healthZoneName);
 				
 				// by date
-				COVID19HealthZoneTotalPositivesData data = new COVID19HealthZoneTotalPositivesData();
+				COVID19HealthZoneDataItem data = new COVID19HealthZoneDataItem();
 				data.setHealthZone(healthZone);
 				
 				String positiveCount = m.group(3);
-				String postivesBy100thousand = m.group(4);
+				String tisCount = m.group(4);
+				String postivesBy100thousand = m.group(5);
+				String deceased = m.group(6);
+				String mortality = m.group(7);
 				
 				data.setTotalPositiveCount(Strings.isNOTNullOrEmpty(positiveCount) ? Long.parseLong(positiveCount) : 0);
+				data.setTISCount(Strings.isNOTNullOrEmpty(tisCount) ? Long.parseLong(tisCount) : 0);
 				data.setPositiveBy100ThousandPeopleRate(Strings.isNOTNullOrEmpty(postivesBy100thousand) ? Float.parseFloat(postivesBy100thousand) : 0);
-
+				data.setTotalDeceasedCount(Strings.isNOTNullOrEmpty(deceased) ? Long.parseLong(deceased.substring(0,deceased.indexOf("."))) : 0);	// has a point!! WTF!
+				data.setMortalityRate(Strings.isNOTNullOrEmpty(mortality) ? Float.parseFloat(mortality) : 0);
+				
 				// Transfer
-				COVID19TotalPositivesByHealthZoneAtDate atDate = byHealthZone.findOrCreateTotalPositivesByHealthZoneAt(lastUpdateDate);
+				COVID19ByHealthZoneDataAtDate atDate = byHealthZone.findOrCreateDataByHealthZoneAt(lastUpdateDate);
 				atDate.addItem(data);
 			} else {
 				log.debug("{} NOT matching line: {}",lineMatcher,line);

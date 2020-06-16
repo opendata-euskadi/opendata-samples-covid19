@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
-import euskadi.opendata.covid19.v2.model.pcr.COVID19PCR;
-import euskadi.opendata.covid19.v2.model.pcr.COVID19PCRAtDate;
+import euskadi.opendata.covid19.v2.model.deceased.COVID19Deceased;
+import euskadi.opendata.covid19.v2.model.deceased.COVID19DeceasedAtDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,17 +30,13 @@ import r01f.util.types.Strings;
 
 @Slf4j
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public abstract class COVID19PCRTestsImport {
+public abstract class COVID19DeceasedImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
 	private static final Pattern LINE_MATCHER = Pattern.compile("([^;]+);" +	// [1] Fecha
 
-																"([^;]*);" + 	// [2] Casos 
-																"([^;]*);" +	// [3] Incidencia acum.
-																"([^;]*);" +	// [4] Incidencia acum AR.
-																"([^;]*);" +	// [5] Incidencia acum BIZ.
-																"([^;]*);?"		// [6] Incidencia acum GI.
+																"([^;]*)"		// [2] Death count
 																);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
@@ -50,22 +46,22 @@ public abstract class COVID19PCRTestsImport {
 								final Date date) {
 		File f = new File(sourceFolderPath.joinedWith(Dates.format(date,"yyyy-MM-dd"))
 										  .joinedWith("epidemiologic")
-										  .joinedWith("02.csv").asAbsoluteString());
-		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-pcr.xml").asAbsoluteString());
-		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-pcr.json").asAbsoluteString());
+										  .joinedWith("08.csv").asAbsoluteString());
+		File xmlOutputFile = new File(generatedFolderPath.joinedWith("covid19-deceasedPeopleCount.xml").asAbsoluteString());
+		File jsonOutputFile = new File(generatedFolderPath.joinedWith("covid19-deceasedPeopleCount.json").asAbsoluteString());
 		try (InputStream is = new FileInputStream(f);
 			 Writer xmlW = new OutputStreamWriter(new FileOutputStream(xmlOutputFile),Charset.forName("ISO-8859-1"));
 			 Writer jsonW = new OutputStreamWriter(new FileOutputStream(jsonOutputFile),Charset.forName("ISO-8859-1"))) {
 			
 			// import
-			COVID19PCR pcr  = COVID19PCRTestsImport.doImport(is);
+			COVID19Deceased deceased  = COVID19DeceasedImport.doImport(is);
 			
 			// write
 			xmlW.append(COVID19V2Import.XML_HEADER);
 			marshaller.forWriting()
-				      .toXml(pcr,xmlW);
+				      .toXml(deceased,xmlW);
 			marshaller.forWriting()
-				      .toJson(pcr,jsonW);
+				      .toJson(deceased,jsonW);
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}
@@ -73,9 +69,12 @@ public abstract class COVID19PCRTestsImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
-	public static COVID19PCR doImport(final InputStream is) throws IOException {
-		Collection<COVID19PCRAtDate> items = Lists.newArrayList();
+	public static COVID19Deceased doImport(final InputStream is) throws IOException {
+		Collection<COVID19DeceasedAtDate> items = Lists.newArrayList();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
+		
+		String lastUpdate = br.readLine();
+		
 		br.readLine();	// title
 		br.readLine();	// header
 		String line = br.readLine();
@@ -88,24 +87,16 @@ public abstract class COVID19PCRTestsImport {
 			if (m.find()) {
 				String date = m.group(1).replace("abr","apr") + Year.now().getValue() + " 23:00"; // marshaller fix -2 hours. eg: 24/04/2020 21:00
 				
-				String positiveCount = m.group(2);
-				String aggregatedIncidence = m.group(3);
-				String aggregatedIncidenceAR = m.group(4);
-				String aggregatedIncidenceBIZ = m.group(5);
-				String aggregatedIncidenceGI = m.group(6);
+				String deceasedCount = m.group(2);
 				
 				// Transfer
-				COVID19PCRAtDate item = new COVID19PCRAtDate();
+				COVID19DeceasedAtDate item = new COVID19DeceasedAtDate();
 				
 				Date itemDate = Dates.fromFormatedString(date,"dd-MMM.yyyy HH:mm"); 	// 1-mar.
 				
 				item.setDate(itemDate);				
 				
-				item.setPositiveCount(Strings.isNOTNullOrEmpty(positiveCount) ? Long.parseLong(positiveCount) : 0);
-				item.setAggregatedIncidence(Strings.isNOTNullOrEmpty(aggregatedIncidence) ? Float.parseFloat(aggregatedIncidence) : 0);
-				item.setAggregatedIncidenceAR(Strings.isNOTNullOrEmpty(aggregatedIncidenceAR) ? Float.parseFloat(aggregatedIncidenceAR) : 0);
-				item.setAggregatedIncidenceBIZ(Strings.isNOTNullOrEmpty(aggregatedIncidenceBIZ) ? Float.parseFloat(aggregatedIncidenceBIZ) : 0);
-				item.setAggregatedIncidenceGI(Strings.isNOTNullOrEmpty(aggregatedIncidenceGI) ? Float.parseFloat(aggregatedIncidenceGI) : 0);
+				item.setDeceasedCount(Strings.isNOTNullOrEmpty(deceasedCount) ? Long.parseLong(deceasedCount) : 0);
 				
 				items.add(item);
 			} else {
@@ -119,7 +110,7 @@ public abstract class COVID19PCRTestsImport {
 		is.close();
 		
 		// [3] - return 
-		COVID19PCR out = new COVID19PCR();
+		COVID19Deceased out = new COVID19Deceased();
 		out.setLastUpdateDate(new Date());
 		out.setByDateItems(items);
 		out.splitItemsByDate();

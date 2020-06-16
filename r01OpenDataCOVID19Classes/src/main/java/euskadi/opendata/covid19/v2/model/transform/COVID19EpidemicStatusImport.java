@@ -52,7 +52,9 @@ public abstract class COVID19EpidemicStatusImport {
 																"([^;]*);" + 	// [16] Fallecidos
 																"([^;]*);" + 	// [17] Nuevos ingresos planta con PCR positivo
 																"([^;]*);" + 	// [18] Hospitalizados en CI
-																"([^;]*)" 		// [19] R0 en Euskadi
+																"([^;]*);" +	// [19] R0 en Euskadi
+																"([^;]*);" +	// [20] Negativizados
+																"([^;]*)"		// [21] Altas hospitalarias
 																);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
@@ -118,6 +120,8 @@ public abstract class COVID19EpidemicStatusImport {
 				String newAdmissionsWithPCRCount = m.group(17);
 				String icuPeopleCount = m.group(18);
 				String r0 = m.group(19);
+				String goneNegative = m.group(20);
+				String hospitalReleasedCount = m.group(21);
 				
 				// Transfer
 				COVID19EpidemicStatusAtDate item = new COVID19EpidemicStatusAtDate();
@@ -145,6 +149,8 @@ public abstract class COVID19EpidemicStatusImport {
 				item.setNewHospitalAdmissionsWithPCRCount(Strings.isNOTNullOrEmpty(newAdmissionsWithPCRCount) ? Long.parseLong(newAdmissionsWithPCRCount) : 0);
 				item.setICUPeopleCount(Strings.isNOTNullOrEmpty(icuPeopleCount) ? Long.parseLong(icuPeopleCount) : 0);
 				item.setR0(Strings.isNOTNullOrEmpty(r0) ? Float.parseFloat(r0) : 0);
+				item.setGoneNegative(Strings.isNOTNullOrEmpty(goneNegative) ? Long.parseLong(goneNegative) : 0);
+				item.setHospitalReleasedCount(Strings.isNOTNullOrEmpty(hospitalReleasedCount) ? Long.parseLong(hospitalReleasedCount) : 0);
 				
 				items.add(item);
 			} else {

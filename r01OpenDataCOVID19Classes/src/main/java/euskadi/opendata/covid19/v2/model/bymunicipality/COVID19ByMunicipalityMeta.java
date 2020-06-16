@@ -10,7 +10,7 @@ import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
 import r01f.locale.LanguageTextsMapBacked;
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public abstract class COVID19PCRByMunicipalityMeta {
+public abstract class COVID19ByMunicipalityMeta {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -38,10 +38,10 @@ public abstract class COVID19PCRByMunicipalityMeta {
 	public final static COVID19MetaData NEW_POSITIVE_BY_MUNICIPALITY_BY_DATE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("newPositivesByMunicipalityByDate"),
 																									 	 		 				 "Número de nuevos positivos por municipio y por fecha",
 																									 	 		 				 "Positibo berrien kopurua udalerriaren eta dataren arabera");
-	public final static COVID19MetaData TOTAL_POSITIVE_BY_DATE_BY_MUNICIPALITY_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("totalPositivesByDateByMunicipality"),
-																									 	 		 				   "Total de positivos por fecha y por municipio",
-																									 	 		 				   "Positiboak, guztira, dataren eta udalerriaren arabera");
-	public final static COVID19MetaData TOTAL_POSITIVE_BY_MUNICIPALITY_BY_DATE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("totalPositivesByMunicipalityByDate"),
-																									 	 		 				   "Total de positivos por municipio y por fecha",
-																									 	 		 				   "Positiboen guztizkoa, udalerriaren eta dataren arabera");
+	public final static COVID19MetaData DATE_BY_DATE_BY_MUNICIPALITY = new COVID19MetaData(COVID19MetaDataID.forId("byDateByMunicipality"),
+																					 	 		 				   "dATOS por fecha y por municipio",
+																					 	 		 				   "Data, dataren eta udalerriaren arabera");
+	public final static COVID19MetaData DATA_BY_MUNICIPALITY_BY_DATE = new COVID19MetaData(COVID19MetaDataID.forId("byMunicipalityByDate"),
+																					 	 		 				   "Datos por municipio y por fecha",
+																					 	 		 				   "Data, udalerriaren eta dataren arabera");
 }

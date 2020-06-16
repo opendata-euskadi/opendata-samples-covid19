@@ -23,10 +23,10 @@ import java.util.regex.Pattern;
 import com.google.common.collect.Maps;
 
 import euskadi.opendata.covid19.v2.model.bymunicipality.COVID19MunicipalityNewPositivesData;
-import euskadi.opendata.covid19.v2.model.bymunicipality.COVID19MunicipalityTotalPositivesData;
+import euskadi.opendata.covid19.v2.model.bymunicipality.COVID19MunicipalityDataItem;
 import euskadi.opendata.covid19.v2.model.bymunicipality.COVID19NewPositivesByMunicipalityAtDate;
-import euskadi.opendata.covid19.v2.model.bymunicipality.COVID19PCRByMunicipality;
-import euskadi.opendata.covid19.v2.model.bymunicipality.COVID19TotalPositivesByMunicipalityAtDate;
+import euskadi.opendata.covid19.v2.model.bymunicipality.COVID19ByMunicipalityData;
+import euskadi.opendata.covid19.v2.model.bymunicipality.COVID19ByMunicipalityDataAtDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +64,7 @@ public abstract class COVID19ByMunicipalityImport {
 			 Writer xmlW = new OutputStreamWriter(new FileOutputStream(xmlOutputFile),Charset.forName("ISO-8859-1"));
 			 Writer jsonW = new OutputStreamWriter(new FileOutputStream(jsonOutputFile),Charset.forName("ISO-8859-1"))) {
 
-			COVID19PCRByMunicipality byMunicipality = new COVID19PCRByMunicipality();
+			COVID19ByMunicipalityData byMunicipality = new COVID19ByMunicipalityData();
 			byMunicipality.setLastUpdateDate(new Date());
 			
 			// new positives
@@ -77,7 +77,7 @@ public abstract class COVID19ByMunicipalityImport {
 			COVID19ByMunicipalityImport.doImportTotalPositives(is2,
 												 			   nora,
 												 			   byMunicipality);
-			byMunicipality.pivotTotalPositivesByDate();
+			byMunicipality.pivotDataByDate();
 			
 			// write
 			xmlW.append(COVID19V2Import.XML_HEADER);
@@ -94,7 +94,7 @@ public abstract class COVID19ByMunicipalityImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImportNewPositives(final InputStream is,
 											final NORAService nora,
-											final COVID19PCRByMunicipality byMunicipality) throws IOException {
+											final COVID19ByMunicipalityData byMunicipality) throws IOException {
 		log.info("NEW positives by [municipality]>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		br.readLine();	// title
@@ -153,7 +153,7 @@ public abstract class COVID19ByMunicipalityImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static void doImportTotalPositives(final InputStream is,
 											  final NORAService nora,
-											  final COVID19PCRByMunicipality byMunicipality) throws IOException {
+											  final COVID19ByMunicipalityData byMunicipality) throws IOException {
 		log.info("TOTAL positives by [municipality]>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 
@@ -161,13 +161,15 @@ public abstract class COVID19ByMunicipalityImport {
 		Date lastUpdateDate = _lastUpdateDate(lastUpdateLine);
 		
 		// if there already exists a record for the given date, ignore
-		if (byMunicipality.existsTotalPositivesDataFor(lastUpdateDate)) return;
+		if (byMunicipality.existsDataFor(lastUpdateDate)) return;
 		
 		String header = br.readLine();			// header
 		Pattern lineMatcher = Pattern.compile("([^;]+);" +		// [1] municipality
 							  				  "([^;]+);" +		// [2] positive count
 							  				  "([^;]+);" +  	// [3] population
-							  				  "([^;]+);?");		// [4] positives by 100.000 people rate
+							  				  "([^;]+);" +		// [4] positives by 100.000 people rate
+							  				  "([^;]+);" + 		// [5] deceased
+							  				  "([^;]+);?");		// [6] fatality
 		String line = br.readLine();
 		while (line != null) {
 			line = line.trim()
@@ -186,18 +188,22 @@ public abstract class COVID19ByMunicipalityImport {
 					if (mun == null) log.error("[nora] NO municipality found for {}",municipality);
 					
 					// by date
-					COVID19MunicipalityTotalPositivesData data = new COVID19MunicipalityTotalPositivesData();
+					COVID19MunicipalityDataItem data = new COVID19MunicipalityDataItem();
 					data.setGeoMunicipality(mun);
 					String positiveCount = m.group(2);
 					String population = m.group(3);
 					String postivesBy100thousand = m.group(4);
+					String deceasedCount = m.group(5);
+					String mortalityRate = m.group(6);
 					
 					data.setTotalPositiveCount(Strings.isNOTNullOrEmpty(positiveCount) ? Long.parseLong(positiveCount) : 0);
 					data.setPopulation(Strings.isNOTNullOrEmpty(population) ? Long.parseLong(population) : 0);
 					data.setPositiveBy100ThousandPeopleRate(Strings.isNOTNullOrEmpty(postivesBy100thousand) ? Float.parseFloat(postivesBy100thousand) : 0);
+					data.setTotalDeceasedCount(Strings.isNOTNullOrEmpty(deceasedCount) ? Long.parseLong(deceasedCount) : 0);
+					data.setMortalityRate(Strings.isNOTNullOrEmpty(mortalityRate) ? Float.parseFloat(mortalityRate) : 0);
 
 					// Transfer
-					COVID19TotalPositivesByMunicipalityAtDate atDate = byMunicipality.findOrCreateTotalPositivesByMunicipalityAt(lastUpdateDate);
+					COVID19ByMunicipalityDataAtDate atDate = byMunicipality.findOrCreateByMunicipalityAt(lastUpdateDate);
 					atDate.addItem(data);
 				}
 			} else {

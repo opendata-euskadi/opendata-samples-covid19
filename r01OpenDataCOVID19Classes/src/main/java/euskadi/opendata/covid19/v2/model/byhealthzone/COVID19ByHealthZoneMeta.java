@@ -10,7 +10,7 @@ import r01f.locale.LanguageTexts.LangTextNotFoundBehabior;
 import r01f.locale.LanguageTextsMapBacked;
 
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public abstract class COVID19PCRByHealthZoneMeta {
+public abstract class COVID19ByHealthZoneMeta {
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -36,10 +36,10 @@ public abstract class COVID19PCRByHealthZoneMeta {
 	public final static COVID19MetaData NEW_POSITIVE_BY_MUNICIPALITY_BY_DATE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("newPositivesByHealthZoneByDate"),
 																									 	 		 				 "Número de nuevos positivos por zona de salud y por fecha",
 																									 	 		 				 "Positibo berrien kopurua, osasun-eremuaren eta dataren arabera");
-	public final static COVID19MetaData TOTAL_POSITIVE_BY_DATE_BY_MUNICIPALITY_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("totalPositivesByDateByHealthZone"),
-																									 	 		 				   "Total de positivos por fecha y por zona de salud",
-																									 	 		 				   "Positiboak, guztira, dataren eta osasun-eremuaren arabera");
-	public final static COVID19MetaData TOTAL_POSITIVE_BY_MUNICIPALITY_BY_DATE_COUNT = new COVID19MetaData(COVID19MetaDataID.forId("totalPositivesByHealthZoneByDate"),
-																									 	 		 				   "Total de positivos por zona de salud y por fecha",
-																									 	 		 				   "Positiboak guztira, osasun-eremuaren eta dataren arabera");
+	public final static COVID19MetaData BY_DATE_BY_MUNICIPALITY_DATA = new COVID19MetaData(COVID19MetaDataID.forId("dataByDateByHealthZone"),
+																					 	 		 				   "Datos por fecha y por zona de salud",
+																					 	 		 				   "Data, dataren eta osasun-eremuaren arabera");
+	public final static COVID19MetaData BY_MUNICIPALITY_BY_DATE_DATA = new COVID19MetaData(COVID19MetaDataID.forId("dataByHealthZoneByDate"),
+																					 	 		 				   "Datos por zona de salud y por fecha",
+																					 	 		 				   "Data, osasun-eremuaren eta dataren arabera");
 }

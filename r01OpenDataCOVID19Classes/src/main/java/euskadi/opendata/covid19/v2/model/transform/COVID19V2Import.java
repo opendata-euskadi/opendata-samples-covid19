@@ -127,6 +127,15 @@ public abstract class COVID19V2Import {
 		COVID19ByHealthZoneImport.doImport(marshaller,
 										   sourceFolderPath,generatedFolderPath,
 										   date);
+		
+		// 08 > Deceased
+		log.info("=======================================================");
+		log.info("{}",COVID19DeceasedImport.class.getSimpleName());
+		log.info("=======================================================");
+		COVID19DeceasedImport.doImport(marshaller,
+									   sourceFolderPath,generatedFolderPath,
+									   date);
+		
 		////////// HealthCare
 		log.info("=======================================================");
 		log.info("{}",COVID19ByHospitalImport.class.getSimpleName());

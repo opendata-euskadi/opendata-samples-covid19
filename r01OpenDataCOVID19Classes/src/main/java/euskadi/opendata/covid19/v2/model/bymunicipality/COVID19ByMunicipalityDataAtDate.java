@@ -18,9 +18,9 @@ import r01f.types.geo.GeoOIDs.GeoMunicipalityID;
 import r01f.util.types.collections.CollectionUtils;
 import r01f.util.types.collections.Lists;
 
-@MarshallType(as="covid19TotalPositivesByMunicipalityAtDate")
+@MarshallType(as="covid19ByMunicipalityDataAtDate")
 @Accessors(prefix="_")
-public class COVID19TotalPositivesByMunicipalityAtDate
+public class COVID19ByMunicipalityDataAtDate
   implements COVID19ModelObject {
 
 	private static final long serialVersionUID = -7544087438489228860L;
@@ -34,7 +34,7 @@ public class COVID19TotalPositivesByMunicipalityAtDate
 	
 	@MarshallField(as="items",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="item"))
-	@Getter @Setter private Collection<COVID19MunicipalityTotalPositivesData> _items;
+	@Getter @Setter private Collection<COVID19MunicipalityDataItem> _items;
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ public class COVID19TotalPositivesByMunicipalityAtDate
 							.collect(Collectors.toList())
 					: Lists.newArrayList();
 	}
-	public COVID19MunicipalityTotalPositivesData getItemFor(final GeoMunicipalityID geoMunicipality) {
+	public COVID19MunicipalityDataItem getItemFor(final GeoMunicipalityID geoMunicipality) {
 		return CollectionUtils.hasData(_items) 
 					? _items.stream()
 							.filter(item -> item.getGeoMunicipality() != null)
@@ -55,7 +55,7 @@ public class COVID19TotalPositivesByMunicipalityAtDate
 							.findFirst().orElse(null)
 					: null;
 	}
-	public void addItem(final COVID19MunicipalityTotalPositivesData data) {
+	public void addItem(final COVID19MunicipalityDataItem data) {
 		if (_items == null) _items = Lists.newArrayList();
 		_items.add(data);
 	}
