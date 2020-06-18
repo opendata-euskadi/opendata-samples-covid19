@@ -28,8 +28,8 @@ import euskadi.opendata.covid19.model.COVID19HealthZone;
 import euskadi.opendata.covid19.model.COVID19IDs.COVID19HealthZoneID;
 import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19ByHealthZoneData;
 import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19ByHealthZoneDataAtDate;
-import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19HealthZoneNewPositivesData;
 import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19HealthZoneDataItem;
+import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19HealthZoneNewPositivesData;
 import euskadi.opendata.covid19.v2.model.byhealthzone.COVID19NewPositivesByHealthZoneAtDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -211,7 +211,7 @@ public abstract class COVID19ByHealthZoneImport {
 				data.setTotalPositiveCount(Strings.isNOTNullOrEmpty(positiveCount) ? Long.parseLong(positiveCount) : 0);
 				data.setTISCount(Strings.isNOTNullOrEmpty(tisCount) ? Long.parseLong(tisCount) : 0);
 				data.setPositiveBy100ThousandPeopleRate(Strings.isNOTNullOrEmpty(postivesBy100thousand) ? Float.parseFloat(postivesBy100thousand) : 0);
-				data.setTotalDeceasedCount(Strings.isNOTNullOrEmpty(deceased) ? Long.parseLong(deceased.substring(0,deceased.indexOf("."))) : 0);	// has a point!! WTF!
+				data.setTotalDeceasedCount(Strings.isNOTNullOrEmpty(deceased) ? Long.parseLong(deceased) : 0);	
 				data.setMortalityRate(Strings.isNOTNullOrEmpty(mortality) ? Float.parseFloat(mortality) : 0);
 				
 				// Transfer

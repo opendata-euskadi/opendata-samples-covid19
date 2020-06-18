@@ -151,7 +151,7 @@ public abstract class COVID19V2Import {
 									   sourceFolderPath,generatedFolderPath,
 									   date);
 		
-		////////// HealthCare
+		//////// HealthCare
 		log.info("=======================================================");
 		log.info("{}",COVID19ByHospitalImport.class.getSimpleName());
 		log.info("=======================================================");
