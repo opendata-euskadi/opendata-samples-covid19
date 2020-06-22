@@ -164,7 +164,7 @@ public abstract class COVID19ByHospitalImport {
 		
 		String line = br.readLine();
 		while (line != null) {
-			if (!line.contains("(*)") && !line.contains("Suma Total")) {
+			if (!line.contains("(*)") && !(line.toLowerCase().contains("suma total") || line.toLowerCase().contains("grand total"))) {
 				line = line.trim()
 						   .replaceAll("\\\"?([0-9]+),([0-9]+)\\\"?","$1.$2")
 						   .replace("\"","").replaceAll("%","");	// remove all " & %
@@ -175,7 +175,7 @@ public abstract class COVID19ByHospitalImport {
 					
 					// date
 					String date = m.group(1) + " 23:00"; // marshaller fix -2 hours. eg: 24/04/2020 21:00
-					Date itemDate = Dates.fromFormatedString(date,"dd/MM/yyyy HH:mm"); 	// 1-mar.
+					Date itemDate = Dates.fromFormatedString(date,"MM/dd/yyyy HH:mm"); 	
 					
 					// total
 					String total = m.group(2);
