@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.time.Year;
 import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -18,6 +17,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
+import euskadi.opendata.covid19.util.COVID19DateUtils;
 import euskadi.opendata.covid19.v2.model.deceased.COVID19Deceased;
 import euskadi.opendata.covid19.v2.model.deceased.COVID19DeceasedAtDate;
 import lombok.AccessLevel;
@@ -85,14 +85,12 @@ public abstract class COVID19DeceasedImport {
 			
 			Matcher m = LINE_MATCHER.matcher(line);
 			if (m.find()) {
-				String date = m.group(1).replace("abr","apr") + Year.now().getValue() + " 23:00"; // marshaller fix -2 hours. eg: 24/04/2020 21:00
+				Date itemDate = COVID19DateUtils.parseDate(m.group(1));
 				
 				String deceasedCount = m.group(2);
 				
 				// Transfer
 				COVID19DeceasedAtDate item = new COVID19DeceasedAtDate();
-				
-				Date itemDate = Dates.fromFormatedString(date,"dd-MMM.yyyy HH:mm"); 	// 1-mar.
 				
 				item.setDate(itemDate);				
 				
