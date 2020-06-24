@@ -104,4 +104,21 @@ public class COVID19EpidemicStatusAtDate
 	@MarshallField(as="hospitalReleasedCount",
 				   whenXml=@MarshallFieldAsXml(attr=true))
 	@Getter @Setter private long _hospitalReleasedCount;
+	
+	@MarshallField(as="icuNewAdmissionsCountLast14Days",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private long _ICUNewAdmissionsCountLast14Days;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateAR",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private float _by100ThousandPeoplePositiveRateAR;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateBIZ",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private float _by100ThousandPeoplePositiveRateBIZ;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateGI",
+				   whenXml=@MarshallFieldAsXml(attr=true))
+	@Getter @Setter private float _by100ThousandPeoplePositiveRateGI;
+	
 }

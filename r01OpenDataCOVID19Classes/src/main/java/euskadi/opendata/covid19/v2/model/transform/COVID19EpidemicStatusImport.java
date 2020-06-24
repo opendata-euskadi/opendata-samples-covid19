@@ -54,7 +54,11 @@ public abstract class COVID19EpidemicStatusImport {
 																"([^;]*);" + 	// [18] Hospitalizados en CI
 																"([^;]*);" +	// [19] R0 en Euskadi
 																"([^;]*);" +	// [20] Negativizados
-																"([^;]*)"		// [21] Altas hospitalarias
+																"([^;]*);" +	// [21] Altas hospitalarias
+																"([^;]*);" +	// [22] Nuevos ingresos UCI en los ultimos 14 días
+																"([^;]*);" +	// [23] Tasa de positivos por 100.000 habitantes ARABA
+																"([^;]*);" +	// [24] Tasa de positivos por 100.000 habitantes BIZKAIA
+																"([^;]*);?" 	// [25] Tasa de positivos por 100.000 habitantes GIPUZKOA
 																);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
@@ -122,6 +126,10 @@ public abstract class COVID19EpidemicStatusImport {
 				String r0 = m.group(19);
 				String goneNegative = m.group(20);
 				String hospitalReleasedCount = m.group(21);
+				String icuNewAdmissionsCountLast14Days = m.group(22);
+				String by100ThousandPeoplePositiveRateAR = m.group(23);
+				String by100ThousandPeoplePositiveRateBIZ = m.group(24);
+				String by100ThousandPeoplePositiveRateGI = m.group(25);
 				
 				// Transfer
 				COVID19EpidemicStatusAtDate item = new COVID19EpidemicStatusAtDate();
@@ -151,6 +159,10 @@ public abstract class COVID19EpidemicStatusImport {
 				item.setR0(Strings.isNOTNullOrEmpty(r0) ? Float.parseFloat(r0) : 0);
 				item.setGoneNegative(Strings.isNOTNullOrEmpty(goneNegative) ? Long.parseLong(goneNegative) : 0);
 				item.setHospitalReleasedCount(Strings.isNOTNullOrEmpty(hospitalReleasedCount) ? Long.parseLong(hospitalReleasedCount) : 0);
+				item.setICUNewAdmissionsCountLast14Days(Strings.isNOTNullOrEmpty(icuNewAdmissionsCountLast14Days) ? Long.parseLong(icuNewAdmissionsCountLast14Days) : 0);
+				item.setBy100ThousandPeoplePositiveRateAR(Strings.isNOTNullOrEmpty(by100ThousandPeoplePositiveRateAR) ? Float.parseFloat(r0) : 0);
+				item.setBy100ThousandPeoplePositiveRateBIZ(Strings.isNOTNullOrEmpty(by100ThousandPeoplePositiveRateBIZ) ? Float.parseFloat(r0) : 0);
+				item.setBy100ThousandPeoplePositiveRateGI(Strings.isNOTNullOrEmpty(by100ThousandPeoplePositiveRateGI) ? Float.parseFloat(r0) : 0);
 				
 				items.add(item);
 			} else {

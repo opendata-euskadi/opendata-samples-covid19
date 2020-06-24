@@ -114,6 +114,22 @@ public class COVID19EpidemicStatus
 				   whenXml=@MarshallFieldAsXml(collectionElementName="r0AtDate"))
 	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Float>> _r0ByDate;
 	
+	@MarshallField(as="icuNewAdmissionsCountLast14DaysByDate",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="icuNewAdmissionsCountLast14DaysAtDate"))
+	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Long>> _icuNewAdmissionsCountLast14DaysByDate;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateARByDate",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="by100ThousandPeoplePositiveRateARAtDate"))
+	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Float>> _by100ThousandPeoplePositiveRateARByDate;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateBIZByDate",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="by100ThousandPeoplePositiveRateBIZAtDate"))
+	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Float>> _by100ThousandPeoplePositiveRateBIZByDate;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateGIByDate",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="by100ThousandPeoplePositiveRateGIAtDate"))
+	@Getter @Setter private Collection<COVID19DimensionValueAtDate<Float>> _by100ThousandPeoplePositiveRateGIByDate;
+	
 	
 	////////// Data splitted in a more suitable format for xy representations
 	@MarshallField(as="dates",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
@@ -192,6 +208,22 @@ public class COVID19EpidemicStatus
 				   whenXml=@MarshallFieldAsXml(collectionElementName="r0Item"))
 	@Getter @Setter private Collection<Float> _r0;
 	
+	@MarshallField(as="icuNewAdmissionsCountLast14Days",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="icuNewAdmissionsCountLast14DaysItem"))
+	@Getter @Setter private Collection<Long> _icuNewAdmissionsCountLast14Days;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateAR",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="by100ThousandPeoplePositiveRateARItem"))
+	@Getter @Setter private Collection<Float> _by100ThousandPeoplePositiveRateAR;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateBIZ",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="by100ThousandPeoplePositiveRateBIZItem"))
+	@Getter @Setter private Collection<Float> _by100ThousandPeoplePositiveRateBIZ;
+	
+	@MarshallField(as="by100ThousandPeoplePositiveRateGI",
+				   whenXml=@MarshallFieldAsXml(collectionElementName="by100ThousandPeoplePositiveRateGIItem"))
+	@Getter @Setter private Collection<Float> _by100ThousandPeoplePositiveRateGI;
+	
 	////////// Meta-data
 	@MarshallField(as="name")
 	@Getter @Setter private LanguageTexts _name = COVID19PCRMeta.NAME;
@@ -219,7 +251,11 @@ public class COVID19EpidemicStatus
 																								COVID19EpidemicStatusMeta.DECEASED_COUNT,
 																								COVID19EpidemicStatusMeta.NEW_HOSPITAL_ADMISSIONS_WIH_PCR_COUNT,
 																								COVID19EpidemicStatusMeta.ICU_PEOPLE_COUNT,
-																								COVID19EpidemicStatusMeta.R0);
+																								COVID19EpidemicStatusMeta.R0,
+																								COVID19EpidemicStatusMeta.ICU_NEW_ADMISSIONS_COUNT_LAST_14_DAYS,
+																								COVID19EpidemicStatusMeta.BY_100_THOUSAND_PEOPLE_POSITIVE_RATE_AR,
+																								COVID19EpidemicStatusMeta.BY_100_THOUSAND_PEOPLE_POSITIVE_RATE_BIZ,
+																								COVID19EpidemicStatusMeta.BY_100_THOUSAND_PEOPLE_POSITIVE_RATE_GI);
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -246,6 +282,10 @@ public class COVID19EpidemicStatus
 		_newHospitalAdmissionsWithPCRCount = COVID19EpidemicStatus.getNewHospitalAdmissionsWithPCRCountOf(_byDateItems);
 		_icuPeopleCount = COVID19EpidemicStatus.getICUPeopleCountOf(_byDateItems);
 		_r0 = COVID19EpidemicStatus.getR0Of(_byDateItems);
+		_icuNewAdmissionsCountLast14Days = COVID19EpidemicStatus.getICUNewAdmissionsCountLast14DaysOf(_byDateItems);
+		_by100ThousandPeoplePositiveRateAR = COVID19EpidemicStatus.getBy100ThousandPeoplePositiveRateAROf(_byDateItems);
+		_by100ThousandPeoplePositiveRateBIZ = COVID19EpidemicStatus.getBy100ThousandPeoplePositiveRateBIZOf(_byDateItems);
+		_by100ThousandPeoplePositiveRateGI = COVID19EpidemicStatus.getBy100ThousandPeoplePositiveRateGIOf(_byDateItems);
 	}
 	public void pivotData() {
 		if (CollectionUtils.isNullOrEmpty(_byDateItems)) return;
@@ -269,6 +309,10 @@ public class COVID19EpidemicStatus
 		_newHospitalAdmissionsWithPCRCountByDate = COVID19EpidemicStatus.getNewHospitalAdmissionsWithPCRCountByDateOf(_byDateItems);
 		_icuPeopleCountByDate = COVID19EpidemicStatus.getICUPeopleCountByDateOf(_byDateItems);
 		_r0ByDate = COVID19EpidemicStatus.getR0ByDateOf(_byDateItems);
+		_icuNewAdmissionsCountLast14DaysByDate = COVID19EpidemicStatus.getICUNewAdmissionsCountLast14DaysByDateOf(_byDateItems);
+		_by100ThousandPeoplePositiveRateARByDate = COVID19EpidemicStatus.getBy100ThousandPeoplePositiveRateARByDateOf(_byDateItems);
+		_by100ThousandPeoplePositiveRateBIZByDate = COVID19EpidemicStatus.getBy100ThousandPeoplePositiveRateBIZByDateOf(_byDateItems);
+		_by100ThousandPeoplePositiveRateGIByDate = COVID19EpidemicStatus.getBy100ThousandPeoplePositiveRateGIByDateOf(_byDateItems);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
@@ -387,6 +431,30 @@ public class COVID19EpidemicStatus
 						  .map(COVID19EpidemicStatusAtDate::getR0)
 						  .collect(Collectors.toList());
 	}
+	public static Collection<Long> getICUNewAdmissionsCountLast14DaysOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(COVID19EpidemicStatusAtDate::getICUNewAdmissionsCountLast14Days)
+						  .collect(Collectors.toList());
+	}
+	public static Collection<Float> getBy100ThousandPeoplePositiveRateAROf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(COVID19EpidemicStatusAtDate::getBy100ThousandPeoplePositiveRateAR)
+						  .collect(Collectors.toList());
+	}
+	public static Collection<Float> getBy100ThousandPeoplePositiveRateBIZOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(COVID19EpidemicStatusAtDate::getBy100ThousandPeoplePositiveRateBIZ)
+						  .collect(Collectors.toList());
+	}
+	public static Collection<Float> getBy100ThousandPeoplePositiveRateGIOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(COVID19EpidemicStatusAtDate::getBy100ThousandPeoplePositiveRateGI)
+						  .collect(Collectors.toList());
+	}
 /////////////////////////////////////////////////////////////////////////////////////////
 //	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -496,6 +564,30 @@ public class COVID19EpidemicStatus
 		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
 		return byDateItems.stream()
 						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getR0()))
+						  .collect(Collectors.toList());
+	}
+	public static Collection<COVID19DimensionValueAtDate<Long>> getICUNewAdmissionsCountLast14DaysByDateOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getICUNewAdmissionsCountLast14Days()))
+						  .collect(Collectors.toList());
+	}
+	public static Collection<COVID19DimensionValueAtDate<Float>> getBy100ThousandPeoplePositiveRateARByDateOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getBy100ThousandPeoplePositiveRateAR()))
+						  .collect(Collectors.toList());
+	}
+	public static Collection<COVID19DimensionValueAtDate<Float>> getBy100ThousandPeoplePositiveRateBIZByDateOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getBy100ThousandPeoplePositiveRateBIZ()))
+						  .collect(Collectors.toList());
+	}
+	public static Collection<COVID19DimensionValueAtDate<Float>> getBy100ThousandPeoplePositiveRateGIByDateOf(final Collection<COVID19EpidemicStatusAtDate> byDateItems) {
+		if (CollectionUtils.isNullOrEmpty(byDateItems)) return null;
+		return byDateItems.stream()
+						  .map(i -> new COVID19DimensionValueAtDate<>(i.getDate(),i.getBy100ThousandPeoplePositiveRateGI()))
 						  .collect(Collectors.toList());
 	}
 }

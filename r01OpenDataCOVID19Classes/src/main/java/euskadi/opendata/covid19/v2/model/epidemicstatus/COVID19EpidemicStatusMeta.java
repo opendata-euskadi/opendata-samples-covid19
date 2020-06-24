@@ -78,5 +78,17 @@ public abstract class COVID19EpidemicStatusMeta {
 																			    "ZIUn ospitaleratuak");	
 	public final static COVID19MetaData R0 = new COVID19MetaData(COVID19MetaDataID.forId("r0"),    
 																 "R0 en Euskadi",                               
-																 "R0 Euskadin");	
+																 "R0 Euskadin");
+	public final static COVID19MetaData ICU_NEW_ADMISSIONS_COUNT_LAST_14_DAYS = new COVID19MetaData(COVID19MetaDataID.forId("icuNewAdmissionsCountLast14Days"),    
+																 									"Nuevos ingresos en UCI en los últimos 14 días",                               
+																 									"ZIUN ospitaleratze berriak azken 14 egunetan");
+	public final static COVID19MetaData BY_100_THOUSAND_PEOPLE_POSITIVE_RATE_AR = new COVID19MetaData(COVID19MetaDataID.forId("by100ThousandPeoplePositiveRateAR"),    
+																 									  "Tasa de positivos por 100.000 habitantes en Álava ",                               
+																 									  "Positiboen tasa 100.000 biztanleko Araban");
+	public final static COVID19MetaData BY_100_THOUSAND_PEOPLE_POSITIVE_RATE_BIZ = new COVID19MetaData(COVID19MetaDataID.forId("by100ThousandPeoplePositiveRateBIZ"),    
+																 									  "Tasa de positivos por 100.000 habitantes en Bizkaia ",                               
+																 									  "Positiboen tasa 100.000 biztanleko Bizkaian");
+	public final static COVID19MetaData BY_100_THOUSAND_PEOPLE_POSITIVE_RATE_GI = new COVID19MetaData(COVID19MetaDataID.forId("by100ThousandPeoplePositiveRateGI"),    
+																 									  "Tasa de positivos por 100.000 habitantes en Gipuzkoa ",                               
+																 									  "Positiboen tasa 100.000 biztanleko Gipuzkoan");
 }
