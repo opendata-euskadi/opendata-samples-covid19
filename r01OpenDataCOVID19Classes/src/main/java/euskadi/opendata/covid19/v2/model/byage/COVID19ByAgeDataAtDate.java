@@ -26,14 +26,17 @@ public class COVID19ByAgeDataAtDate
 /////////////////////////////////////////////////////////////////////////////////////////
 //	FIELDS
 /////////////////////////////////////////////////////////////////////////////////////////
-	@MarshallField(as="date",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
+	@MarshallField(as="lastUpdateDate",dateFormat=@MarshallDateFormat(use=DateFormat.ISO8601),
 			   whenXml=@MarshallFieldAsXml(attr=true))
-	@Getter @Setter private Date _date;
+	@Getter @Setter private Date _lastUpdateDate;
 	
 	////////// Data
 	@MarshallField(as="byAgeRange",
 				   whenXml=@MarshallFieldAsXml(collectionElementName="ageRange"))
 	@Getter @Setter private Collection<COVID19ByAgeDataItem> _items;
+	
+	@MarshallField(as="totals")
+	@Getter @Setter private COVID19ByAgeDataItemValues _totals;
 	
 	////////// splitted data in a more suitable format to create representations
 	@MarshallField(as="allAgeRanges",

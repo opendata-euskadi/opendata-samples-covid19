@@ -159,7 +159,6 @@ public abstract class COVID19V2Import {
 										 sourceFolderPath,generatedFolderPath,
 										 date);
 		
-		
 		////////// Index
 //				log.info("*********************************************************");
 //				log.info("WRITE INDEX FILES");

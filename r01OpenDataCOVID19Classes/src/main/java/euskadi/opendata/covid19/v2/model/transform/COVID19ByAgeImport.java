@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +18,7 @@ import com.google.common.collect.Lists;
 
 import euskadi.opendata.covid19.v2.model.byage.COVID19ByAgeDataAtDate;
 import euskadi.opendata.covid19.v2.model.byage.COVID19ByAgeDataItem;
+import euskadi.opendata.covid19.v2.model.byage.COVID19ByAgeDataItemValues;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,13 +90,16 @@ public abstract class COVID19ByAgeImport {
 /////////////////////////////////////////////////////////////////////////////////////////
 	public static COVID19ByAgeDataAtDate doImportDate(final Date date,
 													  final InputStream is) throws IOException {
-		Collection<COVID19ByAgeDataItem> items = Lists.newArrayList();
+		COVID19ByAgeDataAtDate out = new COVID19ByAgeDataAtDate();		
+		out.setLastUpdateDate(date);
+		out.setItems(Lists.newArrayList());
+				
 		BufferedReader br = new BufferedReader(new InputStreamReader(is,Charset.forName("ISO-8859-1")));
 		br.readLine();	// header
 		
 		String line = br.readLine();
 		while (line != null) {
-			if (!line.contains("(*)") && !line.contains("GUZTIRA / TOTAL")) {
+			if (!line.contains("(*)")) { 
 				line = line.trim()
 						   .replaceAll("\\\"?([0-9]+),([0-9]+)\\\"?","$1.$2")
 						   .replace("\"","").replaceAll("%","");	// remove all " & %
@@ -105,56 +108,20 @@ public abstract class COVID19ByAgeImport {
 				if (m.find()) {
 					String ageRange = m.group(1);
 					
-					String positiveCount = m.group(2);
-					String womenPositiveCount = m.group(3);
-					String menPositiveCount = m.group(4);
-					
-					String population = m.group(5);
-					String womenPopulation = m.group(6);
-					String menPopulation = m.group(7);
-					
-					String byPopulationrate = m.group(8);
-					String byWomenPopulationrate = m.group(9);
-					String byMenPopulationrate = m.group(10);
-					
-					String percentage = m.group(11);
-					
-					String deceasedCount = m.group(12);	
-					String womenDeceasedCount = m.group(13);
-					String menDeceasedCount = m.group(14);
-					
-					String lethality = m.group(15);
-					String womenLethality = m.group(16);
-					String menLethality = m.group(17);
-					
 					// Transfer
-					COVID19ByAgeDataItem item = new COVID19ByAgeDataItem();
-					
-					item.setAgeRange(ageRange);
-					
-					item.setPositiveCount(Strings.isNOTNullOrEmpty(positiveCount) ? Long.parseLong(positiveCount) : 0);
-					item.setPositiveWomenCount(Strings.isNOTNullOrEmpty(womenPositiveCount) ? Long.parseLong(womenPositiveCount) : 0);
-					item.setPositiveMenCount(Strings.isNOTNullOrEmpty(menPositiveCount) ? Long.parseLong(menPositiveCount) : 0);
-					
-					item.setPopulation(Strings.isNOTNullOrEmpty(population) ? Long.parseLong(population) : 0);
-					item.setWomenPopulation(Strings.isNOTNullOrEmpty(womenPopulation) ? Long.parseLong(womenPopulation) : 0);
-					item.setMenPopulation(Strings.isNOTNullOrEmpty(menPopulation) ? Long.parseLong(menPopulation) : 0);
-					
-					item.setPositivesByPopulationRate(Strings.isNOTNullOrEmpty(byPopulationrate) ? Float.parseFloat(byPopulationrate) : 0);
-					item.setPositivesByWomenPopulationRate(Strings.isNOTNullOrEmpty(byWomenPopulationrate) ? Float.parseFloat(byWomenPopulationrate) : 0);
-					item.setPositivesByMenPopulationRate(Strings.isNOTNullOrEmpty(byMenPopulationrate) ? Float.parseFloat(byMenPopulationrate) : 0);
-					
-					item.setPositivesByPopulationPercentage(Strings.isNOTNullOrEmpty(percentage) ? Float.parseFloat(percentage) : 0);
-					
-					item.setDeceasedCount(Strings.isNOTNullOrEmpty(deceasedCount) ? Long.parseLong(deceasedCount) : 0);
-					item.setDeceasedWomenCount(Strings.isNOTNullOrEmpty(womenDeceasedCount) ? Long.parseLong(womenDeceasedCount) : 0);
-					item.setDeceasedMenCount(Strings.isNOTNullOrEmpty(menDeceasedCount) ? Long.parseLong(menDeceasedCount) : 0);
-					
-					item.setLethalityRate(Strings.isNOTNullOrEmpty(lethality) ? Float.parseFloat(lethality) : 0);
-					item.setLethalityWomenRate(Strings.isNOTNullOrEmpty(womenLethality) ? Float.parseFloat(womenLethality) : 0);
-					item.setLethalityMenRate(Strings.isNOTNullOrEmpty(menLethality) ? Float.parseFloat(menLethality) : 0);
-					
-					items.add(item);
+					if (!ageRange.contains("GUZTIRA / TOTAL")) {
+						COVID19ByAgeDataItem item = new COVID19ByAgeDataItem();
+						item.setAgeRange(ageRange);
+						
+						_transferData(m,item);
+						
+						out.getItems()
+						   .add(item);
+					} else {
+						COVID19ByAgeDataItemValues item = new COVID19ByAgeDataItemValues();
+						_transferData(m,item);
+						out.setTotals(item);
+					}
 				} else {
 					log.debug("{} NOT matching line: {}",LINE_MATCHER,line);
 				}
@@ -167,10 +134,58 @@ public abstract class COVID19ByAgeImport {
 		is.close();
 		
 		// [3] - return 
-		COVID19ByAgeDataAtDate out = new COVID19ByAgeDataAtDate();
-		out.setDate(date);
-		out.setItems(items);
 		out.splitItems();
 		return out;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////
+//	
+/////////////////////////////////////////////////////////////////////////////////////////	
+	private static void _transferData(final Matcher m,
+							   		  final COVID19ByAgeDataItemValues item) {
+		String positiveCount = m.group(2);
+		String womenPositiveCount = m.group(3);
+		String menPositiveCount = m.group(4);
+		
+		String population = m.group(5);
+		String womenPopulation = m.group(6);
+		String menPopulation = m.group(7);
+		
+		String byPopulationrate = m.group(8);
+		String byWomenPopulationrate = m.group(9);
+		String byMenPopulationrate = m.group(10);
+		
+		String percentage = m.group(11);
+		
+		String deceasedCount = m.group(12);	
+		String womenDeceasedCount = m.group(13);
+		String menDeceasedCount = m.group(14);
+		
+		String lethality = m.group(15);
+		String womenLethality = m.group(16);
+		String menLethality = m.group(17);
+		
+
+		// transfer
+		item.setPositiveCount(Strings.isNOTNullOrEmpty(positiveCount) ? Long.parseLong(positiveCount) : 0);
+		item.setPositiveWomenCount(Strings.isNOTNullOrEmpty(womenPositiveCount) ? Long.parseLong(womenPositiveCount) : 0);
+		item.setPositiveMenCount(Strings.isNOTNullOrEmpty(menPositiveCount) ? Long.parseLong(menPositiveCount) : 0);
+		
+		item.setPopulation(Strings.isNOTNullOrEmpty(population) ? Long.parseLong(population) : 0);
+		item.setWomenPopulation(Strings.isNOTNullOrEmpty(womenPopulation) ? Long.parseLong(womenPopulation) : 0);
+		item.setMenPopulation(Strings.isNOTNullOrEmpty(menPopulation) ? Long.parseLong(menPopulation) : 0);
+		
+		item.setPositivesByPopulationRate(Strings.isNOTNullOrEmpty(byPopulationrate) ? Float.parseFloat(byPopulationrate) : 0);
+		item.setPositivesByWomenPopulationRate(Strings.isNOTNullOrEmpty(byWomenPopulationrate) ? Float.parseFloat(byWomenPopulationrate) : 0);
+		item.setPositivesByMenPopulationRate(Strings.isNOTNullOrEmpty(byMenPopulationrate) ? Float.parseFloat(byMenPopulationrate) : 0);
+		
+		item.setPositivesByPopulationPercentage(Strings.isNOTNullOrEmpty(percentage) ? Float.parseFloat(percentage) : 0);
+		
+		item.setDeceasedCount(Strings.isNOTNullOrEmpty(deceasedCount) ? Long.parseLong(deceasedCount) : 0);
+		item.setDeceasedWomenCount(Strings.isNOTNullOrEmpty(womenDeceasedCount) ? Long.parseLong(womenDeceasedCount) : 0);
+		item.setDeceasedMenCount(Strings.isNOTNullOrEmpty(menDeceasedCount) ? Long.parseLong(menDeceasedCount) : 0);
+		
+		item.setLethalityRate(Strings.isNOTNullOrEmpty(lethality) ? Float.parseFloat(lethality) : 0);
+		item.setLethalityWomenRate(Strings.isNOTNullOrEmpty(womenLethality) ? Float.parseFloat(womenLethality) : 0);
+		item.setLethalityMenRate(Strings.isNOTNullOrEmpty(menLethality) ? Float.parseFloat(menLethality) : 0);
 	}
 }

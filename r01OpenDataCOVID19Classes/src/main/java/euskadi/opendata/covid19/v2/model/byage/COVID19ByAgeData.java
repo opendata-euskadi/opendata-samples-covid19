@@ -99,13 +99,13 @@ public class COVID19ByAgeData
 				COVID19ByAgeDataItem dimItem = itemAtDate.getItemFor(ageRange);
 				if (dimItem != null) {
 					// positives
-					positiveCountByDate.addValueAt(itemAtDate.getDate(),
+					positiveCountByDate.addValueAt(itemAtDate.getLastUpdateDate(),
 												   dimItem.getPositiveCount());
 					// deaths
-					deathCountByDate.addValueAt(itemAtDate.getDate(),
+					deathCountByDate.addValueAt(itemAtDate.getLastUpdateDate(),
 												dimItem.getDeceasedCount());
 					// lethality
-					lethalityRateByDate.addValueAt(itemAtDate.getDate(),
+					lethalityRateByDate.addValueAt(itemAtDate.getLastUpdateDate(),
 												   dimItem.getLethalityRate());
 				}
 			}
